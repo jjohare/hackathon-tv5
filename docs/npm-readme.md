@@ -1,15 +1,15 @@
-# @agenticsorg/hackathon
+# agentics-hackathon
 
 > CLI and MCP server for the Agentics Foundation TV5 Hackathon - Build the future of agentic AI with Google Cloud, Gemini, Claude, and open-source tools
 
-[![npm version](https://img.shields.io/npm/v/@agenticsorg/hackathon.svg)](https://www.npmjs.com/package/@agenticsorg/hackathon)
+[![npm version](https://img.shields.io/npm/v/agentics-hackathon.svg)](https://www.npmjs.com/package/agentics-hackathon)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2)](https://discord.agentics.org)
 
 ## Quick Start
 
 ```bash
-npx @agenticsorg/hackathon init
+npx agentics-hackathon init
 ```
 
 ## The Challenge
@@ -70,7 +70,7 @@ Add to Claude configuration:
   "mcpServers": {
     "hackathon": {
       "command": "npx",
-      "args": ["@agenticsorg/hackathon", "mcp", "stdio"]
+      "args": ["agentics-hackathon", "mcp", "stdio"]
     }
   }
 }

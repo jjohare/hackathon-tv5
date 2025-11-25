@@ -1,6 +1,6 @@
 # Agentics Foundation TV5 Hackathon
 
-[![npm version](https://img.shields.io/npm/v/@agenticsorg/hackathon.svg)](https://www.npmjs.com/package/@agenticsorg/hackathon)
+[![npm version](https://img.shields.io/npm/v/agentics-hackathon.svg)](https://www.npmjs.com/package/agentics-hackathon)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org)
 [![Discord](https://img.shields.io/discord/1234567890?color=5865F2&logo=discord&logoColor=white&label=Discord)](https://discord.agentics.org)
@@ -48,7 +48,7 @@ Join the Agentics Foundation TV5 Hackathon to build agentic AI solutions that so
 ### One-Line Setup
 
 ```bash
-npx @agenticsorg/hackathon init
+npx agentics-hackathon init
 ```
 
 This will:
@@ -61,7 +61,7 @@ This will:
 ### Global Installation (Optional)
 
 ```bash
-npm install -g @agenticsorg/hackathon
+npm install -g agentics-hackathon
 hackathon init
 ```
 
@@ -94,10 +94,10 @@ Options:
 
 ```bash
 # Interactive setup (recommended for beginners)
-npx @agenticsorg/hackathon init
+npx agentics-hackathon init
 
 # Quick setup with specific tools
-npx @agenticsorg/hackathon init --tools claudeFlow geminiCli adk
+npx agentics-hackathon init --tools claudeFlow geminiCli adk
 
 # Check available tools
 hackathon tools --list
@@ -167,7 +167,7 @@ Add to your Claude configuration:
   "mcpServers": {
     "hackathon": {
       "command": "npx",
-      "args": ["@agenticsorg/hackathon", "mcp", "stdio"]
+      "args": ["agentics-hackathon", "mcp", "stdio"]
     }
   }
 }

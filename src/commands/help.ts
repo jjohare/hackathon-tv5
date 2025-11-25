@@ -74,12 +74,12 @@ function showGeneralHelp(): void {
 `);
 
   console.log(chalk.bold('HELP TOPICS'));
-  console.log(`  ${chalk.cyan('hackathon help init')}       Setup and initialization options
-  ${chalk.cyan('hackathon help tools')}      Available tools and installation
-  ${chalk.cyan('hackathon help mcp')}        MCP server configuration
-  ${chalk.cyan('hackathon help tracks')}     Hackathon track descriptions
-  ${chalk.cyan('hackathon help examples')}   Usage examples and workflows
-  ${chalk.cyan('hackathon help packages')}   All available packages detailed
+  console.log(`  ${chalk.cyan('npx agentics-hackathon help init')}       Setup and initialization options
+  ${chalk.cyan('npx agentics-hackathon help tools')}      Available tools and installation
+  ${chalk.cyan('npx agentics-hackathon help mcp')}        MCP server configuration
+  ${chalk.cyan('npx agentics-hackathon help tracks')}     Hackathon track descriptions
+  ${chalk.cyan('npx agentics-hackathon help examples')}   Usage examples and workflows
+  ${chalk.cyan('npx agentics-hackathon help packages')}   All available packages detailed
 `);
 
   console.log(chalk.bold('RESOURCES'));
@@ -93,7 +93,7 @@ function showInitHelp(): void {
   console.log(chalk.bold.cyan('\n═══ INIT COMMAND HELP ═══\n'));
 
   console.log(chalk.bold('USAGE'));
-  console.log(`  ${chalk.cyan('hackathon init [options]')}
+  console.log(`  ${chalk.cyan('npx agentics-hackathon init [options]')}
 `);
 
   console.log(chalk.bold('DESCRIPTION'));
@@ -111,16 +111,16 @@ function showInitHelp(): void {
 
   console.log(chalk.bold('EXAMPLES'));
   console.log(`  ${chalk.gray('# Interactive setup (recommended)')}
-  ${chalk.cyan('hackathon init')}
+  ${chalk.cyan('npx agentics-hackathon init')}
 
   ${chalk.gray('# Quick setup with specific tools')}
-  ${chalk.cyan('hackathon init --tools claudeFlow agenticFlow adk')}
+  ${chalk.cyan('npx agentics-hackathon init --tools claudeFlow agenticFlow adk')}
 
   ${chalk.gray('# Non-interactive with all options')}
-  ${chalk.cyan('hackathon init -y --team "AI Wizards" --track multi-agent-systems')}
+  ${chalk.cyan('npx agentics-hackathon init -y --team "AI Wizards" --track multi-agent-systems')}
 
   ${chalk.gray('# Force reinitialize')}
-  ${chalk.cyan('hackathon init --force')}
+  ${chalk.cyan('npx agentics-hackathon init --force')}
 `);
 }
 
@@ -128,7 +128,7 @@ function showToolsHelp(): void {
   console.log(chalk.bold.cyan('\n═══ TOOLS COMMAND HELP ═══\n'));
 
   console.log(chalk.bold('USAGE'));
-  console.log(`  ${chalk.cyan('hackathon tools [options]')}
+  console.log(`  ${chalk.cyan('npx agentics-hackathon tools [options]')}
 `);
 
   console.log(chalk.bold('DESCRIPTION'));
@@ -163,13 +163,13 @@ function showToolsHelp(): void {
   console.log(`
 ${chalk.bold('EXAMPLES')}
   ${chalk.gray('# List all tools')}
-  ${chalk.cyan('hackathon tools --list')}
+  ${chalk.cyan('npx agentics-hackathon tools --list')}
 
   ${chalk.gray('# Check installed status')}
-  ${chalk.cyan('hackathon tools --check')}
+  ${chalk.cyan('npx agentics-hackathon tools --check')}
 
   ${chalk.gray('# Install multiple tools')}
-  ${chalk.cyan('hackathon tools --install claudeFlow agenticFlow lionpride')}
+  ${chalk.cyan('npx agentics-hackathon tools --install claudeFlow agenticFlow lionpride')}
 `);
 }
 
@@ -177,7 +177,7 @@ function showMcpHelp(): void {
   console.log(chalk.bold.cyan('\n═══ MCP SERVER HELP ═══\n'));
 
   console.log(chalk.bold('USAGE'));
-  console.log(`  ${chalk.cyan('hackathon mcp [transport] [options]')}
+  console.log(`  ${chalk.cyan('npx agentics-hackathon mcp [transport] [options]')}
 `);
 
   console.log(chalk.bold('DESCRIPTION'));
@@ -218,10 +218,10 @@ function showMcpHelp(): void {
 
   console.log(chalk.bold('EXAMPLES'));
   console.log(`  ${chalk.gray('# Start STDIO server')}
-  ${chalk.cyan('hackathon mcp stdio')}
+  ${chalk.cyan('npx agentics-hackathon mcp stdio')}
 
   ${chalk.gray('# Start SSE server on port 3001')}
-  ${chalk.cyan('hackathon mcp sse --port 3001')}
+  ${chalk.cyan('npx agentics-hackathon mcp sse --port 3001')}
 `);
 }
 
@@ -259,31 +259,31 @@ function showExamplesHelp(): void {
   ${chalk.cyan('npx agentics-hackathon init')}
 
   ${chalk.gray('# 2. Install recommended tools')}
-  ${chalk.cyan('hackathon tools --install claudeFlow agenticFlow adk')}
+  ${chalk.cyan('npx agentics-hackathon tools --install claudeFlow agenticFlow adk')}
 
   ${chalk.gray('# 3. Check your setup')}
-  ${chalk.cyan('hackathon status')}
+  ${chalk.cyan('npx agentics-hackathon status')}
 `);
 
   console.log(chalk.bold('MULTI-AGENT WORKFLOW'));
   console.log(`  ${chalk.gray('# Set up a multi-agent project')}
-  ${chalk.cyan('hackathon init --track multi-agent-systems')}
-  ${chalk.cyan('hackathon tools --install agenticFlow flowNexus lionpride')}
+  ${chalk.cyan('npx agentics-hackathon init --track multi-agent-systems')}
+  ${chalk.cyan('npx agentics-hackathon tools --install agenticFlow flowNexus lionpride')}
   ${chalk.cyan('npx agentic-flow init')}
   ${chalk.cyan('npx flow-nexus init')}
 `);
 
   console.log(chalk.bold('USING WITH CLAUDE'));
   console.log(`  ${chalk.gray('# Start MCP server for Claude integration')}
-  ${chalk.cyan('hackathon mcp stdio')}
+  ${chalk.cyan('npx agentics-hackathon mcp stdio')}
 
   ${chalk.gray('# Or for web-based access')}
-  ${chalk.cyan('hackathon mcp sse --port 3000')}
+  ${chalk.cyan('npx agentics-hackathon mcp sse --port 3000')}
 `);
 
   console.log(chalk.bold('PYTHON-BASED PROJECT'));
   console.log(`  ${chalk.gray('# Install Python agent frameworks')}
-  ${chalk.cyan('hackathon tools --install lionpride agenticFramework openaiAgents adk')}
+  ${chalk.cyan('npx agentics-hackathon tools --install lionpride agenticFramework openaiAgents adk')}
 
   ${chalk.gray('# Then in your Python code:')}
   ${chalk.green(`from lionpride import Agent
@@ -292,7 +292,7 @@ from agentic import create_agent`)}
 
   console.log(chalk.bold('QUICK DEMO'));
   console.log(`  ${chalk.gray('# One-liner to test everything')}
-  ${chalk.cyan('npx agentics-hackathon init -y && hackathon tools --list && hackathon status')}
+  ${chalk.cyan('npx agentics-hackathon init -y && npx agentics-hackathon tools --list && npx agentics-hackathon status')}
 `);
 }
 
@@ -348,12 +348,12 @@ function showPackagesHelp(): void {
 
 ${chalk.bold('QUICK INSTALL BY CATEGORY')}
   ${chalk.gray('# All orchestration tools')}
-  ${chalk.cyan('hackathon tools --install claudeFlow agenticFlow flowNexus adk')}
+  ${chalk.cyan('npx agentics-hackathon tools --install claudeFlow agenticFlow flowNexus adk')}
 
   ${chalk.gray('# All Python frameworks')}
-  ${chalk.cyan('hackathon tools --install lionpride agenticFramework openaiAgents')}
+  ${chalk.cyan('npx agentics-hackathon tools --install lionpride agenticFramework openaiAgents')}
 
   ${chalk.gray('# Recommended starter pack')}
-  ${chalk.cyan('hackathon tools --install claudeCode claudeFlow agenticFlow geminiCli')}
+  ${chalk.cyan('npx agentics-hackathon tools --install claudeCode claudeFlow agenticFlow geminiCli')}
 `);
 }

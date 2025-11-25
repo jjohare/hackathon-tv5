@@ -8,15 +8,28 @@ import type { HackathonConfig, ToolSelection } from '../types.js';
 import { CONFIG_FILE } from '../constants.js';
 
 const DEFAULT_TOOLS: ToolSelection = {
+  // AI Assistants
   claudeCode: false,
-  claudeFlow: false,
   geminiCli: false,
+  // Orchestration
+  claudeFlow: false,
+  agenticFlow: false,
+  flowNexus: false,
+  adk: false,
+  // Cloud Platform
   googleCloudCli: false,
-  agentDb: false,
-  ruvector: false,
-  agenticSynth: false,
   vertexAi: false,
-  adk: false
+  // Databases
+  ruvector: false,
+  agentDb: false,
+  // Synthesis
+  agenticSynth: false,
+  strangeLoops: false,
+  sparc: false,
+  // Python Frameworks
+  lionpride: false,
+  agenticFramework: false,
+  openaiAgents: false
 };
 
 export function getConfigPath(dir: string = process.cwd()): string {

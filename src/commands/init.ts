@@ -163,15 +163,28 @@ async function runInteractive(options: InitOptions): Promise<HackathonConfig> {
 
   // Build configuration
   const tools: ToolSelection = {
+    // AI Assistants
     claudeCode: selectedTools.includes('claudeCode'),
-    claudeFlow: selectedTools.includes('claudeFlow'),
     geminiCli: selectedTools.includes('geminiCli'),
+    // Orchestration
+    claudeFlow: selectedTools.includes('claudeFlow'),
+    agenticFlow: selectedTools.includes('agenticFlow'),
+    flowNexus: selectedTools.includes('flowNexus'),
+    adk: selectedTools.includes('adk'),
+    // Cloud Platform
     googleCloudCli: selectedTools.includes('googleCloudCli'),
-    agentDb: selectedTools.includes('agentDb'),
-    ruvector: selectedTools.includes('ruvector'),
-    agenticSynth: selectedTools.includes('agenticSynth'),
     vertexAi: selectedTools.includes('vertexAi'),
-    adk: selectedTools.includes('adk')
+    // Databases
+    ruvector: selectedTools.includes('ruvector'),
+    agentDb: selectedTools.includes('agentDb'),
+    // Synthesis
+    agenticSynth: selectedTools.includes('agenticSynth'),
+    strangeLoops: selectedTools.includes('strangeLoops'),
+    sparc: selectedTools.includes('sparc'),
+    // Python Frameworks
+    lionpride: selectedTools.includes('lionpride'),
+    agenticFramework: selectedTools.includes('agenticFramework'),
+    openaiAgents: selectedTools.includes('openaiAgents')
   };
 
   // Install selected tools
@@ -219,15 +232,28 @@ async function runNonInteractive(options: InitOptions): Promise<HackathonConfig>
   const projectName = process.cwd().split('/').pop() || 'hackathon-project';
 
   const tools: ToolSelection = {
+    // AI Assistants
     claudeCode: options.tools?.includes('claudeCode') || false,
-    claudeFlow: options.tools?.includes('claudeFlow') || false,
     geminiCli: options.tools?.includes('geminiCli') || false,
+    // Orchestration
+    claudeFlow: options.tools?.includes('claudeFlow') || false,
+    agenticFlow: options.tools?.includes('agenticFlow') || false,
+    flowNexus: options.tools?.includes('flowNexus') || false,
+    adk: options.tools?.includes('adk') || false,
+    // Cloud Platform
     googleCloudCli: options.tools?.includes('googleCloudCli') || false,
-    agentDb: options.tools?.includes('agentDb') || false,
-    ruvector: options.tools?.includes('ruvector') || false,
-    agenticSynth: options.tools?.includes('agenticSynth') || false,
     vertexAi: options.tools?.includes('vertexAi') || false,
-    adk: options.tools?.includes('adk') || false
+    // Databases
+    ruvector: options.tools?.includes('ruvector') || false,
+    agentDb: options.tools?.includes('agentDb') || false,
+    // Synthesis
+    agenticSynth: options.tools?.includes('agenticSynth') || false,
+    strangeLoops: options.tools?.includes('strangeLoops') || false,
+    sparc: options.tools?.includes('sparc') || false,
+    // Python Frameworks
+    lionpride: options.tools?.includes('lionpride') || false,
+    agenticFramework: options.tools?.includes('agenticFramework') || false,
+    openaiAgents: options.tools?.includes('openaiAgents') || false
   };
 
   // Install selected tools

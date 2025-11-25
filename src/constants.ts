@@ -31,6 +31,7 @@ export const TRACKS: Record<HackathonTrack, { name: string; description: string 
 };
 
 export const AVAILABLE_TOOLS: Tool[] = [
+  // AI Assistants
   {
     name: 'claudeCode',
     displayName: 'Claude Code CLI',
@@ -42,16 +43,6 @@ export const AVAILABLE_TOOLS: Tool[] = [
     category: 'ai-assistants'
   },
   {
-    name: 'claudeFlow',
-    displayName: 'Claude Flow',
-    description: 'Multi-agent orchestration framework for Claude',
-    installCommand: 'npx claude-flow@alpha init --force',
-    verifyCommand: 'npx claude-flow --version',
-    docUrl: 'https://github.com/anthropics/claude-flow',
-    required: false,
-    category: 'orchestration'
-  },
-  {
     name: 'geminiCli',
     displayName: 'Google Gemini CLI',
     description: 'Command-line interface for Google Gemini models',
@@ -61,15 +52,37 @@ export const AVAILABLE_TOOLS: Tool[] = [
     required: false,
     category: 'ai-assistants'
   },
+
+  // Orchestration & Agent Frameworks
   {
-    name: 'googleCloudCli',
-    displayName: 'Google Cloud CLI (gcloud)',
-    description: 'Google Cloud SDK for Vertex AI, Cloud Functions, and more',
-    installCommand: 'curl https://sdk.cloud.google.com | bash',
-    verifyCommand: 'gcloud --version',
-    docUrl: 'https://cloud.google.com/sdk/docs/install',
+    name: 'claudeFlow',
+    displayName: 'Claude Flow',
+    description: '#1 agent orchestration platform - multi-agent swarms, 101 MCP tools, RAG integration',
+    installCommand: 'npx claude-flow@alpha init --force',
+    verifyCommand: 'npx claude-flow --version',
+    docUrl: 'https://github.com/ruvnet/claude-flow',
     required: false,
-    category: 'cloud-platform'
+    category: 'orchestration'
+  },
+  {
+    name: 'agenticFlow',
+    displayName: 'Agentic Flow',
+    description: 'Production AI orchestration - 66 agents, 213 MCP tools, ReasoningBank memory',
+    installCommand: 'npx agentic-flow init',
+    verifyCommand: 'npx agentic-flow --version',
+    docUrl: 'https://github.com/ruvnet/agentic-flow',
+    required: false,
+    category: 'orchestration'
+  },
+  {
+    name: 'flowNexus',
+    displayName: 'Flow Nexus',
+    description: 'Competitive agentic platform on MCP - deploy AI swarms, earn credits',
+    installCommand: 'npx flow-nexus init',
+    verifyCommand: 'npx flow-nexus --version',
+    docUrl: 'https://github.com/ruvnet/flow-nexus',
+    required: false,
+    category: 'orchestration'
   },
   {
     name: 'adk',
@@ -81,6 +94,18 @@ export const AVAILABLE_TOOLS: Tool[] = [
     required: false,
     category: 'orchestration'
   },
+
+  // Cloud Platform
+  {
+    name: 'googleCloudCli',
+    displayName: 'Google Cloud CLI (gcloud)',
+    description: 'Google Cloud SDK for Vertex AI, Cloud Functions, and more',
+    installCommand: 'curl https://sdk.cloud.google.com | bash',
+    verifyCommand: 'gcloud --version',
+    docUrl: 'https://cloud.google.com/sdk/docs/install',
+    required: false,
+    category: 'cloud-platform'
+  },
   {
     name: 'vertexAi',
     displayName: 'Vertex AI SDK',
@@ -91,6 +116,8 @@ export const AVAILABLE_TOOLS: Tool[] = [
     required: false,
     category: 'cloud-platform'
   },
+
+  // Databases & Memory
   {
     name: 'ruvector',
     displayName: 'RuVector',
@@ -111,6 +138,8 @@ export const AVAILABLE_TOOLS: Tool[] = [
     required: false,
     category: 'databases'
   },
+
+  // Synthesis & Advanced Tools
   {
     name: 'agenticSynth',
     displayName: 'Agentic Synth',
@@ -120,6 +149,58 @@ export const AVAILABLE_TOOLS: Tool[] = [
     docUrl: 'https://ruv.io/projects',
     required: false,
     category: 'synthesis'
+  },
+  {
+    name: 'strangeLoops',
+    displayName: 'Strange Loops',
+    description: 'Consciousness exploration SDK - emergent intelligence, 500K+ ops/sec nano-agents',
+    installCommand: 'npx strange-loops init',
+    verifyCommand: 'npx strange-loops --version',
+    docUrl: 'https://github.com/ruvnet/strange-loops',
+    required: false,
+    category: 'synthesis'
+  },
+  {
+    name: 'sparc',
+    displayName: 'SPARC 2.0',
+    description: 'Autonomous vector coding agent with MCP - intelligent code analysis',
+    installCommand: 'npx sparc init',
+    verifyCommand: 'npx sparc --version',
+    docUrl: 'https://github.com/ruvnet/sparc',
+    required: false,
+    category: 'synthesis'
+  },
+
+  // Python Frameworks
+  {
+    name: 'lionpride',
+    displayName: 'LionPride',
+    description: 'Python agentic AI framework for building intelligent agent systems',
+    installCommand: 'pip install lionpride',
+    verifyCommand: 'python -c "import lionpride"',
+    docUrl: 'https://pypi.org/project/lionpride/',
+    required: false,
+    category: 'python-frameworks'
+  },
+  {
+    name: 'agenticFramework',
+    displayName: 'Agentic Framework',
+    description: 'Python framework for creating AI agents with natural language & tools',
+    installCommand: 'pip install agentic-framework',
+    verifyCommand: 'python -c "import agentic"',
+    docUrl: 'https://pypi.org/project/agentic-framework/',
+    required: false,
+    category: 'python-frameworks'
+  },
+  {
+    name: 'openaiAgents',
+    displayName: 'OpenAI Agents SDK',
+    description: 'Lightweight framework for multi-agent workflows from OpenAI',
+    installCommand: 'pip install openai-agents',
+    verifyCommand: 'python -c "import agents"',
+    docUrl: 'https://github.com/openai/openai-agents-python',
+    required: false,
+    category: 'python-frameworks'
   }
 ];
 

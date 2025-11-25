@@ -20,15 +20,28 @@ export type HackathonTrack =
   | 'open-innovation';
 
 export interface ToolSelection {
+  // AI Assistants
   claudeCode: boolean;
-  claudeFlow: boolean;
   geminiCli: boolean;
-  googleCloudCli: boolean;
-  agentDb: boolean;
-  ruvector: boolean;
-  agenticSynth: boolean;
-  vertexAi: boolean;
+  // Orchestration
+  claudeFlow: boolean;
+  agenticFlow: boolean;
+  flowNexus: boolean;
   adk: boolean;
+  // Cloud Platform
+  googleCloudCli: boolean;
+  vertexAi: boolean;
+  // Databases
+  ruvector: boolean;
+  agentDb: boolean;
+  // Synthesis
+  agenticSynth: boolean;
+  strangeLoops: boolean;
+  sparc: boolean;
+  // Python Frameworks
+  lionpride: boolean;
+  agenticFramework: boolean;
+  openaiAgents: boolean;
 }
 
 export interface Tool {
@@ -47,7 +60,8 @@ export type ToolCategory =
   | 'orchestration'
   | 'databases'
   | 'cloud-platform'
-  | 'synthesis';
+  | 'synthesis'
+  | 'python-frameworks';
 
 export interface InstallProgress {
   tool: string;

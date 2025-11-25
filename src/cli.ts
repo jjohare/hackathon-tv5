@@ -9,13 +9,13 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 
-import { initCommand, toolsCommand, statusCommand, infoCommand } from './commands/index.js';
+import { initCommand, toolsCommand, statusCommand, infoCommand, helpCommand } from './commands/index.js';
 import { startSseServer } from './mcp/sse.js';
 import { BANNER, DISCORD_URL, WEBSITE_URL, HACKATHON_NAME } from './constants.js';
 import { logger } from './utils/index.js';
 
 // Package version
-const version = '1.0.0';
+const version = '1.1.0';
 
 const program = new Command();
 
@@ -114,6 +114,14 @@ program
     );
   });
 
+// Help command with topics
+program
+  .command('help [topic]')
+  .description('Show detailed help (topics: init, tools, mcp, tracks, examples, packages)')
+  .action(async (topic) => {
+    await helpCommand({ topic });
+  });
+
 // Default action (no command)
 program
   .action(async () => {
@@ -130,12 +138,12 @@ program
 
     const commands = [
       { cmd: 'hackathon init', desc: 'Initialize a new project' },
-      { cmd: 'hackathon tools', desc: 'Browse and install tools' },
+      { cmd: 'hackathon tools', desc: 'Browse and install 17+ AI tools' },
       { cmd: 'hackathon status', desc: 'Check project status' },
       { cmd: 'hackathon info', desc: 'View hackathon details' },
       { cmd: 'hackathon mcp', desc: 'Start MCP server' },
       { cmd: 'hackathon discord', desc: 'Join the community' },
-      { cmd: 'hackathon --help', desc: 'Show all commands' }
+      { cmd: 'hackathon help', desc: 'Detailed help & examples' }
     ];
 
     commands.forEach(({ cmd, desc }) => {
@@ -147,7 +155,7 @@ program
     logger.newline();
 
     console.log(chalk.bold('  Get Started:'));
-    console.log(`  ${chalk.yellow('$')} ${chalk.cyan('npx @agenticsorg/hackathon init')}`);
+    console.log(`  ${chalk.yellow('$')} ${chalk.cyan('npx agentics-hackathon init')}`);
     logger.newline();
 
     console.log(chalk.bold('  Resources:'));

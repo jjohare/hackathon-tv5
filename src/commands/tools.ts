@@ -45,10 +45,11 @@ async function listTools(): Promise<void> {
 
   const categories = {
     'ai-assistants': 'AI Assistants',
-    'orchestration': 'Orchestration',
-    'databases': 'Databases',
+    'orchestration': 'Orchestration & Agent Frameworks',
     'cloud-platform': 'Cloud Platform',
-    'synthesis': 'Synthesis'
+    'databases': 'Databases & Memory',
+    'synthesis': 'Synthesis & Advanced Tools',
+    'python-frameworks': 'Python Frameworks'
   };
 
   for (const [category, label] of Object.entries(categories)) {

@@ -15,7 +15,7 @@ import { BANNER, DISCORD_URL, WEBSITE_URL, HACKATHON_NAME } from './constants.js
 import { logger } from './utils/index.js';
 
 // Package version
-const version = '1.1.0';
+const version = '1.1.1';
 
 const program = new Command();
 
@@ -137,13 +137,13 @@ program
     logger.newline();
 
     const commands = [
-      { cmd: 'hackathon init', desc: 'Initialize a new project' },
-      { cmd: 'hackathon tools', desc: 'Browse and install 17+ AI tools' },
-      { cmd: 'hackathon status', desc: 'Check project status' },
-      { cmd: 'hackathon info', desc: 'View hackathon details' },
-      { cmd: 'hackathon mcp', desc: 'Start MCP server' },
-      { cmd: 'hackathon discord', desc: 'Join the community' },
-      { cmd: 'hackathon help', desc: 'Detailed help & examples' }
+      { cmd: 'npx agentics-hackathon init', desc: 'Initialize a new project' },
+      { cmd: 'npx agentics-hackathon tools', desc: 'Browse and install 17+ AI tools' },
+      { cmd: 'npx agentics-hackathon status', desc: 'Check project status' },
+      { cmd: 'npx agentics-hackathon info', desc: 'View hackathon details' },
+      { cmd: 'npx agentics-hackathon mcp', desc: 'Start MCP server' },
+      { cmd: 'npx agentics-hackathon discord', desc: 'Join the community' },
+      { cmd: 'npx agentics-hackathon help', desc: 'Detailed help & examples' }
     ];
 
     commands.forEach(({ cmd, desc }) => {

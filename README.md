@@ -69,18 +69,18 @@ hackathon init
 
 | Command | Description |
 |---------|-------------|
-| `hackathon init` | Initialize a new hackathon project |
-| `hackathon tools` | Browse and install development tools |
-| `hackathon status` | Check project configuration status |
-| `hackathon info` | View hackathon details and resources |
-| `hackathon mcp [stdio\|sse]` | Start the MCP server |
-| `hackathon discord` | Join the community Discord |
-| `hackathon --help` | Show all available commands |
+| `npx agentics-hackathon init` | Initialize a new hackathon project |
+| `npx agentics-hackathon tools` | Browse and install development tools |
+| `npx agentics-hackathon status` | Check project configuration status |
+| `npx agentics-hackathon info` | View hackathon details and resources |
+| `npx agentics-hackathon mcp [stdio\|sse]` | Start the MCP server |
+| `npx agentics-hackathon discord` | Join the community Discord |
+| `npx agentics-hackathon help` | Detailed help & examples |
 
 ### Init Options
 
 ```bash
-hackathon init [options]
+npx agentics-hackathon init [options]
 
 Options:
   -f, --force           Force reinitialize existing project
@@ -100,13 +100,13 @@ npx agentics-hackathon init
 npx agentics-hackathon init --tools claudeFlow geminiCli adk
 
 # Check available tools
-hackathon tools --list
+npx agentics-hackathon tools --list
 
 # Install specific tools later
-hackathon tools --install ruvector agentDb
+npx agentics-hackathon tools --install ruvector agentDb
 
 # Start MCP server for AI integration
-hackathon mcp sse --port 3000
+npx agentics-hackathon mcp sse --port 3000
 ```
 
 ## 🏆 Hackathon Tracks
@@ -157,7 +157,7 @@ The hackathon CLI includes a Model Context Protocol (MCP) server for AI integrat
 ### STDIO Transport
 
 ```bash
-hackathon mcp stdio
+npx agentics-hackathon mcp stdio
 ```
 
 Add to your Claude configuration:
@@ -176,7 +176,7 @@ Add to your Claude configuration:
 ### SSE Transport
 
 ```bash
-hackathon mcp sse --port 3000
+npx agentics-hackathon mcp sse --port 3000
 ```
 
 Connect at `http://localhost:3000/sse`

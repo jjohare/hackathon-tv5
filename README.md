@@ -1,4 +1,6 @@
-# Agentics Foundation TV5 Hackathon
+# Media Gateway Hackathon
+
+**Presented by the Agentics Foundation with the support of TV5 Monde USA, Google & Kaltura**
 
 [![npm version](https://img.shields.io/npm/v/agentics-hackathon.svg)](https://www.npmjs.com/package/agentics-hackathon)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -18,7 +20,7 @@
 ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝ ╚═════╝╚══════╝
 ```
 
-### 🚀 TV5 Hackathon - Supported by Google
+### 🚀 Media Gateway Hackathon
 
 **Building the Future of Agentic AI | Open Source | Global**
 
@@ -32,7 +34,7 @@
 
 **Every night, millions spend up to 45 minutes deciding what to watch — billions of hours lost every day. Not from lack of content, but from fragmentation.**
 
-Join the Agentics Foundation TV5 Hackathon to build agentic AI solutions that solve real problems. Powered by Google Cloud, Gemini, Claude, and the best open-source tools in the ecosystem.
+Join the Media Gateway Hackathon to build agentic AI solutions that solve real problems. Powered by Google Cloud, Gemini, Claude, and the best open-source tools in the ecosystem.
 
 ## ✨ Features
 
@@ -165,9 +167,8 @@ npx agentics-hackathon status --json
 {
   "success": true,
   "hackathon": {
-    "name": "Agentics Foundation TV5 Hackathon",
-    "tagline": "Building the Future of Agentic AI",
-    "sponsor": "Google Cloud"
+    "name": "Media Gateway Hackathon",
+    "tagline": "Building the Future of Agentic AI"
   },
   "tracks": [...],
   "resources": {
@@ -391,7 +392,9 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 🙏 Acknowledgments
 
-- **Google Cloud** - Hackathon sponsor and technology partner
+- **TV5 Monde USA** - Media partner
+- **Google** - Technology partner
+- **Kaltura** - Technology partner
 - **Anthropic** - Claude AI and tooling
 - **Agentics Foundation** - Organization and community
 - **All Contributors** - Thank you for making this possible!

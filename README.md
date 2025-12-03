@@ -26,6 +26,8 @@
 
 [Website](https://agentics.org/hackathon) · [Discord](https://discord.agentics.org) · [Documentation](#documentation) · [Get Started](#quick-start)
 
+[Live Hackathon Event Studio](https://video.agentics.org/meetings/394715113/Agentics+Foundation+Global+AI+Hackathon)
+
 </div>
 
 ---

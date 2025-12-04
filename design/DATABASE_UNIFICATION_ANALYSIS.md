@@ -15,9 +15,16 @@
 **Recommendation**: **Option C - Dual System (Neo4j + Milvus)** - Deprecate PostgreSQL and Redis
 
 **Rationale**:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - 50% reduction in operational complexity (4 → 2 systems)
 - 18% cost savings ($840/month → $690/month at 7,000 QPS)
 - Minimal performance degradation (<5ms additional latency)
+-->
+
 - Lower migration risk than full Neo4j consolidation
 - Maintains GPU acceleration advantage of Milvus
 
@@ -192,11 +199,18 @@
 **Hybrid Approach**:
 ```
 Option 1: Neo4j only (no Redis)
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
   → Query latency: 15ms → 20ms (+5ms cache miss penalty)
 
 Option 2: Neo4j + Redis
   → Query latency: 15ms (cache hit), 18ms (cache miss)
   → Complexity: Still 2 systems
+-->
+
 
 Recommendation: If deprecating Redis, expect 3-5ms latency increase.
 ```
@@ -212,10 +226,17 @@ Recommendation: If deprecating Redis, expect 3-5ms latency increase.
 **Topology**:
 ```
 API Gateway
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ├─> Milvus (vector search)
     ├─> Neo4j (graph)
     ├─> PostgreSQL (AgentDB)
     └─> Redis (cache)
+-->
+
 ```
 
 **Pros**:
@@ -240,8 +261,15 @@ API Gateway
 **Topology**:
 ```
 API Gateway
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     └─> Neo4j (all workloads)
 ```
+
+-->
 
 **Pros**:
 - ✅ Minimal operational complexity
@@ -258,9 +286,16 @@ API Gateway
 **Performance Degradation**:
 ```
 Current: 15ms p95
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
   ├─> Milvus: 8.7ms → Neo4j vectors: 20ms (+11.3ms)
   ├─> Redis cache: 0.5ms → Neo4j cache: 3ms (+2.5ms)
   └─> Total: 15ms → 28ms (+13ms, 87% increase)
+-->
+
 ```
 
 **Performance**: 28ms p95 (+87%)
@@ -275,32 +310,67 @@ Current: 15ms p95
 **Topology**:
 ```
 API Gateway
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ├─> Milvus (vector search, GPU-accelerated)
     └─> Neo4j (graph + AgentDB + cache)
 ```
+-->
+
 
 **Consolidation**:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - PostgreSQL → Neo4j (AgentDB state as graph nodes)
 - Redis → Neo4j (page cache + query cache)
 
+-->
+
 **Pros**:
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 - ✅ 50% reduction in systems (4 → 2)
 - ✅ Maintains GPU acceleration for vectors
 - ✅ Moderate complexity reduction
+-->
+
 - ✅ Acceptable performance trade-off
 
 **Cons**:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - ⚠️ 3-5ms latency increase (Redis → Neo4j cache)
 - ⚠️ Still 2 systems to manage
 - ⚠️ Migration effort for AgentDB
+-->
+
 
 **Performance Degradation**:
 ```
 Current: 15ms p95
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
   ├─> Milvus: 8.7ms → Unchanged
   ├─> Redis cache: 0.5ms → Neo4j cache: 3ms (+2.5ms)
   ├─> AgentDB: 5ms → Neo4j graph: 7ms (+2ms)
   └─> Total: 15ms → 19.5ms (+4.5ms, 30% increase)
+-->
+
 ```
 
 **Performance**: 19.5ms p95 (+30%)
@@ -315,18 +385,39 @@ Current: 15ms p95
 **Topology**:
 ```
 API Gateway
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ├─> Neo4j (graph + vectors + AgentDB)
     └─> Redis (cache only)
 ```
+-->
+
 
 **Consolidation**:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - Milvus → Neo4j (vector index)
 - PostgreSQL → Neo4j (AgentDB state)
 
+-->
+
 **Pros**:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - ✅ 50% reduction in systems (4 → 2)
 - ✅ Sub-ms caching preserved
 - ✅ Simplified vector+graph queries
+-->
+
 
 **Cons**:
 - ❌ 2-3× slower vector search (no GPU)
@@ -336,9 +427,16 @@ API Gateway
 **Performance Degradation**:
 ```
 Current: 15ms p95
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
   ├─> Milvus: 8.7ms → Neo4j vectors: 20ms (+11.3ms)
   ├─> Redis cache: 0.5ms → Unchanged
   └─> Total: 15ms → 26.3ms (+11.3ms, 75% increase)
+-->
+
 ```
 
 **Performance**: 26.3ms p95 (+75%)
@@ -391,6 +489,11 @@ Current: 15ms p95
 
 **Current Architecture** (Baseline):
 ```
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 Request → API Gateway (1ms)
   ├─> Embedding Generation (3ms)
   ├─> Routing (0.1ms)
@@ -398,11 +501,18 @@ Request → API Gateway (1ms)
   ├─> Neo4j Graph Enrichment (2ms)
   ├─> AgentDB RL Reranking (5ms)
   └─> Redis Cache Check (0.5ms)
+-->
+
 Total: 15ms p95 ✅
 ```
 
 **Option B** (Neo4j Only):
 ```
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 Request → API Gateway (1ms)
   ├─> Embedding Generation (3ms)
   ├─> Routing (0.1ms)
@@ -410,11 +520,18 @@ Request → API Gateway (1ms)
   ├─> Neo4j Graph Enrichment (2ms)
   ├─> Neo4j RL Reranking (7ms) ⚠️
   └─> Neo4j Cache (3ms) ⚠️
+-->
+
 Total: 28ms p95 ❌ (87% increase)
 ```
 
 **Option C** (Neo4j + Milvus):
 ```
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 Request → API Gateway (1ms)
   ├─> Embedding Generation (3ms)
   ├─> Routing (0.1ms)
@@ -422,6 +539,8 @@ Request → API Gateway (1ms)
   ├─> Neo4j Graph Enrichment (2ms)
   ├─> Neo4j RL Reranking (7ms) ⚠️
   └─> Neo4j Cache (3ms) ⚠️
+-->
+
 Total: 19.5ms p95 ⚠️ (30% increase)
 ```
 
@@ -487,42 +606,83 @@ Total: 19.5ms p95 ⚠️ (30% increase)
 
 | Migration Path | Effort (Person-Days) | Risk | Data Migration | Code Changes | Testing |
 |----------------|---------------------|------|----------------|--------------|---------|
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 | **PostgreSQL → Neo4j** | 15-20 | Medium | 10M user states | AgentDB queries | 5 days |
 | **Redis → Neo4j** | 8-12 | Low | Cache rebuild | Cache layer logic | 3 days |
 | **Milvus → Neo4j** | 25-35 | High | 100M vectors | Vector search queries | 10 days |
+-->
+
 
 ### 6.2 Option-Specific Migration Plans
 
 **Option B (Neo4j Only)**:
 ```
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 Phase 1: PostgreSQL → Neo4j (15 days)
   ├─> Schema mapping (user_states → :User-[:HAS_STATE]->:RLState)
   ├─> Data pipeline (10M records)
   ├─> Query rewrite (SQL → Cypher)
   └─> Integration testing
+-->
 
+
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 Phase 2: Milvus → Neo4j (30 days)
   ├─> Vector index creation (100M vectors)
   ├─> Embedding migration (2TB data)
   ├─> HNSW tuning (ef, M parameters)
   ├─> Performance validation
   └─> Fallback strategy (GPU → CPU)
+-->
 
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 Phase 3: Redis → Neo4j (10 days)
   ├─> Cache layer refactor
   ├─> Page cache tuning
   ├─> TTL policy implementation
   └─> Load testing
+-->
+
 
 Total: 55-65 days, 3-4 engineers
 ```
 
 **Option C (Neo4j + Milvus)**:
 ```
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 Phase 1: PostgreSQL → Neo4j (15 days)
   (same as Option B)
 
 Phase 2: Redis → Neo4j (10 days)
+-->
+
   (same as Option B)
 
 Total: 25-30 days, 2 engineers
@@ -530,8 +690,17 @@ Total: 25-30 days, 2 engineers
 
 **Option D (Neo4j + Redis)**:
 ```
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 Phase 1: PostgreSQL → Neo4j (15 days)
 Phase 2: Milvus → Neo4j (30 days)
+
+-->
 
 Total: 45-50 days, 3 engineers
 ```
@@ -565,9 +734,16 @@ Total: 45-50 days, 3 engineers
 
 ### 7.2 Scalability Risk
 
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 **100M → 1B Vectors**:
 
 | System | Current Scale | 10× Scale | Risk |
+-->
+
 |--------|--------------|-----------|------|
 | **Milvus** | 100M vectors, 100GB | 1B vectors, 1TB (sharded) | ✅ Proven at scale |
 | **Neo4j Vectors** | Not tested | Unknown (CPU-bound) | ⚠️ Unproven at scale |
@@ -628,14 +804,55 @@ Total: 45-50 days, 3 engineers
 **Rationale**:
 
 1. **Performance**: 19.5ms p95 latency (within <20ms SLA)
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 2. **Cost**: 35% total cost reduction ($7,190 → $4,670/month)
 3. **Complexity**: 50% system reduction (4 → 2 databases)
 4. **Migration Risk**: Medium (2 systems to migrate, 25-30 days)
+-->
+
 5. **Scalability**: Maintains Milvus GPU advantage for 1B+ vectors
 
 ### 9.2 Architecture Diagram
 
 ```
+```mermaid
+graph TD
+    A0["API GATEWAY"]
+    A1["(Actix-web + MCP)"]
+    A0 --> A1
+    A2["MILVUS"]
+    A1 --> A2
+    A3["NEO4J"]
+    A2 --> A3
+    A4["Vector Search"]
+    A3 --> A4
+    A5["(Unified Store)"]
+    A4 --> A5
+    A6["│"]
+    A5 --> A6
+    A7["• 100M vectors"]
+    A6 --> A7
+    A8["• Knowledge Graph"]
+    A7 --> A8
+    A9["• GPU-accelerated"]
+    A8 --> A9
+    A10["• AgentDB State"]
+    A9 --> A10
+    A11["• HNSW + INT8"]
+    A10 --> A11
+    A12["• Page Cache"]
+    A11 --> A12
+    A13["• 8.7ms p95"]
+    A12 --> A13
+    A14["• Query Cache"]
+    A13 --> A14
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────┐
 │                  API GATEWAY                        │
 │              (Actix-web + MCP)                      │
@@ -653,6 +870,8 @@ Total: 45-50 days, 3 engineers
 │ • HNSW + INT8    │    │ • Page Cache         │
 │ • 8.7ms p95      │    │ • Query Cache        │
 └──────────────────┘    └──────────────────────┘
+-->
+
 ```
 
 ### 9.3 Consolidation Details
@@ -716,9 +935,18 @@ Strategy:
 
 ## 10. Implementation Roadmap
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 ### 10.1 Phase 1: PostgreSQL → Neo4j (Weeks 1-3)
 
 **Week 1: Schema Design**
+-->
+
 ```
 Tasks:
   ✓ Map PostgreSQL schema to Neo4j graph model
@@ -739,15 +967,31 @@ Tasks:
 **Week 3: Application Integration**
 ```
 Tasks:
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
   ✓ Rewrite AgentDB queries (SQL → Cypher)
   ✓ Update connection pooling (neo4rs driver)
   ✓ Integration testing (unit + E2E)
+-->
+
   ✓ Performance benchmarking
 ```
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 ### 10.2 Phase 2: Redis → Neo4j (Weeks 4-5)
 
 **Week 4: Cache Layer Refactor**
+-->
+
 ```
 Tasks:
   ✓ Remove Redis dependency
@@ -770,9 +1014,16 @@ Tasks:
 **Cutover Plan**:
 ```
 1. Blue-green deployment (new stack running in parallel)
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 2. Gradual traffic shift (10% → 50% → 100%)
 3. Monitor metrics (latency, error rate, CPU/memory)
 4. Rollback trigger: p95 latency >25ms or error rate >1%
+-->
+
 5. Keep old stack on standby (7 days)
 ```
 
@@ -853,7 +1104,16 @@ ON (u.id, u.updated_at)
 1. Present to architecture review board
 2. Get stakeholder approval
 3. Allocate 2-3 engineers for 6-week migration
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 4. Begin Phase 1 (PostgreSQL → Neo4j)
 
 **Contact**: System Architecture Team
+-->
+
 **Review Date**: 2025-12-11

@@ -28,23 +28,42 @@ INCLUDE := -I./kernels -I/usr/local/cuda/include
 LIBS := -lcudart -lcuda -lcublas -lcudnn -lnccl
 
 # Directories
-KERNEL_DIR := kernels
+KERNEL_DIR := .
 BUILD_DIR := build
+PTX_DIR := ../../../target/ptx
 
-# Source files
-KERNELS := \
-	$(KERNEL_DIR)/semantic_similarity.cu \
-	$(KERNEL_DIR)/semantic_similarity_fp16.cu \
+# Source files - Critical kernels for Rust FFI
+# Core kernels verified to compile successfully to PTX for T4 GPU (sm_75)
+# These 4 are the primary kernels required for Rust FFI:
+PTX_KERNELS := \
+	$(KERNEL_DIR)/semantic_similarity_fp16_tensor_cores.cu \
 	$(KERNEL_DIR)/graph_search.cu \
 	$(KERNEL_DIR)/ontology_reasoning.cu \
+	$(KERNEL_DIR)/hybrid_sssp.cu \
+	$(KERNEL_DIR)/semantic_similarity.cu \
+	$(KERNEL_DIR)/semantic_similarity_fp16.cu \
+	$(KERNEL_DIR)/product_quantization.cu
+
+# Legacy variable for compatibility
+KERNELS := $(PTX_KERNELS)
+
+# Benchmark algorithms
+BENCHMARK_SRC := benchmark_algorithms.cu
+BENCHMARK_BIN := benchmark_algorithms
+TEST_BIN := ../../../tests/test_benchmark_algorithms
+
+# All kernels for object file compilation (including non-PTX-compatible)
+ALL_KERNELS := $(PTX_KERNELS) \
+	$(KERNEL_DIR)/unified_pipeline.cu \
+	$(KERNEL_DIR)/memory_layout.cu \
 	$(KERNEL_DIR)/sorted_similarity.cu \
-	$(KERNEL_DIR)/memory_layout.cu
+	$(KERNEL_DIR)/lsh_gpu.cu
 
-# Object files
-OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(KERNELS))
+# Object files (use ALL_KERNELS for library builds)
+OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(ALL_KERNELS))
 
-# Build all
-all: $(BUILD_DIR)/libkernels_t4.a $(BUILD_DIR)/t4_validation
+# Build all (includes PTX for Rust FFI)
+all: ptx $(BUILD_DIR)/libkernels_t4.a $(BUILD_DIR)/t4_validation
 
 # Create build directory
 $(BUILD_DIR):
@@ -68,14 +87,39 @@ $(BUILD_DIR)/libkernels_t4.a: $(OBJECTS)
 	ar rcs $@ $(OBJECTS) $(BUILD_DIR)/device_link.o
 	@echo "Built T4 kernel library: $@"
 
-# Compile to PTX for inspection
-ptx: $(KERNELS) | $(BUILD_DIR)
-	@for kernel in $(KERNELS); do \
+# Compile to PTX for Rust FFI
+# PTX compilation flags optimized for T4 and runtime loading
+NVCC_PTX_FLAGS := -ptx -O3 -std=c++17 -arch=sm_75 \
+                  --use_fast_math --expt-relaxed-constexpr --extended-lambda \
+                  -Xptxas -v -Xcompiler -fPIC \
+                  $(TENSOR_FLAGS)
+
+ptx: $(PTX_KERNELS) | $(PTX_DIR)
+	@echo "==================================================================="
+	@echo "Compiling CUDA kernels to PTX for Rust FFI"
+	@echo "Target: T4 GPU (sm_75) with Tensor Core support"
+	@echo "==================================================================="
+	@for kernel in $(PTX_KERNELS); do \
 		base=$$(basename $$kernel .cu); \
-		$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
-			-ptx $$kernel -o $(BUILD_DIR)/$$base.ptx; \
-		echo "Generated PTX: $(BUILD_DIR)/$$base.ptx"; \
+		echo "Compiling $$base.cu -> $$base.ptx"; \
+		$(NVCC) $(NVCC_PTX_FLAGS) $(INCLUDE) \
+			$$kernel -o $(PTX_DIR)/$$base.ptx 2>&1 | grep -E "(ptxas info|warning|error)" || true; \
+		if [ -f $(PTX_DIR)/$$base.ptx ]; then \
+			echo "✓ Generated: $(PTX_DIR)/$$base.ptx ($$(wc -c < $(PTX_DIR)/$$base.ptx) bytes)"; \
+		else \
+			echo "✗ Failed: $$base.ptx"; \
+			exit 1; \
+		fi; \
 	done
+	@echo "==================================================================="
+	@echo "PTX compilation complete. Files in $(PTX_DIR)/"
+	@ls -lh $(PTX_DIR)/*.ptx
+	@echo "==================================================================="
+
+# Create PTX directory
+$(PTX_DIR):
+	@mkdir -p $(PTX_DIR)
+	@echo "Created PTX output directory: $(PTX_DIR)"
 
 # Compile to SASS for inspection
 sass: $(KERNELS) | $(BUILD_DIR)
@@ -127,7 +171,8 @@ occupancy: $(BUILD_DIR)/libkernels_t4.a
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(PTX_DIR)/*.ptx
+	@echo "Cleaned build and PTX artifacts"
 
 # Architecture-specific builds
 t4: CUDA_ARCH := -arch=sm_75
@@ -205,3 +250,27 @@ phase2-bandwidth: phase2-benchmark
 	    ./$(BUILD_DIR)/phase2_benchmark
 
 .PHONY: phase2-benchmark phase2-test phase2-profile phase2-bandwidth
+
+# HNSW/LSH Benchmark Algorithms
+benchmark-algorithms: $(BENCHMARK_SRC) hnsw_gpu.cuh lsh_gpu.cu $(BUILD_DIR)
+	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
+		$(BENCHMARK_SRC) -o $(BUILD_DIR)/$(BENCHMARK_BIN) $(LIBS) -lcurand
+	@echo "✅ Benchmark compiled: $(BUILD_DIR)/$(BENCHMARK_BIN)"
+	@echo "Run with: ./$(BUILD_DIR)/$(BENCHMARK_BIN)"
+
+test-algorithms: ../../../tests/test_benchmark_algorithms.cu hnsw_gpu.cuh lsh_gpu.cu $(BUILD_DIR)
+	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
+		../../../tests/test_benchmark_algorithms.cu -o $(BUILD_DIR)/$(TEST_BIN) $(LIBS) -lcurand
+	@echo "✅ Tests compiled: $(BUILD_DIR)/$(TEST_BIN)"
+	@echo "Running HNSW/LSH algorithm tests..."
+	@./$(BUILD_DIR)/$(TEST_BIN) || (echo "❌ Tests failed" && exit 1)
+	@echo "✅ All algorithm tests passed"
+
+run-benchmark-algorithms: benchmark-algorithms
+	@echo "=========================================="
+	@echo "Running HNSW/LSH Benchmark Suite"
+	@echo "Expected: 100-1000× speedup vs exact k-NN"
+	@echo "=========================================="
+	./$(BUILD_DIR)/$(BENCHMARK_BIN)
+
+.PHONY: benchmark-algorithms test-algorithms run-benchmark-algorithms

@@ -1,0 +1,258 @@
+{
+  "total_diagrams": 24,
+  "valid_diagrams": 23,
+  "invalid_diagrams": 1,
+  "by_type": {
+    "flowchart": 19,
+    "sequenceDiagram": 4,
+    "gantt": 1
+  },
+  "mmdc_available": false,
+  "valid_diagram_list": [
+    {
+      "file": "design/DATABASE_USAGE_ANALYSIS.md",
+      "start_line": 674,
+      "end_line": 701,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    A[API Layer] --> B[HybridStorageCoordinator]\n    B --> C[MilvusClient]\n    B --> D[Neo4jClient]\n    B --> E[AgentDBCoordinator]\n    B --> F[QueryPlanner]\n\n    E --> G[PostgresStore]\n    E --> H[Redis Cache]\n\n    C --> I[Milvus Cluster]\n    D --> J[Neo4j Cluster]\n    G --> K[PostgreSQL + pgvector]\n    H --> L[Redis]\n\n    I --> M[Etcd]\n    I --> N[MinIO]\n    I --> O[Pulsar]\n\n    F -.Strategy.-> B\n\n    style B fill:#f9f,stroke:#333\n    style C fill:#bbf,stroke:#333\n    style D fill:#bf...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/README.md",
+      "start_line": 206,
+      "end_line": 238,
+      "diagram_type": "flowchart",
+      "content": "flowchart TB\n    subgraph Cold[\"COLD PATH (Offline Processing)\"]\n        Raw[Raw Media Asset]\n        GPU1[GPU Processing Cluster<br/>Visual/Audio/Semantic]\n        Fusion[Multi-Modal Fusion]\n        Storage1[(Vector DB<br/>Knowledge Graph)]\n    end\n\n    subgraph Warm[\"WARM PATH (Periodic Updates)\"]\n        Social[Social Trends]\n        News[Real-World Events]\n        Trends[Trend Aggregator]\n        Context[(Cultural Context)]\n    end\n\n    subgraph Hot[\"HOT PATH (Real-Time <100ms)\"]\n        Use...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/high-level.md",
+      "start_line": 28,
+      "end_line": 249,
+      "diagram_type": "flowchart",
+      "content": "flowchart TB\n    %% Global Styling\n    classDef cold fill:#e1f5fe,stroke:#01579b,stroke-width:3px\n    classDef warm fill:#fff9c4,stroke:#fbc02d,stroke-width:3px\n    classDef hot fill:#ffebee,stroke:#b71c1c,stroke-width:3px\n    classDef storage fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px\n    classDef gpu fill:#f3e5f5,stroke:#6a1b9a,stroke-width:3px\n    classDef network fill:#e0f2f1,stroke:#00695c,stroke-width:2px\n    classDef learning fill:#fce4ec,stroke:#880e4f,stroke-width:3px\n\n    %% --------...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/t4-cluster-architecture.md",
+      "start_line": 34,
+      "end_line": 91,
+      "diagram_type": "flowchart",
+      "content": "graph TB\n    subgraph \"Client Layer\"\n        APP[Application Servers<br/>10K concurrent users]\n    end\n\n    subgraph \"Edge Layer\"\n        LB[Global Load Balancer<br/>Cloud CDN]\n        CACHE[Redis Cluster<br/>20 nodes, 400GB RAM]\n    end\n\n    subgraph \"Routing Layer\"\n        ENVOY1[Envoy Proxy Pool<br/>10 instances]\n        ROUTER[Smart Query Router<br/>Consistent Hashing]\n    end\n\n    subgraph \"GPU Cluster - 100 Nodes\"\n        subgraph \"Region A - 40 Nodes\"\n            GPU_A1[T4 GPU 1-10<br/>Sh...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/t4-cluster-architecture.md",
+      "start_line": 95,
+      "end_line": 131,
+      "diagram_type": "sequenceDiagram",
+      "content": "sequenceDiagram\n    participant C as Client\n    participant LB as Load Balancer\n    participant RC as Redis Cache\n    participant E as Envoy Proxy\n    participant QR as Query Router\n    participant G1 as GPU Shard 1\n    participant G2 as GPU Shard 2\n    participant G3 as GPU Shard 3\n\n    C->>LB: GET /recommend?user_id=123\n    LB->>RC: Check cache (key: user:123:recs)\n\n    alt Cache Hit (95% of requests)\n        RC-->>LB: Return cached results\n        LB-->>C: 200 OK (8ms latency)\n    else Cache ...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/t4-cluster-architecture.md",
+      "start_line": 195,
+      "end_line": 213,
+      "diagram_type": "flowchart",
+      "content": "graph LR\n    subgraph \"Hot Tier - GPU Memory\"\n        HOT[Top 70% Popular Items<br/>70M embeddings<br/>Last 30 days access]\n    end\n\n    subgraph \"Warm Tier - System RAM\"\n        WARM[20% Mid-tier Items<br/>20M embeddings<br/>Accessed occasionally]\n    end\n\n    subgraph \"Cold Tier - Object Storage\"\n        COLD[10% Long-tail Items<br/>10M embeddings<br/>S3/GCS]\n    end\n\n    HOT -->|LRU Eviction| WARM\n    WARM -->|Archive| COLD\n    COLD -->|On-demand Load| WARM\n    WARM -->|Promote| HOT",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/t4-cluster-architecture.md",
+      "start_line": 1261,
+      "end_line": 1289,
+      "diagram_type": "gantt",
+      "content": "gantt\n    title GMC-O Production Rollout Timeline\n    dateFormat  YYYY-MM-DD\n    section Phase 1: Infrastructure\n    Provision GKE cluster           :2025-01-01, 3d\n    Deploy GPU operator             :2025-01-04, 2d\n    Setup monitoring stack          :2025-01-06, 2d\n\n    section Phase 2: Data Migration\n    Export embeddings from prototype:2025-01-08, 3d\n    Upload to Cloud Storage         :2025-01-11, 2d\n    Load into GPU shards            :2025-01-13, 2d\n\n    section Phase 3: Service Deploy\n ...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/system-architecture.md",
+      "start_line": 27,
+      "end_line": 212,
+      "diagram_type": "flowchart",
+      "content": "flowchart TB\n    %% Styling\n    classDef cold fill:#e1f5fe,stroke:#01579b,stroke-width:3px\n    classDef warm fill:#fff9c4,stroke:#fbc02d,stroke-width:3px\n    classDef hot fill:#ffebee,stroke:#b71c1c,stroke-width:3px\n    classDef storage fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px\n    classDef gpu fill:#f3e5f5,stroke:#6a1b9a,stroke-width:3px\n    classDef network fill:#e0f2f1,stroke:#00695c,stroke-width:2px\n\n    %% COLD PATH - Content Processing\n    subgraph ColdPath [\"COLD PATH: Content Processi...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/architecture/system-architecture.md",
+      "start_line": 755,
+      "end_line": 812,
+      "diagram_type": "flowchart",
+      "content": "flowchart TB\n    subgraph GlobalLB [\"Global Load Balancer (Cloudflare)\"]\n        DNS[DNS-based Geo-Routing]\n    end\n\n    subgraph RegionUS [\"US Region (AWS us-east-1)\"]\n        USALB[Application LB<br/>50K req/sec]\n\n        subgraph USHot [\"Hot Path Cluster\"]\n            USHot1[API Server 1]\n            USHot2[API Server 2]\n            USHot3[API Server N]\n        end\n\n        subgraph USVector [\"Vector Search Cluster\"]\n            USVec1[RuVector Shard 1-5]\n            USVec2[RuVector Shard 6-1...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/VISUALIZATION.md",
+      "start_line": 136,
+      "end_line": 143,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    Genre[Genre]\n    Genre --> Action[\"Action\"]\n    Genre --> Drama[\"Drama\"]\n    Genre --> Comedy[\"Comedy\"]\n    Genre --> SciFi[\"Science Fiction\"]",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/VISUALIZATION.md",
+      "start_line": 160,
+      "end_line": 180,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    CreativeWork[Creative Work]\n    CreativeWork --> Film\n    CreativeWork --> TVSeries[TV Series]\n    CreativeWork --> TVEpisode[TV Episode]\n\n    Genre --> Action\n    Genre --> Drama\n    Genre --> Comedy\n    Genre --> SciFi[Sci-Fi]\n    Genre --> Horror\n    Genre --> Romance\n    Genre --> Documentary\n\n    VisualAesthetic[Visual Aesthetic]\n    VisualAesthetic --> NoirAesthetic[Film Noir]\n    VisualAesthetic --> NeonAesthetic[Neon/Cyberpunk]\n    VisualAesthetic --> PastelAesthetic[Pastel]...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/VISUALIZATION.md",
+      "start_line": 184,
+      "end_line": 198,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    ViewerProfile[Viewer Profile]\n\n    PsychographicState[Psychographic State]\n    PsychographicState --> SeekingComfort[Seeking Comfort]\n    PsychographicState --> SeekingChallenge[Seeking Challenge]\n    PsychographicState --> Nostalgic\n    PsychographicState --> Adventurous\n\n    TasteCluster[Taste Cluster]\n    TasteCluster --> MainstreamCluster[Mainstream]\n    TasteCluster --> ArtHouseCluster[Art House]\n    TasteCluster --> GenreSpecialistCluster[Genre Specialist]",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/VISUALIZATION.md",
+      "start_line": 202,
+      "end_line": 229,
+      "diagram_type": "flowchart",
+      "content": "graph LR\n    subgraph Cultural\n        Holiday\n        Halloween[\"Halloween\"]\n        Christmas[\"Christmas\"]\n        Valentines[\"Valentine Day\"]\n    end\n\n    subgraph Social\n        SocialSetting[Social Setting]\n        DateNight[Date Night]\n        Family[Family Gathering]\n        Solo[Solo Viewing]\n    end\n\n    subgraph Environmental\n        TimeOfDay[Time of Day]\n        Device[Device Type]\n    end\n\n    Holiday --> Halloween\n    Holiday --> Christmas\n    Holiday --> Valentines\n    SocialSetti...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/VISUALIZATION.md",
+      "start_line": 359,
+      "end_line": 362,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    A --> B",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/integration/sssp-owl-integration.md",
+      "start_line": 11,
+      "end_line": 43,
+      "diagram_type": "flowchart",
+      "content": "graph TB\n    subgraph \"Knowledge Graph Layer\"\n        KG[(Neo4j Graph<br/>GMC-O Ontology)]\n        OWL[Rust OWL Reasoner<br/>Transitive Closure]\n    end\n\n    subgraph \"GPU Processing Layer\"\n        SSSP[CUDA SSSP Kernel<br/>gpu_landmark_apsp.cu]\n        APSP[Landmark APSP<br/>k-pivot approximation]\n        Semantic[Semantic Forces<br/>semantic_forces.cu]\n        Ontology[Ontology Constraints<br/>ontology_constraints.cu]\n    end\n\n    subgraph \"Integration Layer\"\n        PathFinder[Semantic Path F...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "design/ontology/visualizations/README.md",
+      "start_line": 78,
+      "end_line": 83,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    Genre[Genre]\n    Genre --> Action\n    Genre --> Drama",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/scripts/DEPLOYMENT-QUICKSTART.md",
+      "start_line": 73,
+      "end_line": 93,
+      "diagram_type": "flowchart",
+      "content": "graph TD\n    A[Start] --> B[Check Prerequisites]\n    B --> C[Get Workspace Version]\n    C --> D[Sync All Package Versions]\n    D --> E{Run Tests?}\n    E -->|Yes| F[cargo test --all]\n    E -->|Skip| G\n    F --> G[Run Clippy]\n    G --> H[Check Formatting]\n    H --> I[Build WASM Packages]\n    I --> J{Publish Crates?}\n    J -->|Yes| K[Publish to crates.io]\n    J -->|Skip| L\n    K --> L{Publish NPM?}\n    L -->|Yes| M[Build Native Modules]\n    M --> N[Publish to npm]\n    L -->|Skip| O\n    N --> O[Trig...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/.claude/agents/sparc/architecture.md",
+      "start_line": 42,
+      "end_line": 89,
+      "diagram_type": "flowchart",
+      "content": "graph TB\n    subgraph \"Client Layer\"\n        WEB[Web App]\n        MOB[Mobile App]\n        API_CLIENT[API Clients]\n    end\n    \n    subgraph \"API Gateway\"\n        GATEWAY[Kong/Nginx]\n        RATE_LIMIT[Rate Limiter]\n        AUTH_FILTER[Auth Filter]\n    end\n    \n    subgraph \"Application Layer\"\n        AUTH_SVC[Auth Service]\n        USER_SVC[User Service]\n        NOTIF_SVC[Notification Service]\n    end\n    \n    subgraph \"Data Layer\"\n        POSTGRES[(PostgreSQL)]\n        REDIS[(Redis Cache)]\n     ...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/02-architecture.md",
+      "start_line": 377,
+      "end_line": 480,
+      "diagram_type": "flowchart",
+      "content": "graph TB\n    subgraph \"Core Modules\"\n        TRAITS[traits.rs<br/>Base Traits]\n        CONFIG[config.rs<br/>Configuration]\n        ERRORS[error.rs<br/>Error Types]\n    end\n\n    subgraph \"Attention Implementations\"\n        STANDARD[standard.rs<br/>Scaled Dot-Product]\n        MULTIHEAD[multihead.rs<br/>Multi-Head Attention]\n        GEOMETRIC[geometric.rs<br/>Geometric Attention]\n        SPARSE[sparse.rs<br/>Sparse Patterns]\n        GRAPH[graph.rs<br/>Graph Attention]\n    end\n\n    subgraph \"Compute...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/02-architecture.md",
+      "start_line": 503,
+      "end_line": 537,
+      "diagram_type": "sequenceDiagram",
+      "content": "sequenceDiagram\n    participant User\n    participant Attention\n    participant MatMul\n    participant Softmax\n    participant SIMD\n    participant Cache\n\n    User->>Attention: forward(query, keys, values)\n    Attention->>Cache: check_cache(query_hash)\n\n    alt Cache Hit\n        Cache-->>Attention: cached_result\n        Attention-->>User: result\n    else Cache Miss\n        Attention->>MatMul: compute_qk_similarity(query, keys)\n        MatMul->>SIMD: batch_dot_product(query, keys)\n        SIMD-->>...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/02-architecture.md",
+      "start_line": 541,
+      "end_line": 575,
+      "diagram_type": "sequenceDiagram",
+      "content": "sequenceDiagram\n    participant Trainer\n    participant Attention\n    participant Gradient\n    participant MatMul\n    participant Optimizer\n\n    Trainer->>Attention: backward(grad_output)\n    Attention->>Gradient: compute_grad_values(grad_output, weights)\n    Gradient->>MatMul: matmul_transpose(weights^T, grad_output)\n    MatMul-->>Gradient: grad_values\n    Gradient-->>Attention: grad_values\n\n    Attention->>Gradient: compute_grad_weights(grad_output, values)\n    Gradient->>MatMul: outer_product...",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/02-architecture.md",
+      "start_line": 579,
+      "end_line": 595,
+      "diagram_type": "flowchart",
+      "content": "graph LR\n    A[Node Features] --> B[Gather Neighbors]\n    B --> C[Edge Attention]\n    C --> D[Attention Weights]\n    D --> E[Aggregate Messages]\n    E --> F[Update Node]\n    F --> G[Layer Norm]\n    G --> H[Output Features]\n\n    I[Edge Index] --> B\n    J[Edge Attributes] --> C\n\n    style A fill:#e3f2fd\n    style H fill:#c8e6c9\n    style D fill:#fff9c4",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/02-architecture.md",
+      "start_line": 599,
+      "end_line": 619,
+      "diagram_type": "flowchart",
+      "content": "graph TB\n    A[Input Sequence] --> B{Sparsity Pattern}\n\n    B -->|Windowed| C[Local Windows]\n    B -->|Strided| D[Strided Pattern]\n    B -->|Top-K| E[Top-K Selection]\n    B -->|Block| F[Block Sparse]\n\n    C --> G[Sparse Matmul]\n    D --> G\n    E --> G\n    F --> G\n\n    G --> H[Softmax]\n    H --> I[Sparse Weighted Sum]\n    I --> J[Output]\n\n    style B fill:#ffe0b2\n    style G fill:#f8bbd0",
+      "is_valid": true,
+      "error_message": null,
+      "warnings": null
+    }
+  ],
+  "invalid_diagram_list": [
+    {
+      "file": "design/architecture/t4-cluster-architecture.md",
+      "start_line": 540,
+      "end_line": 567,
+      "diagram_type": "sequenceDiagram",
+      "content": "sequenceDiagram\n    participant P as Primary Shard\n    participant R1 as Replica 1\n    participant R2 as Replica 2\n    participant Q as Query Router\n\n    Note over P: Embedding update arrives\n    P->>P: Update local index\n    P->>P: Write to WAL (async)\n\n    par Async Replication\n        P-->>R1: Stream update (gRPC)\n        P-->>R2: Stream update (gRPC)\n    end\n\n    R1->>R1: Apply update (async)\n    R2->>R2: Apply update (async)\n\n    Note over P: Primary ACK immediately (no wait for replicas)\n\n...",
+      "is_valid": false,
+      "error_message": "Note syntax: \"Note over Actor: Text\"",
+      "warnings": null
+    }
+  ],
+  "suggestions": [
+    "Install mermaid-cli for full syntax validation: npm install -g @mermaid-js/mermaid-cli"
+  ]
+}

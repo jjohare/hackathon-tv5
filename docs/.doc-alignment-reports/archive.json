@@ -1,0 +1,834 @@
+{
+  "total_found": 63,
+  "total_size_bytes": 787016,
+  "by_reason": {
+    "Implementation note outside docs directory": 49,
+    "Filename starts with 'TEST_'": 13,
+    "Content contains working marker": 1
+  },
+  "working_docs": [
+    {
+      "file": "IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:19:03.369159",
+      "size_bytes": 10492,
+      "suggested_archive_path": "docs/archive/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Hybrid Storage Coordinator - Implementation Summary\n\n## \u2705 IMPLEMENTATION COMPLETE\n\nAll deliverables have been implemented and are ready for integration."
+    },
+    {
+      "file": "docs/TEST_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:13:15.560183",
+      "size_bytes": 13728,
+      "suggested_archive_path": "docs/archive/docs/TEST_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Hybrid Architecture Test Implementation Summary\n\n## Overview\n\nComprehensive test suite for Milvus + Neo4j + PostgreSQL + AgentDB hybrid storage architecture, targeting <10ms p99 latency at 7,000 QPS..."
+    },
+    {
+      "file": "design/phase2_implementation_docs.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T14:17:27.987919",
+      "size_bytes": 9791,
+      "suggested_archive_path": "docs/archive/design/phase2_implementation_docs.md",
+      "content_preview": "# Phase 2 Memory Optimization Implementation\n\n## Overview\n\nPhase 2 optimizations target **4-5x speedup** through memory coalescing and shared memory caching on top of Phase 1 improvements, achieving *..."
+    },
+    {
+      "file": "design/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T12:27:03.202372",
+      "size_bytes": 10135,
+      "suggested_archive_path": "docs/archive/design/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Automated Rust Type Generation from OWL Ontology - Implementation Summary\n\n## \u2705 Task Complete\n\nSuccessfully implemented automated Rust type generation from OWL ontology to prevent drift between sema..."
+    },
+    {
+      "file": "tests/docs/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T15:58:49.766423",
+      "size_bytes": 10876,
+      "suggested_archive_path": "docs/archive/tests/docs/TEST_SUMMARY.md",
+      "content_preview": "# Adaptive SSSP Test Suite Summary\n\n## Quick Reference\n\n**File**: `/home/devuser/workspace/hackathon-tv5/tests/adaptive_sssp_tests.rs`"
+    },
+    {
+      "file": "design/guides/vector-search-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T11:10:19.089687",
+      "size_bytes": 22219,
+      "suggested_archive_path": "docs/archive/design/guides/vector-search-implementation.md",
+      "content_preview": "# Vector Search Implementation Guide\n\n**Target Audience**: Backend Engineers, ML Engineers\n**Prerequisites**: Rust knowledge, understanding of vector embeddings\n**Estimated Implementation Time**: 1-2 ..."
+    },
+    {
+      "file": "temp-ruvector/npm/PUBLISHING_STATUS.md",
+      "reason": "Content contains working marker",
+      "last_modified": "2025-12-04T13:39:32.172913",
+      "size_bytes": 6790,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/PUBLISHING_STATUS.md",
+      "content_preview": "# Ruvector NPM Packages - Publishing Status\n\n**Date:** November 21, 2025\n**Version:** 0.1.1\n"
+    },
+    {
+      "file": "temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.287731",
+      "size_bytes": 11367,
+      "suggested_archive_path": "docs/archive/temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md",
+      "content_preview": "# Agentic-Jujutsu Test Results\n\n## Executive Summary\n\nComprehensive test suite for agentic-jujutsu quantum-resistant, self-learning version control system for AI agents."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.073305",
+      "size_bytes": 9227,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# ruvector-attention SDK Implementation Summary\n\n## Overview\n\nSuccessfully implemented a comprehensive, ergonomic SDK for the ruvector-attention crate following Agent 10's specifications."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.102577",
+      "size_bytes": 13829,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md",
+      "content_preview": "# FastGRNN Training Pipeline Implementation\n\n## Overview\n\nSuccessfully implemented a comprehensive training pipeline for the FastGRNN neural routing model in Tiny Dancer. The implementation includes a..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.102577",
+      "size_bytes": 11693,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Tiny Dancer Admin API - Implementation Summary\n\n## Overview\n\nThis document summarizes the complete implementation of the Tiny Dancer Admin API, a production-ready REST API for monitoring, health che..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 8381,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# GNN Layers Implementation Summary\n\n## Overview\n\nComplete implementation of Graph Neural Network (GNN) layers for the ruvector-postgres PostgreSQL extension. This module enables efficient graph learn..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 7370,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# RuVector Native PostgreSQL Type I/O Implementation Summary\n\n## Implementation Complete \u2705\n\nSuccessfully implemented native PostgreSQL type I/O functions for RuVector with zero-copy access, compatible..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 12269,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Native Quantized Vector Types - Implementation Summary\n\n## Files Created\n\n### Core Type Implementations"
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 10344,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md",
+      "content_preview": "# Comprehensive Test Framework Summary\n\n## \u2705 Test Framework Implementation Complete\n\nThis document summarizes the comprehensive test framework created for ruvector-postgres PostgreSQL extension."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 13173,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md",
+      "content_preview": "# Graph Operations & Cypher Implementation Summary\n\n## Overview\n\nSuccessfully implemented a complete graph database module for the ruvector-postgres PostgreSQL extension. The implementation provides g..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.091861",
+      "size_bytes": 12221,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Sparse Vectors Implementation Summary\n\n## Overview\n\nComplete implementation of sparse vector support for ruvector-postgres PostgreSQL extension, providing efficient storage and operations for high-d..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.090364",
+      "size_bytes": 11091,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Attention Mechanisms Implementation Summary\n\n## Overview\n\nSuccessfully implemented a comprehensive attention mechanisms module for the ruvector-postgres PostgreSQL extension with SIMD acceleration a..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.092249",
+      "size_bytes": 6651,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Zero-Copy SIMD Distance Functions - Implementation Summary\n\n## What Was Implemented\n\nAdded high-performance, zero-copy raw pointer-based distance functions to `/home/user/ruvector/crates/ruvector-po..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.091861",
+      "size_bytes": 11026,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# IVFFlat PostgreSQL Access Method - Implementation Summary\n\n## Overview\n\nComplete implementation of IVFFlat (Inverted File with Flat quantization) as a PostgreSQL index access method for the ruvector..."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.092376",
+      "size_bytes": 10282,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Self-Learning Module Implementation Summary\n\n## \u2705 Implementation Complete\n\nThe Self-Learning/ReasoningBank module has been successfully implemented for the ruvector-postgres PostgreSQL extension."
+    },
+    {
+      "file": "temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.075845",
+      "size_bytes": 10284,
+      "suggested_archive_path": "docs/archive/temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md",
+      "content_preview": "# Ruvector CLI & MCP Server Implementation Summary\n\n**Date:** 2025-11-19\n**Status:** \u2705 Complete (pending core library fixes)\n"
+    },
+    {
+      "file": "temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.161904",
+      "size_bytes": 9676,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# WebAssembly Implementation Summary\n\n## \u2705 Implementation Complete\n\nComprehensive WebAssembly bindings have been successfully implemented for ruvector-scipix."
+    },
+    {
+      "file": "temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.161904",
+      "size_bytes": 4694,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Image Preprocessing Module - Implementation Complete \u2705\n\n## Summary\n\nSuccessfully implemented a **production-ready image preprocessing module** for ruvector-scipix with 2,721 lines of optimized Rust ..."
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.127340",
+      "size_bytes": 6193,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md",
+      "content_preview": "# Integration Test Inventory\n\n**Complete list of all integration tests created for EXO-AI 2025**\n\nGenerated: 2025-11-29"
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.127340",
+      "size_bytes": 8892,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md",
+      "content_preview": "# EXO-AI 2025: Test Execution Report\n\n**Generated**: 2025-11-29\n**Agent**: Unit Test Specialist\n**Status**: \u2705 TESTS DEPLOYED AND RUNNING"
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.127340",
+      "size_bytes": 8779,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md",
+      "content_preview": "# EXO-AI Manifold Engine Implementation\n\n**Status**: \u2705 Complete  \n**Date**: 2025-11-29  \n**Agent**: Manifold Engine Agent (Coder)"
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.127340",
+      "size_bytes": 11380,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md",
+      "content_preview": "# EXO-AI 2025 Integration Test Suite Summary\n\n**Status**: \u2705 Complete (TDD Mode - All tests defined, awaiting implementation)\n\n**Created**: 2025-11-29"
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.127340",
+      "size_bytes": 15204,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md",
+      "content_preview": "# EXO-AI 2025: Comprehensive Test Strategy\n\n## Test Agent Status\n**Status**: \u23f3 WAITING FOR CRATES\n**Last Updated**: 2025-11-29"
+    },
+    {
+      "file": "temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.126774",
+      "size_bytes": 7779,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md",
+      "content_preview": "# EXO-WASM Implementation Summary\n\n## Overview\n\nCreated a complete WASM bindings crate for EXO-AI 2025 cognitive substrate, enabling browser-based deployment of advanced AI substrate operations."
+    },
+    {
+      "file": "temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.165075",
+      "size_bytes": 13859,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md",
+      "content_preview": "# Performance Optimization Implementation - Completion Report\n\n## Executive Summary\n\nSuccessfully implemented comprehensive performance optimizations for the ruvector-scipix project, including SIMD op..."
+    },
+    {
+      "file": "temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.158388",
+      "size_bytes": 40539,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md",
+      "content_preview": "# SONA Implementation Roadmap\n\n## Overview\n\nThis document outlines the **optimized, prioritized** implementation strategy for SONA (Self-Optimizing Neural Architecture). The roadmap leverages existing..."
+    },
+    {
+      "file": "temp-ruvector/npm/tests/TEST_RESULTS.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.286107",
+      "size_bytes": 10857,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/tests/TEST_RESULTS.md",
+      "content_preview": "# NPM Packages Test Results\n\n**Date:** 2025-11-21\n**Environment:** Linux x64 (Codespaces)\n**Node Version:** 18+"
+    },
+    {
+      "file": "temp-ruvector/npm/tests/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.286107",
+      "size_bytes": 8018,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/tests/TEST_SUMMARY.md",
+      "content_preview": "# NPM Package Testing - Summary Report\n\n## Overview\n\n**Status:** \u2705 **COMPLETE**"
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.265230",
+      "size_bytes": 10521,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md",
+      "content_preview": "# Agentic-Synth Implementation Plan\n\nThis document outlines the implementation plan for the builder agent.\n\n## Overview"
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.265230",
+      "size_bytes": 11004,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md",
+      "content_preview": "# Agentic-Synth Implementation Summary\n\n## Overview\nComplete implementation of the agentic-synth package at `/home/user/ruvector/packages/agentic-synth` based on the architect's design.\n"
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.265230",
+      "size_bytes": 11286,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md",
+      "content_preview": "# Comprehensive Test Analysis Report\n## agentic-synth Package\n\n**Report Generated:** 2025-11-22\n**Test Duration:** 19.95s"
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.265230",
+      "size_bytes": 6654,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md",
+      "content_preview": "# Agentic Synth Test Suite - Summary\n\n## Overview\n\nComprehensive test suite created for the agentic-synth package with **98.4% test pass rate** (180/183 tests passing)."
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.273576",
+      "size_bytes": 4413,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# DSPy.ts Learning Session - Implementation Summary\n\n## \ud83d\udce6 Implementation Complete\n\n### Created Files"
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.273576",
+      "size_bytes": 11396,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# DSPy Multi-Model Benchmark Implementation Summary\n\n## \u2705 Implementation Complete\n\nA fully functional multi-model benchmarking system has been created using **real dspy.ts v2.1.1** features."
+    },
+    {
+      "file": "temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md",
+      "reason": "Filename starts with 'TEST_'",
+      "last_modified": "2025-12-04T13:39:32.272896",
+      "size_bytes": 7289,
+      "suggested_archive_path": "docs/archive/temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md",
+      "content_preview": "# DSPy Integration Test Suite - Summary\n\n## \ud83d\udcca Test Statistics\n\n- **Total Tests**: 56 (All Passing \u2705)"
+    },
+    {
+      "file": "temp-ruvector/.claude/agents/templates/migration-plan.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.060979",
+      "size_bytes": 18313,
+      "suggested_archive_path": "docs/archive/temp-ruvector/.claude/agents/templates/migration-plan.md",
+      "content_preview": "---\nname: migration-planner\ntype: planning\ncolor: red\ndescription: Comprehensive migration plan for converting commands to agent-based system"
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-roadmap.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.114075",
+      "size_bytes": 30853,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/latent-space/implementation-roadmap.md",
+      "content_preview": "# Implementation Roadmap: GNN Latent-Graph Interplay\n\n## Executive Summary\n\nThis document provides a comprehensive, actionable roadmap for implementing the research findings from the previous document..."
+    },
+    {
+      "file": "temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.110666",
+      "size_bytes": 24070,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# RuVector Global Streaming Optimization - Implementation Summary\n\n## Executive Overview\n\n**Project**: Global Streaming Optimization for RuVector"
+    },
+    {
+      "file": "temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.115342",
+      "size_bytes": 11280,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md",
+      "content_preview": "# SparseVec Native PostgreSQL Type - Implementation Summary\n\n## Overview\n\nImplemented a complete native PostgreSQL sparse vector type with zero-copy varlena layout and SIMD-optimized distance function..."
+    },
+    {
+      "file": "temp-ruvector/docs/postgres/parallel-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.115575",
+      "size_bytes": 10454,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/postgres/parallel-implementation-summary.md",
+      "content_preview": "# Parallel Query Implementation Summary\n\n## Overview\n\nSuccessfully implemented comprehensive PostgreSQL parallel query execution for RuVector's vector similarity search operations. The implementation ..."
+    },
+    {
+      "file": "temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.115575",
+      "size_bytes": 13011,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md",
+      "content_preview": "# PostgreSQL Zero-Copy Memory Implementation Summary\n\n## Implementation Overview\n\nThis document summarizes the zero-copy memory layout optimization implemented for ruvector-postgres, providing efficie..."
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/graph-attention-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 5545,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/graph-attention-implementation-summary.md",
+      "content_preview": "# Graph Attention Implementation Summary\n\n## Agent 04: Graph Attention Implementation Status\n\n### Completed Files"
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 9308,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md",
+      "content_preview": "# Hyperbolic Attention Implementation\n\n## Overview\nSuccessfully implemented hyperbolic and mixed-curvature attention mechanisms for the ruvector-attention sub-package.\n"
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/gnn-layer-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 5199,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/gnn-layer-implementation.md",
+      "content_preview": "# Ruvector GNN Layer Implementation\n\n## Overview\n\nImplemented a complete Graph Neural Network (GNN) layer for Ruvector that operates on HNSW topology, providing message passing, attention mechanisms, ..."
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/cli-graph-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 6831,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/cli-graph-implementation-summary.md",
+      "content_preview": "# CLI Graph Commands Implementation Summary\n\n## Overview\n\nSuccessfully extended the RuVector CLI with comprehensive graph database commands, providing Neo4j-compatible Cypher query capabilities."
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/training-utilities-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 4834,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/training-utilities-implementation.md",
+      "content_preview": "# Training Utilities Implementation - Agent 06\n\n## Summary\n\nSuccessfully implemented comprehensive training utilities for the ruvector-attention sub-package at `crates/ruvector-attention/src/training/..."
+    },
+    {
+      "file": "temp-ruvector/docs/gnn/cypher-parser-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.109524",
+      "size_bytes": 14881,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/gnn/cypher-parser-implementation.md",
+      "content_preview": "# Cypher Parser Implementation Summary\n\n## Overview\n\nSuccessfully implemented a complete Cypher-compatible query language parser for the RuVector graph database with full support for hyperedges (N-ary..."
+    },
+    {
+      "file": "temp-ruvector/docs/project-phases/phase5-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.116240",
+      "size_bytes": 12878,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/project-phases/phase5-implementation-summary.md",
+      "content_preview": "# Phase 5: Multi-Platform Deployment - WASM Bindings Implementation Summary\n\n## \u2705 Implementation Complete\n\nAll Phase 5 objectives have been successfully implemented. The Ruvector WASM bindings provide..."
+    },
+    {
+      "file": "temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.116240",
+      "size_bytes": 11296,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md",
+      "content_preview": "# Phase 2: HNSW Integration Implementation Summary\n\n## Overview\nSuccessfully implemented Phase 2: HNSW Integration with hnsw_rs library for production-grade vector search.\n"
+    },
+    {
+      "file": "temp-ruvector/docs/project-phases/phase4-implementation-summary.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.116240",
+      "size_bytes": 14127,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/project-phases/phase4-implementation-summary.md",
+      "content_preview": "# Phase 4 Implementation Summary: Advanced Features\n\n**Implementation Date**: 2025-11-19\n**Total Lines of Code**: 2,127+ lines\n**Test Coverage**: Comprehensive unit and integration tests"
+    },
+    {
+      "file": "temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.115342",
+      "size_bytes": 11422,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Performance Optimization Implementation Summary\n\n**Project**: Ruvector Vector Database\n**Date**: November 19, 2025\n**Status**: \u2705 Implementation Complete, Validation Pending"
+    },
+    {
+      "file": "temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.110083",
+      "size_bytes": 11729,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md",
+      "content_preview": "# HNSW PostgreSQL Access Method Implementation\n\n## \ud83c\udfaf Implementation Complete\n\nThis implementation provides a **complete PostgreSQL Access Method** for HNSW (Hierarchical Navigable Small World) indexin..."
+    },
+    {
+      "file": "temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.110666",
+      "size_bytes": 13979,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# HNSW PostgreSQL Access Method - Implementation Summary\n\n## Overview\n\nThis document summarizes the complete implementation of HNSW (Hierarchical Navigable Small World) as a proper PostgreSQL Index Ac..."
+    },
+    {
+      "file": "temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.115575",
+      "size_bytes": 12217,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md",
+      "content_preview": "# \u2705 Zero-Copy Distance Functions - Implementation Complete\n\n## \ud83d\udce6 What Was Delivered\n\nSuccessfully implemented zero-copy distance functions for the RuVector PostgreSQL extension using pgrx 0.12 with **..."
+    },
+    {
+      "file": "temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.112653",
+      "size_bytes": 68411,
+      "suggested_archive_path": "docs/archive/temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md",
+      "content_preview": "# Swarm Implementation Plan: RuVector Attention Mechanisms\n\n## Executive Summary\n\nThis document outlines a comprehensive swarm-based implementation strategy for the `ruvector-attention` crate, leverag..."
+    },
+    {
+      "file": "temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.069339",
+      "size_bytes": 12813,
+      "suggested_archive_path": "docs/archive/temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md",
+      "content_preview": "# Graph Benchmark Suite Implementation Summary\n\n## Overview\nComprehensive benchmark suite created for RuVector graph database with agentic-synth integration for synthetic data generation. Validates 10..."
+    },
+    {
+      "file": "temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt",
+      "reason": "Implementation note outside docs directory",
+      "last_modified": "2025-12-04T13:39:32.161904",
+      "size_bytes": 11893,
+      "suggested_archive_path": "docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt",
+      "content_preview": "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n   WEBASSEMBLY BINDINGS IMPLEMENTATION - COMPLETE \u2705\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550..."
+    }
+  ],
+  "suggested_moves": [
+    {
+      "source": "IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/IMPLEMENTATION_SUMMARY.md)\" && mv \"IMPLEMENTATION_SUMMARY.md\" \"docs/archive/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "docs/TEST_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/docs/TEST_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/docs/TEST_IMPLEMENTATION_SUMMARY.md)\" && mv \"docs/TEST_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/docs/TEST_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "design/phase2_implementation_docs.md",
+      "destination": "docs/archive/design/phase2_implementation_docs.md",
+      "command": "mkdir -p \"$(dirname docs/archive/design/phase2_implementation_docs.md)\" && mv \"design/phase2_implementation_docs.md\" \"docs/archive/design/phase2_implementation_docs.md\""
+    },
+    {
+      "source": "design/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/design/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/design/IMPLEMENTATION_SUMMARY.md)\" && mv \"design/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/design/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "tests/docs/TEST_SUMMARY.md",
+      "destination": "docs/archive/tests/docs/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/tests/docs/TEST_SUMMARY.md)\" && mv \"tests/docs/TEST_SUMMARY.md\" \"docs/archive/tests/docs/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "design/guides/vector-search-implementation.md",
+      "destination": "docs/archive/design/guides/vector-search-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/design/guides/vector-search-implementation.md)\" && mv \"design/guides/vector-search-implementation.md\" \"docs/archive/design/guides/vector-search-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/PUBLISHING_STATUS.md",
+      "destination": "docs/archive/temp-ruvector/npm/PUBLISHING_STATUS.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/PUBLISHING_STATUS.md)\" && mv \"temp-ruvector/npm/PUBLISHING_STATUS.md\" \"docs/archive/temp-ruvector/npm/PUBLISHING_STATUS.md\""
+    },
+    {
+      "source": "temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md",
+      "destination": "docs/archive/temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md)\" && mv \"temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md\" \"docs/archive/temp-ruvector/tests/agentic-jujutsu/TEST_RESULTS.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-attention/docs/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md)\" && mv \"temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/TRAINING_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-tiny-dancer-core/docs/API_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GNN_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TYPE_IO_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/GRAPH_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/SPARSE_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/guides/ATTENTION_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/SIMD_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/implementation/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/crates/ruvector-postgres/docs/learning/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md)\" && mv \"temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/crates/ruvector-cli/docs/IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/examples/scipix/WASM_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_INVENTORY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_EXECUTION_REPORT.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/docs/MANIFOLD_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/docs/TEST_STRATEGY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md)\" && mv \"temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/examples/exo-ai-2025/crates/exo-wasm/IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md)\" && mv \"temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/examples/scipix/docs/OPTIMIZATION_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md)\" && mv \"temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/examples/ruvLLM/docs/SONA/07-IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/tests/TEST_RESULTS.md",
+      "destination": "docs/archive/temp-ruvector/npm/tests/TEST_RESULTS.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/tests/TEST_RESULTS.md)\" && mv \"temp-ruvector/npm/tests/TEST_RESULTS.md\" \"docs/archive/temp-ruvector/npm/tests/TEST_RESULTS.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/tests/TEST_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/npm/tests/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/tests/TEST_SUMMARY.md)\" && mv \"temp-ruvector/npm/tests/TEST_SUMMARY.md\" \"docs/archive/temp-ruvector/npm/tests/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION_PLAN.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_ANALYSIS_REPORT.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/docs/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/training/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/training/BENCHMARK_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md)\" && mv \"temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md\" \"docs/archive/temp-ruvector/npm/packages/agentic-synth/tests/training/TEST_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/.claude/agents/templates/migration-plan.md",
+      "destination": "docs/archive/temp-ruvector/.claude/agents/templates/migration-plan.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/.claude/agents/templates/migration-plan.md)\" && mv \"temp-ruvector/.claude/agents/templates/migration-plan.md\" \"docs/archive/temp-ruvector/.claude/agents/templates/migration-plan.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/latent-space/implementation-roadmap.md",
+      "destination": "docs/archive/temp-ruvector/docs/latent-space/implementation-roadmap.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/latent-space/implementation-roadmap.md)\" && mv \"temp-ruvector/docs/latent-space/implementation-roadmap.md\" \"docs/archive/temp-ruvector/docs/latent-space/implementation-roadmap.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/docs/implementation/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md)\" && mv \"temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/docs/postgres/SPARSEVEC_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/postgres/parallel-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/postgres/parallel-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/postgres/parallel-implementation-summary.md)\" && mv \"temp-ruvector/docs/postgres/parallel-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/postgres/parallel-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md)\" && mv \"temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/postgres/postgres-memory-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/graph-attention-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/graph-attention-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/graph-attention-implementation-summary.md)\" && mv \"temp-ruvector/docs/gnn/graph-attention-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/gnn/graph-attention-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md)\" && mv \"temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md\" \"docs/archive/temp-ruvector/docs/gnn/hyperbolic-attention-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/gnn-layer-implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/gnn-layer-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/gnn-layer-implementation.md)\" && mv \"temp-ruvector/docs/gnn/gnn-layer-implementation.md\" \"docs/archive/temp-ruvector/docs/gnn/gnn-layer-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/cli-graph-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/cli-graph-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/cli-graph-implementation-summary.md)\" && mv \"temp-ruvector/docs/gnn/cli-graph-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/gnn/cli-graph-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/training-utilities-implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/training-utilities-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/training-utilities-implementation.md)\" && mv \"temp-ruvector/docs/gnn/training-utilities-implementation.md\" \"docs/archive/temp-ruvector/docs/gnn/training-utilities-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/gnn/cypher-parser-implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/gnn/cypher-parser-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/gnn/cypher-parser-implementation.md)\" && mv \"temp-ruvector/docs/gnn/cypher-parser-implementation.md\" \"docs/archive/temp-ruvector/docs/gnn/cypher-parser-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/project-phases/phase5-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/project-phases/phase5-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/project-phases/phase5-implementation-summary.md)\" && mv \"temp-ruvector/docs/project-phases/phase5-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/project-phases/phase5-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md)\" && mv \"temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md\" \"docs/archive/temp-ruvector/docs/project-phases/phase2_hnsw_implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/project-phases/phase4-implementation-summary.md",
+      "destination": "docs/archive/temp-ruvector/docs/project-phases/phase4-implementation-summary.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/project-phases/phase4-implementation-summary.md)\" && mv \"temp-ruvector/docs/project-phases/phase4-implementation-summary.md\" \"docs/archive/temp-ruvector/docs/project-phases/phase4-implementation-summary.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/docs/optimization/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md",
+      "destination": "docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md)\" && mv \"temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md\" \"docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_README.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/docs/hnsw/HNSW_IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md",
+      "destination": "docs/archive/temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md)\" && mv \"temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md\" \"docs/archive/temp-ruvector/docs/postgres/zero-copy/ZERO_COPY_IMPLEMENTATION.md\""
+    },
+    {
+      "source": "temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md",
+      "destination": "docs/archive/temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md)\" && mv \"temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md\" \"docs/archive/temp-ruvector/docs/latent-space/implementation-plans/04-swarm-implementation.md\""
+    },
+    {
+      "source": "temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs/archive/temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md)\" && mv \"temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md\" \"docs/archive/temp-ruvector/benchmarks/graph/docs/IMPLEMENTATION_SUMMARY.md\""
+    },
+    {
+      "source": "temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt",
+      "destination": "docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt",
+      "command": "mkdir -p \"$(dirname docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt)\" && mv \"temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt\" \"docs/archive/temp-ruvector/examples/scipix/IMPLEMENTATION_SUMMARY.txt\""
+    }
+  ],
+  "dry_run": true,
+  "archive_directory": "docs/archive"
+}

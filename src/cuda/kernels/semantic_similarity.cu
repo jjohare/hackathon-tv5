@@ -638,7 +638,11 @@ __global__ void apply_style_similarity_force(
 
         if (dist > 1e-6f) {
             float force_mag = c_media_config.style_similarity.style_clustering_strength * style_similarity;
-            style_force = style_force + (normalize(delta) * force_mag / dist);
+            float3 normalized_delta = normalize(delta);
+            float dist_factor = force_mag / dist;
+            style_force.x += normalized_delta.x * dist_factor;
+            style_force.y += normalized_delta.y * dist_factor;
+            style_force.z += normalized_delta.z * dist_factor;
         }
     }
 

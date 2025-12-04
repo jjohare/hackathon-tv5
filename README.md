@@ -434,29 +434,24 @@ let recommendation = rl_agent.recommend(
 
 ### Getting Started
 - [**Quick Start Guide**](docs/QUICK_START.md) - 5-minute setup
-- [**API Documentation**](docs/API.md) - Complete REST API reference
-- [**MCP Integration**](docs/MCP_GUIDE.md) - AI agent integration
+- [**API Documentation**](docs/API_GUIDE.md) - Complete REST API reference
 
 ### Architecture
 - [**System Architecture**](ARCHITECTURE.md) - High-level design
-- [**Hybrid Storage**](design/PHASE2_README.md) - GPU + Vector DB
-- [**Data Flow**](design/architecture/data-flow.md) - Pipeline details
+- [**System Design**](design/architecture/system-architecture.md) - Technical architecture
 
 ### Performance
 - [**Performance Analysis**](PERFORMANCE.md) - Complete benchmarks
 - [**Phase 1: Tensor Cores**](PHASE1_COMPLETE.md) - 10× speedup
-- [**Phase 2: Memory**](design/PHASE2_SUMMARY.md) - 5× speedup
-- [**Optimization Guide**](design/cuda-optimization-plan.md) - Tuning tips
 
 ### Implementation
 - [**CUDA Kernels**](src/cuda/README.md) - GPU programming guide
-- [**Rust Integration**](src/rust/README.md) - Application layer
 - [**Deployment Guide**](design/guides/deployment-guide.md) - Production setup
 
 ### Research
-- [**GMC-O Ontology**](design/research/gmc-o-ontology-extension.md) - Media semantics
-- [**Vector Search**](design/research/vector-database-comparison.md) - Technology comparison
-- [**Reinforcement Learning**](design/research/reinforcement-learning.md) - Personalization
+- [**GPU Semantic Processing**](design/research/gpu-semantic-processing.md) - GPU acceleration
+- [**Graph Algorithms**](design/research/graph-algorithms-recommendations.md) - Algorithm analysis
+- [**Neo4j Vector Search**](design/research/neo4j-vector-search-analysis.md) - Vector integration
 
 ---
 

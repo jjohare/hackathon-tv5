@@ -1,0 +1,368 @@
+{
+  "archive_plan_version": "2.0",
+  "project": "hackathon-tv5",
+  "generated_date": "2025-12-04",
+  "total_documents_to_archive": 77,
+  "archive_strategy": {
+    "primary_archive": "design/archive/2025-12-04/",
+    "structure": {
+      "working_summaries": "design/archive/2025-12-04/summaries/",
+      "phase_documents": "design/archive/2025-12-04/phases/",
+      "analysis_reports": "design/archive/2025-12-04/analysis/",
+      "cuda_working": "design/archive/2025-12-04/cuda/",
+      "test_documents": "design/archive/2025-12-04/tests/",
+      "temp_ruvector": "design/archive/2025-12-04/temp-ruvector/"
+    }
+  },
+
+  "priority_1_hackathon_working_docs": {
+    "description": "Implementation summaries and working documents from hackathon development phases",
+    "count": 14,
+    "documents": [
+      {
+        "file": "design/IMPLEMENTATION_SUMMARY.md",
+        "reason": "Working summary for Rust type generation - completed task",
+        "archive_to": "design/archive/2025-12-04/summaries/IMPLEMENTATION_SUMMARY_rust_types.md",
+        "justification": "Implementation summary documenting completed Rust type generation from OWL ontology. This is historical context, not part of final deliverable.",
+        "last_modified": "2025-12-04T12:27:03"
+      },
+      {
+        "file": "IMPLEMENTATION_SUMMARY.md",
+        "reason": "Hybrid storage coordinator summary - duplicates docs/",
+        "archive_to": "design/archive/2025-12-04/summaries/IMPLEMENTATION_SUMMARY_hybrid_storage.md",
+        "justification": "Root-level implementation summary for hybrid storage. All relevant info is in docs/. This is a working document.",
+        "last_modified": "2025-12-04T13:19:03"
+      },
+      {
+        "file": "design/PHASE2_SUMMARY.md",
+        "reason": "Phase 2 memory optimization summary - intermediate milestone",
+        "archive_to": "design/archive/2025-12-04/phases/PHASE2_SUMMARY.md",
+        "justification": "Phase 2 completion summary showing 4-5x speedup achievement. This is a milestone marker, not final documentation.",
+        "last_modified": "2025-12-04T14:20:00"
+      },
+      {
+        "file": "design/PHASE2_COMPLETE.txt",
+        "reason": "Phase 2 completion marker - text format milestone",
+        "archive_to": "design/archive/2025-12-04/phases/PHASE2_COMPLETE.txt",
+        "justification": "Simple completion marker file for Phase 2. Redundant with PHASE2_SUMMARY.md.",
+        "last_modified": "2025-12-04T14:24:00"
+      },
+      {
+        "file": "design/phase2_implementation_docs.md",
+        "reason": "Phase 2 technical implementation details - working doc",
+        "archive_to": "design/archive/2025-12-04/phases/phase2_implementation_docs.md",
+        "justification": "Detailed implementation notes for Phase 2 memory optimization. This is working documentation that informed the final architecture.",
+        "last_modified": "2025-12-04T14:17:27"
+      },
+      {
+        "file": "design/PHASE2_INDEX.md",
+        "reason": "Phase 2 index/navigation document",
+        "archive_to": "design/archive/2025-12-04/phases/PHASE2_INDEX.md",
+        "justification": "Index document for Phase 2 artifacts. Not needed for final delivery.",
+        "last_modified": "2025-12-04T14:22:00"
+      },
+      {
+        "file": "design/PHASE2_README.md",
+        "reason": "Phase 2 README - working documentation",
+        "archive_to": "design/archive/2025-12-04/phases/PHASE2_README.md",
+        "justification": "Phase 2 working README for development. Final documentation is in main docs/.",
+        "last_modified": "2025-12-04T14:19:00"
+      },
+      {
+        "file": "design/phase2_memory_patterns.txt",
+        "reason": "Phase 2 memory pattern notes - working notes",
+        "archive_to": "design/archive/2025-12-04/phases/phase2_memory_patterns.txt",
+        "justification": "Working notes on memory patterns during Phase 2 development. This informed final implementation but is not needed for delivery.",
+        "last_modified": "2025-12-04T14:21:00"
+      },
+      {
+        "file": "PHASE1_COMPLETE.md",
+        "reason": "Phase 1 completion marker",
+        "archive_to": "design/archive/2025-12-04/phases/PHASE1_COMPLETE.md",
+        "justification": "Milestone marker for Phase 1 completion. Historical context only.",
+        "last_modified": "2025-12-04T14:19:00"
+      },
+      {
+        "file": "UNIFIED_PIPELINE_COMPLETE.md",
+        "reason": "Pipeline completion marker",
+        "archive_to": "design/archive/2025-12-04/summaries/UNIFIED_PIPELINE_COMPLETE.md",
+        "justification": "Completion marker for unified pipeline. This is a checkpoint document, not final documentation.",
+        "last_modified": "2025-12-04T14:54:00"
+      },
+      {
+        "file": "MIGRATION-SUMMARY.md",
+        "reason": "Migration summary - historical record",
+        "archive_to": "design/archive/2025-12-04/summaries/MIGRATION-SUMMARY.md",
+        "justification": "Summary of migration from one architecture to another. This is historical context showing evolution of the system.",
+        "last_modified": "2025-12-04T13:15:00"
+      },
+      {
+        "file": "TESTING_CHECKLIST.md",
+        "reason": "Working testing checklist",
+        "archive_to": "design/archive/2025-12-04/tests/TESTING_CHECKLIST.md",
+        "justification": "Working checklist used during testing phases. This is internal process documentation.",
+        "last_modified": "2025-12-04T13:13:00"
+      },
+      {
+        "file": "REASONER_SUMMARY.md",
+        "reason": "Reasoner implementation summary - intermediate",
+        "archive_to": "design/archive/2025-12-04/summaries/REASONER_SUMMARY.md",
+        "justification": "Summary of reasoner implementation. Final documentation is integrated into main docs.",
+        "last_modified": "2025-12-04T12:28:00"
+      },
+      {
+        "file": "VALIDATION_SUMMARY.md",
+        "reason": "Validation summary - checkpoint document",
+        "archive_to": "design/archive/2025-12-04/summaries/VALIDATION_SUMMARY.md",
+        "justification": "Validation checkpoint summary. This is a milestone marker documenting validation completion.",
+        "last_modified": "2025-12-04T12:27:00"
+      }
+    ]
+  },
+
+  "priority_2_analysis_working_docs": {
+    "description": "Analysis reports and investigation documents that informed decisions but are not part of final deliverable",
+    "count": 11,
+    "documents": [
+      {
+        "file": "design/DUAN_SSSP_ANALYSIS.md",
+        "reason": "Working analysis of Duan SSSP algorithm",
+        "archive_to": "design/archive/2025-12-04/analysis/DUAN_SSSP_ANALYSIS.md",
+        "justification": "Initial analysis of Duan SSSP algorithm. This was superseded by corrected analysis and final implementation.",
+        "last_modified": "2025-12-04T15:21:00"
+      },
+      {
+        "file": "design/DUAN_SSSP_CORRECTED_ANALYSIS.md",
+        "reason": "Corrected analysis - working document",
+        "archive_to": "design/archive/2025-12-04/analysis/DUAN_SSSP_CORRECTED_ANALYSIS.md",
+        "justification": "Corrected version of Duan SSSP analysis. This informed the final SSSP implementation but is not needed for delivery.",
+        "last_modified": "2025-12-04T15:24:00"
+      },
+      {
+        "file": "design/SSSP_INVESTIGATION_REPORT.md",
+        "reason": "SSSP investigation working report",
+        "archive_to": "design/archive/2025-12-04/analysis/SSSP_INVESTIGATION_REPORT.md",
+        "justification": "Investigation report documenting SSSP algorithm research. This is background research, not final documentation.",
+        "last_modified": "2025-12-04T15:32:00"
+      },
+      {
+        "file": "design/VISIONFLOW_PORT_ANALYSIS.md",
+        "reason": "VisionFlow port analysis - working document",
+        "archive_to": "design/archive/2025-12-04/analysis/VISIONFLOW_PORT_ANALYSIS.md",
+        "justification": "Analysis of porting VisionFlow components. This is research/planning documentation that informed architecture decisions.",
+        "last_modified": "2025-12-04T15:29:00"
+      },
+      {
+        "file": "design/VISIONFLOW_PORT_SUMMARY.md",
+        "reason": "VisionFlow port summary - working summary",
+        "archive_to": "design/archive/2025-12-04/analysis/VISIONFLOW_PORT_SUMMARY.md",
+        "justification": "Summary of VisionFlow porting work. This is a checkpoint document.",
+        "last_modified": "2025-12-04T15:30:00"
+      },
+      {
+        "file": "design/HIVE_MIND_REPORT.md",
+        "reason": "Hive mind swarm coordination report",
+        "archive_to": "design/archive/2025-12-04/analysis/HIVE_MIND_REPORT.md",
+        "justification": "Report on hive mind coordination patterns used during development. This is process documentation, not product documentation.",
+        "last_modified": "2025-12-04T13:55:00"
+      },
+      {
+        "file": "design/cuda-kernel-analysis.md",
+        "reason": "CUDA kernel analysis - working analysis",
+        "archive_to": "design/archive/2025-12-04/cuda/cuda-kernel-analysis.md",
+        "justification": "Analysis of CUDA kernel performance and design. This informed optimizations but is not part of final documentation.",
+        "last_modified": "2025-12-04T13:52:00"
+      },
+      {
+        "file": "design/cuda-optimization-plan.md",
+        "reason": "CUDA optimization planning document",
+        "archive_to": "design/archive/2025-12-04/cuda/cuda-optimization-plan.md",
+        "justification": "Planning document for CUDA optimizations. This is project management documentation that guided development.",
+        "last_modified": "2025-12-04T13:52:00"
+      },
+      {
+        "file": "design/deepseek-cuda-analysis-results.md",
+        "reason": "DeepSeek CUDA analysis results",
+        "archive_to": "design/archive/2025-12-04/cuda/deepseek-cuda-analysis-results.md",
+        "justification": "Results from DeepSeek AI analysis of CUDA code. This is an AI-assisted analysis tool output, not human-authored final documentation.",
+        "last_modified": "2025-12-04T14:05:00"
+      },
+      {
+        "file": "design/deepseek-cuda-query.md",
+        "reason": "DeepSeek query document",
+        "archive_to": "design/archive/2025-12-04/cuda/deepseek-cuda-query.md",
+        "justification": "Query document for DeepSeek AI analysis. This is tooling input, not deliverable documentation.",
+        "last_modified": "2025-12-04T13:52:00"
+      },
+      {
+        "file": "design/deepseek-cuda-reasoning.txt",
+        "reason": "DeepSeek reasoning output",
+        "archive_to": "design/archive/2025-12-04/cuda/deepseek-cuda-reasoning.txt",
+        "justification": "AI reasoning output from DeepSeek analysis. This is tool output, not authored documentation.",
+        "last_modified": "2025-12-04T13:55:00"
+      }
+    ]
+  },
+
+  "priority_3_api_docs": {
+    "description": "API-related summary documents that are superseded by integrated documentation",
+    "count": 2,
+    "documents": [
+      {
+        "file": "design/API_SUMMARY.md",
+        "reason": "API summary - working document",
+        "archive_to": "design/archive/2025-12-04/summaries/API_SUMMARY.md",
+        "justification": "Working API summary document. Final API documentation is integrated into main docs/.",
+        "last_modified": "2025-12-04T14:24:00"
+      },
+      {
+        "file": "design/API_DELIVERABLES.md",
+        "reason": "API deliverables checklist",
+        "archive_to": "design/archive/2025-12-04/summaries/API_DELIVERABLES.md",
+        "justification": "Checklist of API deliverables. This is project management documentation, not final deliverable.",
+        "last_modified": "2025-12-04T14:18:00"
+      }
+    ]
+  },
+
+  "do_not_archive_critical": {
+    "description": "Files that MUST NOT be archived - these are critical hackathon deliverables",
+    "count": 5,
+    "files": [
+      {
+        "file": "design/SSSP_BREAKTHROUGH_SUMMARY.md",
+        "reason": "PRIMARY HACKATHON DELIVERABLE - Documents breakthrough SSSP algorithm achievement",
+        "justification": "This is the key technical achievement for the hackathon. MUST remain accessible."
+      },
+      {
+        "file": "design/DATABASE_UNIFICATION_ANALYSIS.md",
+        "reason": "CRITICAL ARCHITECTURE DOCUMENT - Database unification strategy",
+        "justification": "Core architectural decision document. Recent (2025-12-04) and critical for understanding system design."
+      },
+      {
+        "file": "design/DATABASE_USAGE_ANALYSIS.md",
+        "reason": "CRITICAL ARCHITECTURE DOCUMENT - Database usage patterns",
+        "justification": "Complements database unification analysis. Essential for understanding data layer architecture."
+      },
+      {
+        "file": "design/ADAPTIVE_SSSP_ARCHITECTURE.md",
+        "reason": "CORE ARCHITECTURE DOCUMENT - Adaptive SSSP system design",
+        "justification": "Core technical architecture document. Recent and essential for understanding the adaptive SSSP implementation."
+      },
+      {
+        "file": "README.md",
+        "reason": "PRIMARY PROJECT DOCUMENTATION",
+        "justification": "Main entry point for understanding the project. Never archive."
+      }
+    ]
+  },
+
+  "temp_ruvector_documents": {
+    "description": "All temp-ruvector documents (63 total from script) - separate project context",
+    "count": 50,
+    "action": "Archive entire temp-ruvector/ directory",
+    "archive_to": "design/archive/2025-12-04/temp-ruvector/",
+    "justification": "The temp-ruvector directory contains documentation from a different project (ruvector vector database). While it may have informed some design decisions, it is not part of the hackathon-tv5 deliverable. Archiving the entire directory preserves context while cleaning up the main project structure.",
+    "note": "See archive.json for complete list of 50+ temp-ruvector files"
+  },
+
+  "test_documents": {
+    "description": "Test summary and implementation documents",
+    "count": 2,
+    "documents": [
+      {
+        "file": "docs/TEST_IMPLEMENTATION_SUMMARY.md",
+        "reason": "Test implementation summary - working document",
+        "archive_to": "design/archive/2025-12-04/tests/TEST_IMPLEMENTATION_SUMMARY.md",
+        "justification": "Summary of test implementation. This is internal development documentation. Final test documentation is integrated elsewhere.",
+        "last_modified": "2025-12-04T13:13:15"
+      },
+      {
+        "file": "tests/docs/TEST_SUMMARY.md",
+        "reason": "Adaptive SSSP test suite summary",
+        "archive_to": "design/archive/2025-12-04/tests/ADAPTIVE_SSSP_TEST_SUMMARY.md",
+        "justification": "Test suite summary for adaptive SSSP. This is checkpoint documentation showing test completion.",
+        "last_modified": "2025-12-04T15:58:49"
+      }
+    ]
+  },
+
+  "storage_migration_docs": {
+    "description": "Storage migration and hybrid architecture working documents",
+    "count": 5,
+    "documents": [
+      {
+        "file": "README_HYBRID_STORAGE.md",
+        "reason": "Hybrid storage README - duplicates docs/",
+        "archive_to": "design/archive/2025-12-04/summaries/README_HYBRID_STORAGE.md",
+        "justification": "Root-level README for hybrid storage. This information is integrated into main documentation.",
+        "last_modified": "2025-12-04T13:13:00"
+      },
+      {
+        "file": "README_MILVUS.md",
+        "reason": "Milvus integration README - duplicates docs/",
+        "archive_to": "design/archive/2025-12-04/summaries/README_MILVUS.md",
+        "justification": "Root-level README for Milvus integration. This is covered in integrated documentation.",
+        "last_modified": "2025-12-04T13:13:00"
+      },
+      {
+        "file": "README_AGENTDB.md",
+        "reason": "AgentDB integration README - duplicates docs/",
+        "archive_to": "design/archive/2025-12-04/summaries/README_AGENTDB.md",
+        "justification": "Root-level README for AgentDB integration. This is covered in integrated documentation.",
+        "last_modified": "2025-12-04T13:13:00"
+      },
+      {
+        "file": "README-migration.md",
+        "reason": "Migration README - working documentation",
+        "archive_to": "design/archive/2025-12-04/summaries/README-migration.md",
+        "justification": "Migration guide showing transition between architectures. This is historical context.",
+        "last_modified": "2025-12-04T13:13:00"
+      },
+      {
+        "file": "DELIVERABLES.md",
+        "reason": "Working deliverables checklist",
+        "archive_to": "design/archive/2025-12-04/summaries/DELIVERABLES.md",
+        "justification": "Internal deliverables checklist. This is project management documentation.",
+        "last_modified": "2025-12-04T13:13:00"
+      }
+    ]
+  },
+
+  "archive_execution_plan": {
+    "phase_1_create_structure": {
+      "command": "mkdir -p design/archive/2025-12-04/{summaries,phases,analysis,cuda,tests,temp-ruvector}",
+      "description": "Create archive directory structure"
+    },
+    "phase_2_archive_hackathon_docs": {
+      "description": "Archive 27 hackathon-tv5 specific working documents",
+      "count": 27,
+      "method": "Move files to appropriate archive subdirectories"
+    },
+    "phase_3_archive_temp_ruvector": {
+      "description": "Archive entire temp-ruvector directory",
+      "command": "mv temp-ruvector design/archive/2025-12-04/temp-ruvector/",
+      "count": 50
+    },
+    "phase_4_verification": {
+      "description": "Verify critical files were NOT archived",
+      "critical_files_to_verify": [
+        "design/SSSP_BREAKTHROUGH_SUMMARY.md",
+        "design/DATABASE_UNIFICATION_ANALYSIS.md",
+        "design/DATABASE_USAGE_ANALYSIS.md",
+        "design/ADAPTIVE_SSSP_ARCHITECTURE.md",
+        "README.md"
+      ]
+    }
+  },
+
+  "summary": {
+    "total_documents_identified": 77,
+    "hackathon_tv5_documents": 27,
+    "temp_ruvector_documents": 50,
+    "archive_directory": "design/archive/2025-12-04/",
+    "estimated_space_saved": "~787 KB",
+    "critical_files_protected": 5,
+    "archive_rationale": "Archive working documents, phase summaries, analysis reports, and unrelated project files (temp-ruvector) while preserving core hackathon deliverables and recent critical architecture documents."
+  }
+}

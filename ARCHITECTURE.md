@@ -101,6 +101,164 @@ The TV5 Monde Media Gateway is a **hybrid GPU-accelerated semantic discovery pla
 ### System Context Diagram
 
 ```
+```mermaid
+graph TD
+    A0["EXTERNAL SYSTEMS"]
+    A1["┌──────────────┐  ┌──────────────┐  ┌──────────────┐"]
+    A0 --> A1
+    A2["│   Content"]
+    A1 --> A2
+    A3["User"]
+    A2 --> A3
+    A4["AI Agents"]
+    A3 --> A4
+    A5["│  Providers"]
+    A4 --> A5
+    A6["Applications"]
+    A5 --> A6
+    A7["(Claude/etc)"]
+    A6 --> A7
+    A8["└──────┬───────┘  └──────┬───────┘  └──────┬───────┘"]
+    A7 --> A8
+    A9["│"]
+    A8 --> A9
+    A10["│ Metadata"]
+    A9 --> A10
+    A11["MCP Protocol"]
+    A10 --> A11
+    A12["│ Ingestion"]
+    A11 --> A12
+    A13["(JSON-RPC)"]
+    A12 --> A13
+    A16["API GATEWAY LAYER"]
+    A15 --> A16
+    A17["┌────────────────────┐           ┌────────────────────┐"]
+    A16 --> A17
+    A18["│   REST API Server"]
+    A17 --> A18
+    A19["MCP Server"]
+    A18 --> A19
+    A20["│  (Actix-web/Axum)"]
+    A19 --> A20
+    A21["(JSON-RPC 2.0)"]
+    A20 --> A21
+    A24["│ • Authentication"]
+    A23 --> A24
+    A25["• Tool Discovery"]
+    A24 --> A25
+    A26["│ • Rate Limiting"]
+    A25 --> A26
+    A27["• Streaming"]
+    A26 --> A27
+    A28["│ • Request Routing"]
+    A27 --> A28
+    A29["• Context Mgmt"]
+    A28 --> A29
+    A30["│ • Response Cache"]
+    A29 --> A30
+    A31["• Error Handling"]
+    A30 --> A31
+    A32["└─────────┬──────────┘           └─────────┬──────────┘"]
+    A31 --> A32
+    A34["ORCHESTRATION & ROUTING LAYER"]
+    A33 --> A34
+    A35["┌──────────────────────────────────────────────────────────────────┐"]
+    A34 --> A35
+    A36["│              Query Analyzer & Router"]
+    A35 --> A36
+    A38["│  • Complexity Analysis (O(log n) vs O(n) vs O(n²))"]
+    A37 --> A38
+    A39["│  • Resource Estimation (GPU memory, disk I/O)"]
+    A38 --> A39
+    A40["│  • Path Selection (GPU / Vector DB / Hybrid)"]
+    A39 --> A40
+    A41["│  • Load Balancing (Multi-GPU, DB shards)"]
+    A40 --> A41
+    A42["│  • Fallback Strategy (GPU OOM → Vector DB)"]
+    A41 --> A42
+    A43["└──────────────────────────┬───────────────────────────────────────┘"]
+    A42 --> A43
+    A45["GPU ENGINE LAYER"]
+    A44 --> A45
+    A46["VECTOR DATABASE LAYER"]
+    A45 --> A46
+    A47["(CUDA Kernels)"]
+    A46 --> A47
+    A48["(Qdrant / Milvus)"]
+    A47 --> A48
+    A50["┌────────────────────────┐"]
+    A49 --> A50
+    A51["┌──────────────────────────┐"]
+    A50 --> A51
+    A52["│ Semantic Similarity"]
+    A51 --> A52
+    A54["│ • Tensor Cores (FP16)"]
+    A53 --> A54
+    A56["│ • Memory Coalescing"]
+    A55 --> A56
+    A58["│ • Shared Memory Cache"]
+    A57 --> A58
+    A60["│ • 280 GB/s Bandwidth"]
+    A59 --> A60
+    A62["└────────────────────────┘"]
+    A61 --> A62
+    A63["└──────────────────────────┘"]
+    A62 --> A63
+    A67["│ Adaptive SSSP Engine"]
+    A66 --> A67
+    A69["│ • GPU Dijkstra (<10K)"]
+    A68 --> A69
+    A71["│ • Duan SSSP (>10M)"]
+    A70 --> A71
+    A73["│ • Auto crossover"]
+    A72 --> A73
+    A78["Memory: 16GB VRAM"]
+    A77 --> A78
+    A79["Storage: 1TB+ Disk"]
+    A78 --> A79
+    A80["Latency: <10ms"]
+    A79 --> A80
+    A81["Latency: 20-100ms"]
+    A80 --> A81
+    A82["Scale: 1M vectors"]
+    A81 --> A82
+    A83["Scale: 100M+ vectors"]
+    A82 --> A83
+    A84["SEMANTIC ENRICHMENT LAYER"]
+    A83 --> A84
+    A85["┌────────────────────────────────────────────────────────────────┐"]
+    A84 --> A85
+    A86["│               Knowledge Graph (Neo4j)"]
+    A85 --> A86
+    A88["│  • GMC-O Ontology (Extended)"]
+    A87 --> A88
+    A89["│  • Entity Relationships (hasGenre, isPartOf, etc.)"]
+    A88 --> A89
+    A90["│  • APOC Procedures (Graph Algorithms)"]
+    A89 --> A90
+    A91["│  • Cypher Queries (Pattern Matching)"]
+    A90 --> A91
+    A92["│  • Inference Rules (OWL Reasoning)"]
+    A91 --> A92
+    A93["└────────────────────────────────────────────────────────────────┘"]
+    A92 --> A93
+    A94["PERSONALIZATION & LEARNING LAYER"]
+    A93 --> A94
+    A96["│        Reinforcement Learning Agent (AgentDB)"]
+    A95 --> A96
+    A98["│  • Thompson Sampling (Contextual Bandits)"]
+    A97 --> A98
+    A99["│  • User Context Embeddings (session, history, preferences)"]
+    A98 --> A99
+    A100["│  • Exploration/Exploitation Balance (ε-greedy)"]
+    A99 --> A100
+    A101["│  • Experience Replay & Distillation"]
+    A100 --> A101
+    A102["│  • Cold-Start Handling (5-10 interactions)"]
+    A101 --> A102
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        EXTERNAL SYSTEMS                                 │
 │                                                                         │
@@ -205,6 +363,8 @@ The TV5 Monde Media Gateway is a **hybrid GPU-accelerated semantic discovery pla
 │  └────────────────────────────────────────────────────────────────┘    │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
 ```
 
 ---
@@ -300,6 +460,11 @@ pub struct McpServer {
 **Decision Tree**:
 ```
 Query Received
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ├─> Parse & Validate
     │   └─> Extract: [text, filters, limit, threshold]
     │
@@ -320,6 +485,8 @@ Query Received
         │
         └─> Hybrid Path (10K < candidates < 100K)
             └─> VectorDB (coarse) → GPU (rerank) [15-50ms]
+-->
+
 ```
 
 **Routing Logic**:
@@ -384,9 +551,18 @@ __global__ void compute_multimodal_similarity_tensor_cores(
 }
 ```
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+```
+
+<!-- Original ASCII diagram preserved:
 **Performance**: 10× speedup (2.5 TFLOPS → 25 TFLOPS)
 
 **Phase 2: Memory Coalescing**
+-->
+
 ```cuda
 // File: src/cuda/kernels/sorted_similarity.cu
 
@@ -420,9 +596,16 @@ __global__ void compute_similarity_sorted_coalesced(
 }
 ```
 
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
 **Performance**: 5× additional speedup (60 GB/s → 280 GB/s)
 
 **Cumulative GPU Speedup**: 10× × 5× = **50× faster than CPU baseline**
+-->
+
 
 ---
 
@@ -578,9 +761,16 @@ __global__ void validate_ontology_constraints(
 }
 ```
 
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 **Performance**: 33× faster constraint validation (850ms → 24ms)
 
 ---
+-->
+
 
 ### 6. Personalization & Learning Layer
 
@@ -701,10 +891,25 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
 ### End-to-End Query Processing
 
 ```
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 1: REQUEST INGESTION (1-2ms)
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 1: REQUEST INGESTION (1-2ms)                                     │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   User Query: "French documentary about climate change"
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   [API Gateway]
     ├─> Authentication & Authorization (JWT)
@@ -712,6 +917,8 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     ├─> Request Validation (JSON Schema)
     └─> Query Parsing
           ↓
+-->
+
           {
             "text": "French documentary about climate change",
             "filters": { "language": "fr", "genre": "Documentary" },
@@ -719,6 +926,14 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
             "threshold": 0.85
           }
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 2: EMBEDDING GENERATION (2-5ms)
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 2: EMBEDDING GENERATION (2-5ms)                                  │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -726,12 +941,29 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     ↓
   [768-dim] → [1024-dim projection] (normalize + project)
     ↓
+-->
+
   Query Embedding: [0.123, -0.456, 0.789, ...] (1024 dims, FP32)
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 3: ROUTING DECISION (0.1ms)
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 3: ROUTING DECISION (0.1ms)                                      │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   [Query Analyzer]
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ├─> Estimate Candidates:
     │     • Total Items: 100M
     │     • Filter Selectivity (language=fr): 15M
@@ -743,11 +975,26 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     │     • GPU Compute: ~8ms ✓
     │
     └─> Selected Path: GPU_PATH
+-->
 
+
+```mermaid
+graph TD
+    A0["PHASE 4: GPU EXECUTION (8-12ms)"]
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 4: GPU EXECUTION (8-12ms)                                        │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   [Load Filtered Embeddings] (2ms)
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓ Transfer 2.4GB over PCIe Gen4 (32 GB/s)
     ↓
   [Tensor Core Similarity] (6ms)
@@ -756,19 +1003,43 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     ↓   • 25 TFLOPS throughput
     ↓   • 280 GB/s memory bandwidth
     ↓
+-->
+
   [Top-K Selection] (2ms)
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓ GPU-accelerated heap sort
     ↓
   Results: [
+-->
+
     {id: "doc_12345", similarity: 0.94},
     {id: "doc_67890", similarity: 0.91},
     ...
   ] (Top 10)
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 5: SEMANTIC ENRICHMENT (3-7ms)
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 5: SEMANTIC ENRICHMENT (3-7ms)                                   │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   [Neo4j Graph Traversal]
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   FOR EACH result:
     ├─> MATCH (item:MediaItem {id: result.id})
@@ -777,6 +1048,8 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     ├─>       -[:CREATED_BY]->(person:Person)
     ├─> RETURN item, genre, topic, person
     ↓
+-->
+
   Enriched Results: [
     {
       id: "doc_12345",
@@ -793,34 +1066,82 @@ pub fn handle_cold_start(&self, user: &NewUser) -> Vec<MediaItem> {
     ...
   ]
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 6: PERSONALIZATION (2-5ms, if user
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 6: PERSONALIZATION (2-5ms, if user authenticated)                │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   [AgentDB RL Reranking]
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   User Context:
     • Watch history: [doc_11111, doc_33333, ...]
+-->
+
     • Preferences: {genre: {Documentary: 0.9, Drama: 0.7}}
     • Session: {time_of_day: "evening", device: "smart_tv"}
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   Thompson Sampling:
     FOR EACH result:
+-->
+
       score_rl = policy.sample(user_context, item_embedding)
       final_score = 0.7 * similarity + 0.3 * score_rl
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   Reranked Results: [
     {id: "doc_12345", final_score: 0.96},  // Boosted by user preference
+-->
+
     {id: "doc_67890", final_score: 0.88},
     ...
   ]
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant System
+    User->>System: PHASE 7: RESPONSE FORMATTING (0.5ms)
+```
+
+<!-- Original ASCII diagram preserved:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ PHASE 7: RESPONSE FORMATTING (0.5ms)                                   │
 └─────────────────────────────────────────────────────────────────────────┘
+-->
+
   [JSON Serialization]
+```mermaid
+graph TD
+```
+
+<!-- Original ASCII diagram preserved:
     ↓
   {
     "results": [...],
+-->
+
     "query_time_ms": 12,
     "total_candidates": 1200000,
     "metadata": {
@@ -898,9 +1219,16 @@ tracing = "0.1"
 **Impact**:
 - 500-1000× speedup for simple queries
 - 100M+ entity support
+```mermaid
+flowchart LR
+```
+
+<!-- Original ASCII diagram preserved:
 - $14,400 → $600/month cost reduction
 
 ---
+-->
+
 
 ### 2. Why FP16 Tensor Cores?
 
@@ -997,6 +1325,44 @@ tracing = "0.1"
 ### Single-Region Deployment
 
 ```
+```mermaid
+graph TD
+    A0["Load Balancer"]
+    A1["(NGINX/HAProxy)"]
+    A0 --> A1
+    A2["│"]
+    A1 --> A2
+    A3["API Server"]
+    A2 --> A3
+    A6["(Actix)"]
+    A5 --> A6
+    A9["+ MCP"]
+    A8 --> A9
+    A14["GPU Node 1"]
+    A13 --> A14
+    A15["GPU Node 2"]
+    A14 --> A15
+    A16["GPU Node N"]
+    A15 --> A16
+    A17["(T4 GPU)"]
+    A16 --> A17
+    A21["Qdrant"]
+    A20 --> A21
+    A22["Neo4j"]
+    A21 --> A22
+    A23["Cluster"]
+    A22 --> A23
+    A25["(Sharded)"]
+    A24 --> A25
+    A26["(Replicas)"]
+    A25 --> A26
+    A27["Redis"]
+    A26 --> A27
+    A28["(Cache)"]
+    A27 --> A28
+```
+
+<!-- Original ASCII diagram preserved:
                           ┌────────────────────┐
                           │   Load Balancer    │
                           │   (NGINX/HAProxy)  │
@@ -1039,12 +1405,20 @@ tracing = "0.1"
                             │   Redis    │
                             │  (Cache)   │
                             └────────────┘
+-->
+
 ```
 
 ### Multi-Region Deployment (Future)
 
 ```
 Region 1 (US-East)          Region 2 (EU-West)         Region 3 (APAC)
+```mermaid
+graph TD
+    A0["│"]
+```
+
+<!-- Original ASCII diagram preserved:
       │                            │                          │
       ├─ API Servers (3×)          ├─ API Servers (3×)       ├─ API Servers (3×)
       ├─ GPU Nodes (4×)            ├─ GPU Nodes (4×)         ├─ GPU Nodes (4×)
@@ -1053,6 +1427,8 @@ Region 1 (US-East)          Region 2 (EU-West)         Region 3 (APAC)
               │                            │                          │
               └────────────────────────────┴──────────────────────────┘
                                            │
+-->
+
                                     Global Routing
                                      (GeoDNS)
 ```

@@ -21,4 +21,4 @@ pub use embeddings::{EmbeddingVector, VisualEmbedding, AudioEmbedding, TextEmbed
 pub use ontology::{OntologyClass, OntologyProperty, SemanticTriple, OWLAxiom};
 pub use user::{UserProfile, PsychographicState, TasteCluster, ViewingContext};
 pub use recommendation::{Recommendation, RecommendationScore, SemanticPath, ExplanationReason};
-pub use gpu_types::{GPUEmbedding, GPUBatch, GPUMemoryLayout};
+pub use gpu_types::{GPUEmbedding, GPUBatch, GPUEmbeddingBatch};

@@ -604,7 +604,7 @@ impl ProductionMediaReasoner {
 
     /// Evaluate how well media fits the delivery context
     fn evaluate_context_fit(&self, media: &MediaEntity, context: &DeliveryContext) -> f32 {
-        let mut score = 1.0;
+        let mut score = 1.0_f32;
 
         // Network quality vs file size
         if let Some(file_size) = media.technical_metadata.file_size_bytes {
@@ -628,7 +628,7 @@ impl ProductionMediaReasoner {
             _ => {}
         }
 
-        score.max(0.0).min(1.0)
+        score.max(0.0_f32).min(1.0_f32)
     }
 
     /// Calculate similarity to user's interaction history

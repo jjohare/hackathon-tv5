@@ -83,7 +83,7 @@
 // Re-export main types at crate root
 pub use models::{
     content::{ContentId, MediaContent, ContentType},
-    embeddings::{EmbeddingVector, UnifiedEmbedding},
+    embeddings::{EmbeddingVector, MultiModalEmbedding},
     recommendation::{Recommendation, SemanticPath},
     user::{UserProfile, UserId},
 };
@@ -152,7 +152,7 @@ pub mod prelude {
 
     pub use crate::{
         ContentId, MediaContent, ContentType,
-        EmbeddingVector, UnifiedEmbedding,
+        EmbeddingVector, MultiModalEmbedding,
         Recommendation, SemanticPath,
         UserProfile, UserId,
         Result, RecommendationError,
@@ -161,10 +161,7 @@ pub mod prelude {
     #[cfg(feature = "gpu")]
     pub use crate::gpu_engine::GpuSemanticEngine;
 
-    pub use crate::{
-        ontology::OWLReasoner,
-        semantic_search::RecommendationEngine,
-    };
+    pub use crate::semantic_search::RecommendationEngine;
 }
 
 #[cfg(test)]

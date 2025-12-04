@@ -9,10 +9,6 @@ license.workspace = true
 name = "recommendation_engine"
 path = "lib.rs"
 
-[[example]]
-name = "simple_similarity"
-path = "../examples/simple_similarity.rs"
-
 [dependencies]
 # Use workspace dependencies
 tokio.workspace = true
@@ -23,20 +19,18 @@ anyhow.workspace = true
 thiserror.workspace = true
 futures.workspace = true
 tracing.workspace = true
+uuid = { workspace = true }
+chrono = { workspace = true }
 
 # Additional crate-specific dependencies
 rayon = "1.8"
 ndarray = "0.15"
+bytemuck = "1.14"
 
 [features]
-default = ["gpu"]
+default = []  # CPU-only by default until CUDA kernels are compiled
 gpu = ["cudarc"]
 cpu-only = []
 
 [dev-dependencies]
-criterion = "0.5"
 tokio-test = "0.4"
-
-[[bench]]
-name = "similarity_benchmark"
-harness = false

@@ -331,7 +331,7 @@ impl ExplanationGenerator {
         context: &ExplanationContext,
         paths: &[ExplanationPath],
     ) -> Result<f32> {
-        let mut confidence = 0.5;
+        let mut confidence = 0.5_f32;
 
         // Boost confidence based on evidence
         if context.similarity_score > 0.8 {
@@ -346,7 +346,7 @@ impl ExplanationGenerator {
             confidence += 0.1;
         }
 
-        Ok(confidence.min(1.0))
+        Ok(confidence.min(1.0_f32))
     }
 }
 

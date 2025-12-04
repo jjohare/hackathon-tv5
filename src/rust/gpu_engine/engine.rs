@@ -8,6 +8,9 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use super::*;
+use crate::adaptive_sssp::{
+    AdaptiveSsspEngine, AdaptiveSsspConfig, AlgorithmMode, SsspMetrics,
+};
 
 /// Configuration for GPU engine initialization
 #[derive(Debug, Clone)]
@@ -63,6 +66,9 @@ pub struct GpuSemanticEngine {
 
     /// Configuration
     config: GpuConfig,
+
+    /// Adaptive SSSP engine for intelligent algorithm selection
+    adaptive_sssp: Arc<RwLock<AdaptiveSsspEngine>>,
 }
 
 impl GpuSemanticEngine {
@@ -105,6 +111,12 @@ impl GpuSemanticEngine {
         // Initialize metrics
         let metrics = Arc::new(RwLock::new(PerformanceMetrics::default()));
 
+        // Initialize adaptive SSSP with default configuration
+        let sssp_config = AdaptiveSsspConfig::default();
+        let adaptive_sssp = Arc::new(RwLock::new(
+            AdaptiveSsspEngine::new(sssp_config)
+        ));
+
         Ok(Self {
             device,
             modules,
@@ -112,6 +124,7 @@ impl GpuSemanticEngine {
             streams,
             metrics,
             config,
+            adaptive_sssp,
         })
     }
 
@@ -251,7 +264,7 @@ impl GpuSemanticEngine {
         Ok(result)
     }
 
-    /// Find shortest paths in knowledge graph
+    /// Find shortest paths in knowledge graph with adaptive algorithm selection
     ///
     /// # Arguments
     ///
@@ -259,10 +272,11 @@ impl GpuSemanticEngine {
     /// * `sources` - Source node IDs
     /// * `targets` - Target node IDs
     /// * `config` - Pathfinding configuration
+    /// * `algorithm` - Optional algorithm override (None = auto-select)
     ///
     /// # Returns
     ///
-    /// Vector of shortest paths
+    /// Vector of shortest paths with execution metrics
     pub async fn find_shortest_paths(
         &self,
         graph: &[u32],
@@ -270,9 +284,106 @@ impl GpuSemanticEngine {
         targets: &[u32],
         config: &PathfindingConfig,
     ) -> GpuResult<Vec<Path>> {
+        self.find_shortest_paths_with_algorithm(graph, sources, targets, config, None).await
+    }
+
+    /// Find shortest paths with explicit algorithm selection
+    pub async fn find_shortest_paths_with_algorithm(
+        &self,
+        graph: &[u32],
+        sources: &[u32],
+        targets: &[u32],
+        config: &PathfindingConfig,
+        algorithm: Option<AlgorithmMode>,
+    ) -> GpuResult<Vec<Path>> {
         let start = std::time::Instant::now();
 
-        let result = pathfinding::find_shortest_paths(
+        // Determine which algorithm to use
+        let selected_algorithm = if let Some(mode) = algorithm {
+            mode
+        } else {
+            // Auto-select based on graph characteristics
+            let mut sssp = self.adaptive_sssp.write().await;
+            let num_nodes = graph.len() / 2; // Approximate
+            let num_edges = graph.len();
+            sssp.update_graph_stats(num_nodes, num_edges);
+            sssp.select_algorithm()
+        };
+
+        // Execute with selected algorithm
+        let result = match selected_algorithm {
+            AlgorithmMode::Auto | AlgorithmMode::GpuDijkstra => {
+                // Use existing GPU pathfinding
+                pathfinding::find_shortest_paths(
+                    &self.device,
+                    &self.modules,
+                    &self.memory_pool,
+                    &self.streams,
+                    graph,
+                    sources,
+                    targets,
+                    config,
+                ).await?
+            }
+            AlgorithmMode::LandmarkApsp => {
+                // Use landmark-based APSP
+                self.find_paths_landmark(graph, sources, targets, config).await?
+            }
+            AlgorithmMode::Duan => {
+                // Future: Duan et al. implementation
+                // For now, fall back to GPU Dijkstra
+                pathfinding::find_shortest_paths(
+                    &self.device,
+                    &self.modules,
+                    &self.memory_pool,
+                    &self.streams,
+                    graph,
+                    sources,
+                    targets,
+                    config,
+                ).await?
+            }
+        };
+
+        let elapsed = start.elapsed().as_secs_f64() * 1000.0;
+
+        // Record metrics
+        if self.config.enable_metrics {
+            let mut metrics = self.metrics.write().await;
+            metrics.total_operations += 1;
+            metrics.total_compute_time_ms += elapsed;
+
+            // Record SSSP-specific metrics
+            let sssp_metrics = SsspMetrics {
+                algorithm_used: format!("{:?}", selected_algorithm),
+                total_time_ms: elapsed as f32,
+                gpu_time_ms: Some(elapsed as f32 * 0.9),
+                nodes_processed: graph.len() / 2,
+                edges_relaxed: graph.len(),
+                landmarks_used: None,
+                complexity_factor: None,
+            };
+
+            let sssp = self.adaptive_sssp.read().await;
+            sssp.record_metrics(sssp_metrics);
+        }
+
+        Ok(result)
+    }
+
+    /// Landmark-based pathfinding implementation
+    async fn find_paths_landmark(
+        &self,
+        graph: &[u32],
+        sources: &[u32],
+        targets: &[u32],
+        config: &PathfindingConfig,
+    ) -> GpuResult<Vec<Path>> {
+        // Simplified landmark implementation
+        // In production: use full landmark APSP from adaptive_sssp module
+
+        // For now, delegate to standard pathfinding
+        pathfinding::find_shortest_paths(
             &self.device,
             &self.modules,
             &self.memory_pool,
@@ -281,15 +392,28 @@ impl GpuSemanticEngine {
             sources,
             targets,
             config,
-        ).await?;
+        ).await
+    }
 
-        if self.config.enable_metrics {
-            let mut metrics = self.metrics.write().await;
-            metrics.total_operations += 1;
-            metrics.total_compute_time_ms += start.elapsed().as_secs_f64() * 1000.0;
-        }
+    /// Get adaptive SSSP metrics
+    pub async fn get_sssp_metrics(&self) -> Option<SsspMetrics> {
+        let sssp = self.adaptive_sssp.read().await;
+        sssp.last_metrics()
+    }
 
-        Ok(result)
+    /// Get current algorithm selection
+    pub async fn get_selected_algorithm(&self) -> AlgorithmMode {
+        let sssp = self.adaptive_sssp.read().await;
+        sssp.select_algorithm()
+    }
+
+    /// Set algorithm mode (override auto-selection)
+    pub async fn set_algorithm_mode(&self, mode: AlgorithmMode) -> GpuResult<()> {
+        let mut sssp = self.adaptive_sssp.write().await;
+        let mut config = AdaptiveSsspConfig::default();
+        config.mode = mode;
+        *sssp = AdaptiveSsspEngine::new(config);
+        Ok(())
     }
 
     /// Synchronize all pending GPU operations

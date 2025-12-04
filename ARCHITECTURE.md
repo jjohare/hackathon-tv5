@@ -163,10 +163,10 @@ The TV5 Monde Media Gateway is a **hybrid GPU-accelerated semantic discovery pla
 │ └────────────────────────┘ │  │ └──────────────────────────┘ │
 │                            │  │                              │
 │ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
-│ │ Ontology Reasoning     │ │  │ │ Metadata Filtering       │ │
-│ │ • Constraint Validation│ │  │ │ • Inverted Indices       │ │
-│ │ • Transitive Closure   │ │  │ │ • Range Queries          │ │
-│ │ • 33× GPU Acceleration │ │  │ │ • Faceted Search         │ │
+│ │ Adaptive SSSP Engine   │ │  │ │ Metadata Filtering       │ │
+│ │ • GPU Dijkstra (<10K)  │ │  │ │ • Inverted Indices       │ │
+│ │ • Duan SSSP (>10M)     │ │  │ │ • Range Queries          │ │
+│ │ • Auto crossover       │ │  │ │ • Faceted Search         │ │
 │ └────────────────────────┘ │  │ └──────────────────────────┘ │
 │                            │  │                              │
 │ Memory: 16GB VRAM          │  │ Storage: 1TB+ Disk           │

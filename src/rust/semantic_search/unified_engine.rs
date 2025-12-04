@@ -3,6 +3,9 @@ use anyhow::{Result, Context};
 use tokio::sync::RwLock;
 
 use crate::gpu_engine::unified_gpu::GPUPipeline;
+use crate::adaptive_sssp::{
+    AdaptiveSsspEngine, AdaptiveSsspConfig, AlgorithmMode, SsspMetrics,
+};
 
 /// Viewing context for personalized recommendations
 #[derive(Debug, Clone)]
@@ -39,6 +42,7 @@ pub struct RecommendationEngine {
     embeddings: Arc<RwLock<Vec<f32>>>,
     metadata: Arc<RwLock<Vec<ContentMetadata>>>,
     embedding_dim: usize,
+    adaptive_sssp: Arc<RwLock<AdaptiveSsspEngine>>,
 }
 
 #[derive(Debug, Clone)]
@@ -63,12 +67,64 @@ impl RecommendationEngine {
                 .context("Failed to initialize GPU pipeline")?
         );
 
+        // Initialize adaptive SSSP with default configuration
+        let num_nodes = metadata.len();
+        let mut adaptive_sssp = AdaptiveSsspEngine::new(AdaptiveSsspConfig::default());
+        adaptive_sssp.update_graph_stats(num_nodes, num_nodes * 10); // Estimate edges
+
         Ok(Self {
             gpu_pipeline,
             embeddings: Arc::new(RwLock::new(embeddings)),
             metadata: Arc::new(RwLock::new(metadata)),
             embedding_dim,
+            adaptive_sssp: Arc::new(RwLock::new(adaptive_sssp)),
         })
+    }
+
+    /// Create engine with custom SSSP configuration
+    pub async fn with_sssp_config(
+        embeddings: Vec<f32>,
+        embedding_dim: usize,
+        metadata: Vec<ContentMetadata>,
+        sssp_config: AdaptiveSsspConfig,
+    ) -> Result<Self> {
+        let gpu_pipeline = Arc::new(
+            GPUPipeline::new(&embeddings, embedding_dim)
+                .context("Failed to initialize GPU pipeline")?
+        );
+
+        let num_nodes = metadata.len();
+        let mut adaptive_sssp = AdaptiveSsspEngine::new(sssp_config);
+        adaptive_sssp.update_graph_stats(num_nodes, num_nodes * 10);
+
+        Ok(Self {
+            gpu_pipeline,
+            embeddings: Arc::new(RwLock::new(embeddings)),
+            metadata: Arc::new(RwLock::new(metadata)),
+            embedding_dim,
+            adaptive_sssp: Arc::new(RwLock::new(adaptive_sssp)),
+        })
+    }
+
+    /// Get current adaptive SSSP metrics
+    pub async fn get_sssp_metrics(&self) -> Option<SsspMetrics> {
+        let sssp = self.adaptive_sssp.read().await;
+        sssp.last_metrics()
+    }
+
+    /// Get selected algorithm mode
+    pub async fn get_algorithm_mode(&self) -> AlgorithmMode {
+        let sssp = self.adaptive_sssp.read().await;
+        sssp.select_algorithm()
+    }
+
+    /// Set algorithm mode (override auto-selection)
+    pub async fn set_algorithm_mode(&self, mode: AlgorithmMode) -> Result<()> {
+        let mut sssp = self.adaptive_sssp.write().await;
+        let mut config = AdaptiveSsspConfig::default();
+        config.mode = mode;
+        *sssp = AdaptiveSsspEngine::new(config);
+        Ok(())
     }
 
     /// Get personalized recommendations for user

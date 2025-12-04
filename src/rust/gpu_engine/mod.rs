@@ -31,6 +31,9 @@ pub mod similarity;
 pub mod reasoning;
 pub mod pathfinding;
 pub mod gpu_bridge;
+pub mod adaptive_sssp;
+pub mod hybrid_sssp_ffi;
+pub mod hybrid_sssp;
 
 // Unified pipeline module (all 3 optimization phases)
 pub mod unified_gpu;
@@ -43,6 +46,12 @@ pub use similarity::{SimilarityMatrix, SimilarityConfig};
 pub use reasoning::{OntologyConstraints, ReasoningResult};
 pub use pathfinding::{Path, PathfindingConfig};
 pub use gpu_bridge::{GpuBridge, GpuTransferManager, GpuBridgeError, ParsedAxiom, ViolationReport, SerializationStats, GpuHandle};
+pub use adaptive_sssp::{
+    SSPAlgorithm, AdaptiveSSPConfig, SSPMetrics as AdaptiveSSPMetrics, SSPResult,
+    find_adaptive_shortest_paths, detect_crossover_threshold
+};
+pub use hybrid_sssp_ffi::{HybridSSSPKernels, HybridSSSPConfig, SSSPResult};
+pub use hybrid_sssp::{HybridSSPConfig, HybridSSPExecutor, HybridSSPResult, SSPMetrics};
 
 // Unified pipeline exports
 pub use unified_gpu::{GPUPipeline, GPUPipelineBuilder, PipelineStats};

@@ -321,7 +321,7 @@ async fn find_paths_dijkstra(
 }
 
 /// Reconstruct paths from BFS/Dijkstra results
-fn reconstruct_paths(
+pub(crate) fn reconstruct_paths(
     distances: &[u32],
     predecessors: &[u32],
     sources: &[u32],

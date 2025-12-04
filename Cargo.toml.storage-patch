@@ -1,0 +1,49 @@
+# Add these dependencies to Cargo.toml for hybrid storage
+
+[dependencies]
+# Milvus client (placeholder - use milvus-sdk-rust when available)
+# milvus = { version = "0.1", optional = true }
+
+# Neo4j
+neo4rs = "0.7"
+
+# PostgreSQL
+tokio-postgres = { version = "0.7", features = ["with-chrono-0_4", "with-serde_json-1"] }
+
+# Redis
+# redis = { version = "0.23", features = ["tokio-comp", "connection-manager"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Logging
+log = "0.4"
+env_logger = "0.11"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Prometheus metrics
+prometheus = "0.13"
+
+# Hashing
+# Already in Rust std
+
+[dev-dependencies]
+# Testing
+criterion = "0.5"
+
+[features]
+default = ["storage"]
+storage = []

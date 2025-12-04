@@ -1,0 +1,287 @@
+name: Hybrid Architecture Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      milvus:
+        image: milvusdb/milvus:v2.4.0
+        ports:
+          - 19530:19530
+          - 9091:9091
+        options: >-
+          --health-cmd="curl -f http://localhost:9091/healthz || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      neo4j:
+        image: neo4j:5.15
+        ports:
+          - 7687:7687
+          - 7474:7474
+        env:
+          NEO4J_AUTH: neo4j/testpassword
+        options: >-
+          --health-cmd="cypher-shell -u neo4j -p testpassword 'RETURN 1' || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      postgres:
+        image: pgvector/pgvector:pg16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Wait for services
+        run: |
+          echo "Waiting for services to be healthy..."
+          sleep 10
+
+      - name: Run integration tests
+        run: cargo test --test hybrid_integration_tests --release -- --test-threads=1
+        env:
+          MILVUS_ENDPOINT: localhost:19530
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_USER: neo4j
+          NEO4J_PASSWORD: testpassword
+          POSTGRES_URL: postgres://postgres:testpassword@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-results
+          path: target/test-results/
+
+  performance-benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Start test infrastructure
+        run: docker-compose -f tests/docker-compose.test.yml up -d
+
+      - name: Wait for services
+        run: sleep 20
+
+      - name: Run performance benchmarks
+        run: cargo bench --bench hybrid_benchmarks -- --output-format bencher | tee output.txt
+
+      - name: Parse benchmark results
+        id: parse_benchmarks
+        run: |
+          echo "Parsing benchmark results..."
+
+          p99_latency=$(grep -oP 'p99.*?(\d+\.\d+)' output.txt | head -1 || echo "N/A")
+          echo "p99_latency=$p99_latency" >> $GITHUB_OUTPUT
+
+          throughput=$(grep -oP 'throughput.*?(\d+)' output.txt | head -1 || echo "N/A")
+          echo "throughput=$throughput" >> $GITHUB_OUTPUT
+
+      - name: Comment benchmark results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('output.txt', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Benchmark Results\n\n\`\`\`\n${output}\n\`\`\``
+            });
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: |
+            output.txt
+            target/criterion/
+
+  chaos-tests:
+    name: Chaos Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Start test infrastructure
+        run: docker-compose -f tests/docker-compose.test.yml up -d
+
+      - name: Run chaos tests
+        run: cargo test --test chaos_tests --release -- --ignored --test-threads=1
+
+      - name: Collect chaos test logs
+        if: always()
+        run: |
+          docker logs $(docker ps -q -f name=milvus) > milvus.log 2>&1 || true
+          docker logs $(docker ps -q -f name=neo4j) > neo4j.log 2>&1 || true
+          docker logs $(docker ps -q -f name=postgres) > postgres.log 2>&1 || true
+
+      - name: Upload chaos test logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: chaos-test-logs
+          path: "*.log"
+
+  load-tests:
+    name: Load Tests (7000 QPS)
+    runs-on: ubuntu-latest-16-cores
+    timeout-minutes: 90
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Start production-like infrastructure
+        run: docker-compose -f tests/docker-compose.load-test.yml up -d
+
+      - name: Wait for services
+        run: sleep 30
+
+      - name: Run 7000 QPS load test
+        run: cargo test --test load_tests --release test_sustained_load_7000_qps -- --ignored --nocapture
+
+      - name: Collect metrics
+        if: always()
+        run: |
+          echo "Collecting Prometheus metrics..."
+          curl http://localhost:9090/api/v1/query?query=histogram_quantile\(0.99,rate\(http_request_duration_seconds_bucket\[5m\]\)\) > p99_metrics.json
+
+          echo "Collecting Milvus metrics..."
+          curl http://localhost:9091/metrics > milvus_metrics.txt
+
+      - name: Validate SLA
+        run: |
+          p99=$(jq -r '.data.result[0].value[1]' p99_metrics.json)
+          if (( $(echo "$p99 > 0.1" | bc -l) )); then
+            echo "❌ SLA VIOLATION: p99 latency $p99s exceeds 100ms"
+            exit 1
+          else
+            echo "✅ SLA MET: p99 latency $p99s"
+          fi
+
+      - name: Upload load test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results
+          path: |
+            p99_metrics.json
+            milvus_metrics.txt
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Cargo Audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'

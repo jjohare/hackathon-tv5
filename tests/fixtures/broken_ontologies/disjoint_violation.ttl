@@ -1,0 +1,53 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <http://example.org/broken#> .
+
+# Disjoint declarations
+:Animal a owl:Class ;
+    rdfs:label "Animal"@en ;
+    rdfs:comment "Animal class"@en ;
+    owl:disjointWith :Plant .
+
+:Plant a owl:Class ;
+    rdfs:label "Plant"@en ;
+    rdfs:comment "Plant class"@en .
+
+# ERROR: This violates disjoint constraint by being subclass of both
+:Hybrid a owl:Class ;
+    rdfs:label "Hybrid"@en ;
+    rdfs:comment "ERROR: Cannot be both animal and plant"@en ;
+    rdfs:subClassOf :Animal, :Plant .
+
+# Using AllDisjointClasses
+[ a owl:AllDisjointClasses ;
+  owl:members ( :Red :Blue :Green )
+] .
+
+:Red a owl:Class ;
+    rdfs:label "Red"@en ;
+    rdfs:comment "Red color"@en .
+
+:Blue a owl:Class ;
+    rdfs:label "Blue"@en ;
+    rdfs:comment "Blue color"@en .
+
+:Green a owl:Class ;
+    rdfs:label "Green"@en ;
+    rdfs:comment "Green color"@en .
+
+# ERROR: Purple is both Red and Blue
+:Purple a owl:Class ;
+    rdfs:label "Purple"@en ;
+    rdfs:comment "ERROR: Cannot be both red and blue"@en ;
+    rdfs:subClassOf :Red, :Blue .
+
+# VALID: Proper disjoint usage
+:Mammal a owl:Class ;
+    rdfs:label "Mammal"@en ;
+    rdfs:comment "Mammal subclass of Animal"@en ;
+    rdfs:subClassOf :Animal .
+
+:Tree a owl:Class ;
+    rdfs:label "Tree"@en ;
+    rdfs:comment "Tree subclass of Plant"@en ;
+    rdfs:subClassOf :Plant .

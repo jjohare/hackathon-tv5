@@ -1,0 +1,37 @@
+digraph USER_Namespace {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial"];
+    edge [fontname="Arial"];
+    
+    "user:ViewerProfile" [label="Viewer Profile", fillcolor="#4ECDC4", tooltip="User profile with learning history and preferences"];
+    "user:PsychographicState" [label="Psychographic State", fillcolor="#4ECDC4", tooltip="Current psychological inclination inferred from context"];
+    "user:SeekingComfort" [label="Seeking Comfort", fillcolor="#4ECDC4", tooltip="User wants familiar, low-stress content"];
+    "user:SeekingChallenge" [label="Seeking Challenge", fillcolor="#4ECDC4", tooltip="User wants complex, thought-provoking content"];
+    "user:Nostalgic" [label="Nostalgic", fillcolor="#4ECDC4", tooltip="User drawn to content from past eras or childhood"];
+    "user:Adventurous" [label="Adventurous", fillcolor="#4ECDC4", tooltip="User open to new genres and foreign content"];
+    "user:TasteCluster" [label="Taste Cluster", fillcolor="#4ECDC4", tooltip="Dynamic grouping based on consumption vector similarity"];
+    "user:MainstreamCluster" [label="user:MainstreamCluster", fillcolor="#4ECDC4", tooltip=""];
+    "user:ArtHouseCluster" [label="user:ArtHouseCluster", fillcolor="#4ECDC4", tooltip=""];
+    "user:GenreSpecialistCluster" [label="user:GenreSpecialistCluster", fillcolor="#4ECDC4", tooltip=""];
+    "user:ToleranceLevel" [label="Tolerance Level", fillcolor="#4ECDC4", tooltip="User-specific thresholds for content characteristics"];
+    "user:ViolenceTolerance" [label="Violence Tolerance", fillcolor="#4ECDC4", tooltip=""];
+    "user:ComplexityTolerance" [label="Narrative Complexity Tolerance", fillcolor="#4ECDC4", tooltip=""];
+    "user:SubtitleTolerance" [label="Subtitle Willingness", fillcolor="#4ECDC4", tooltip=""];
+    "user:SlowPacingTolerance" [label="Slow Pacing Tolerance", fillcolor="#4ECDC4", tooltip=""];
+    "user:InteractionHistory" [label="Interaction History", fillcolor="#4ECDC4", tooltip="AgentDB-managed learning from user behavior"];
+    "user:WatchEvent" [label="Watch Event", fillcolor="#4ECDC4", tooltip="User watched content (with completion %)"];
+    "user:SkipEvent" [label="Skip Event", fillcolor="#4ECDC4", tooltip="User skipped/abandoned content"];
+    "user:RatingEvent" [label="Rating Event", fillcolor="#4ECDC4", tooltip="Explicit user rating"];
+    
+    "user:PsychographicState" -> "user:SeekingComfort";
+    "user:PsychographicState" -> "user:SeekingChallenge";
+    "user:PsychographicState" -> "user:Nostalgic";
+    "user:PsychographicState" -> "user:Adventurous";
+    "user:TasteCluster" -> "user:MainstreamCluster";
+    "user:TasteCluster" -> "user:ArtHouseCluster";
+    "user:TasteCluster" -> "user:GenreSpecialistCluster";
+    "user:ToleranceLevel" -> "user:ViolenceTolerance";
+    "user:ToleranceLevel" -> "user:ComplexityTolerance";
+    "user:ToleranceLevel" -> "user:SubtitleTolerance";
+    "user:ToleranceLevel" -> "user:SlowPacingTolerance";
+}

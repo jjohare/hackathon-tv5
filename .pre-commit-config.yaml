@@ -1,0 +1,48 @@
+# Pre-commit hooks for ontology validation
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  - repo: local
+    hooks:
+      - id: validate-ontology
+        name: Validate Ontology Files
+        entry: python scripts/validate_ontology.py
+        language: system
+        files: \.ttl$
+        pass_filenames: true
+        verbose: true
+
+      - id: check-ontology-syntax
+        name: Check Ontology Syntax
+        entry: python -c "from rdflib import Graph; import sys; g = Graph(); g.parse(sys.argv[1], format='turtle')"
+        language: system
+        files: design/ontology/.*\.ttl$
+        pass_filenames: true
+
+      - id: ontology-formatting
+        name: Check Ontology Formatting
+        entry: bash -c 'grep -q "^@prefix" "$1" || (echo "Missing prefix declarations"; exit 1)'
+        language: system
+        files: \.ttl$
+        pass_filenames: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: end-of-file-fixer
+        exclude: \.ttl$
+      - id: trailing-whitespace
+        exclude: \.ttl$
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.27.3
+    hooks:
+      - id: check-github-workflows
+
+# Configuration
+default_language_version:
+  python: python3.11
+
+fail_fast: false

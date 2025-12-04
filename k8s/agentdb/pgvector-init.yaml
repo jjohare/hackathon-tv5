@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: agentdb-schema-init
+  namespace: media-gateway
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: psql
+        image: postgres:16-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h agentdb-postgres -U $POSTGRES_USER; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          psql -h agentdb-postgres -U $POSTGRES_USER -d $POSTGRES_DB -f /scripts/agentdb-schema.sql
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: agentdb-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: agentdb-secrets
+              key: postgres-password
+        - name: POSTGRES_DB
+          value: "agentdb"
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: agentdb-secrets
+              key: postgres-password
+        volumeMounts:
+        - name: schema-scripts
+          mountPath: /scripts
+      volumes:
+      - name: schema-scripts
+        configMap:
+          name: agentdb-schema
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentdb-schema
+  namespace: media-gateway
+data:
+  agentdb-schema.sql: |
+    -- Schema will be loaded from /sql/agentdb-schema.sql
+    -- Run: kubectl create configmap agentdb-schema --from-file=sql/agentdb-schema.sql -n media-gateway

@@ -1,0 +1,114 @@
+---
+# Headless service for GPU pods (StatefulSet)
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-shard-headless
+  namespace: gmc-o-prod
+  labels:
+    app: gmc-o-gpu
+spec:
+  clusterIP: None
+  selector:
+    app: gmc-o-gpu
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+
+---
+# Load-balanced service for GPU pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-service
+  namespace: gmc-o-prod
+  labels:
+    app: gmc-o-gpu
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: ClusterIP
+  selector:
+    app: gmc-o-gpu
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 300
+
+---
+# Envoy proxy service (external load balancer)
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-proxy
+  namespace: gmc-o-prod
+  labels:
+    app: envoy-proxy
+  annotations:
+    cloud.google.com/load-balancer-type: "External"
+spec:
+  type: LoadBalancer
+  selector:
+    app: envoy-proxy
+  ports:
+  - name: grpc
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  - name: admin
+    port: 9901
+    targetPort: 9901
+    protocol: TCP
+
+---
+# Redis cluster headless service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-headless
+  namespace: gmc-o-prod
+  labels:
+    app: redis-cluster
+spec:
+  clusterIP: None
+  selector:
+    app: redis-cluster
+  ports:
+  - name: client
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+  - name: gossip
+    port: 16379
+    targetPort: 16379
+    protocol: TCP
+
+---
+# Redis cluster load-balanced service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster
+  namespace: gmc-o-prod
+  labels:
+    app: redis-cluster
+spec:
+  type: ClusterIP
+  selector:
+    app: redis-cluster
+  ports:
+  - name: client
+    port: 6379
+    targetPort: 6379
+    protocol: TCP

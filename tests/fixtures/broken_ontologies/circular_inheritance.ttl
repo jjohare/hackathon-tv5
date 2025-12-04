@@ -1,0 +1,40 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <http://example.org/broken#> .
+
+# ERROR: Circular inheritance A -> B -> C -> A
+:ClassA a owl:Class ;
+    rdfs:label "Class A"@en ;
+    rdfs:comment "First class in circular chain"@en ;
+    rdfs:subClassOf :ClassC .
+
+:ClassB a owl:Class ;
+    rdfs:label "Class B"@en ;
+    rdfs:comment "Second class in circular chain"@en ;
+    rdfs:subClassOf :ClassA .
+
+:ClassC a owl:Class ;
+    rdfs:label "Class C"@en ;
+    rdfs:comment "Third class in circular chain"@en ;
+    rdfs:subClassOf :ClassB .
+
+# ERROR: Self-inheritance
+:SelfInheriting a owl:Class ;
+    rdfs:label "Self Inheriting"@en ;
+    rdfs:comment "Class that inherits from itself"@en ;
+    rdfs:subClassOf :SelfInheriting .
+
+# VALID: Linear inheritance
+:ValidParent a owl:Class ;
+    rdfs:label "Valid Parent"@en ;
+    rdfs:comment "Valid parent class"@en .
+
+:ValidChild a owl:Class ;
+    rdfs:label "Valid Child"@en ;
+    rdfs:comment "Valid child class"@en ;
+    rdfs:subClassOf :ValidParent .
+
+:ValidGrandchild a owl:Class ;
+    rdfs:label "Valid Grandchild"@en ;
+    rdfs:comment "Valid grandchild class"@en ;
+    rdfs:subClassOf :ValidChild .

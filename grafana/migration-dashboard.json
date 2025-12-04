@@ -1,0 +1,214 @@
+{
+  "dashboard": {
+    "title": "Migration Progress Dashboard",
+    "tags": ["migration", "milvus", "neo4j"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Migration Progress",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(migration_migrated_items / migration_total_items) * 100",
+            "legendFormat": "Progress %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50, "color": "yellow"},
+                {"value": 95, "color": "green"}
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Items Migrated Over Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(migration_migrated_items[5m]) * 60",
+            "legendFormat": "Items/min"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Neo4j vs Milvus Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(neo4j_search_latency_ms_bucket[5m]))",
+            "legendFormat": "Neo4j p95"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(milvus_search_latency_ms_bucket[5m]))",
+            "legendFormat": "Milvus p95"
+          }
+        ],
+        "yaxes": [
+          {"format": "ms", "label": "Latency"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Dual-Write Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(dual_write_success_total / dual_write_attempts_total) * 100",
+            "legendFormat": "Success Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 95, "color": "yellow"},
+                {"value": 99, "color": "green"}
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(migration_errors_total[5m])",
+            "legendFormat": "Errors/sec"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Storage Mode",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "storage_mode",
+            "legendFormat": "Current Mode"
+          }
+        ],
+        "mappings": [
+          {"value": 0, "text": "Neo4j Only"},
+          {"value": 1, "text": "Dual Write"},
+          {"value": 2, "text": "Shadow Milvus"},
+          {"value": 3, "text": "Hybrid"}
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Validation Success Rate",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "validation_success_rate * 100",
+            "legendFormat": "Success %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 95, "color": "yellow"},
+                {"value": 99, "color": "green"}
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "RSS (MB)"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Throughput (items/sec)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(migration_migrated_items[1m])",
+            "legendFormat": "Throughput"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Estimated Time Remaining",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(migration_total_items - migration_migrated_items) / rate(migration_migrated_items[5m])",
+            "legendFormat": "ETA (sec)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Milvus Collection Stats",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "milvus_collection_row_count",
+            "legendFormat": "Row Count",
+            "format": "table"
+          },
+          {
+            "expr": "milvus_collection_size_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "Size (GB)",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Neo4j Query Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(neo4j_search_latency_ms_bucket[5m]))",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(neo4j_search_latency_ms_bucket[5m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(neo4j_search_latency_ms_bucket[5m]))",
+            "legendFormat": "p99"
+          }
+        ]
+      }
+    ],
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

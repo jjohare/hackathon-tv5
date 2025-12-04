@@ -1,0 +1,28 @@
+```mermaid
+graph LR
+    subgraph Cultural
+        Holiday
+        Halloween["Halloween"]
+        Christmas["Christmas"]
+        Valentines["Valentine Day"]
+    end
+    
+    subgraph Social
+        SocialSetting[Social Setting]
+        DateNight[Date Night]
+        Family[Family Gathering]
+        Solo[Solo Viewing]
+    end
+    
+    subgraph Environmental
+        TimeOfDay[Time of Day]
+        Device[Device Type]
+    end
+    
+    Holiday --> Halloween
+    Holiday --> Christmas
+    Holiday --> Valentines
+    SocialSetting --> DateNight
+    SocialSetting --> Family
+    SocialSetting --> Solo
+```

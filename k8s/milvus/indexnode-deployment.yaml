@@ -1,0 +1,147 @@
+---
+# Index Node - Builds vector indexes (GPU-accelerated)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexnode
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: indexnode
+spec:
+  replicas: 10  # 10% of query nodes, scales with load
+  selector:
+    matchLabels:
+      app: milvus
+      component: indexnode
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: indexnode
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      # Target GPU nodes
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-Tesla-T4
+
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-accelerator
+                operator: In
+                values: ["nvidia-tesla-t4"]
+        # Spread across nodes, avoid query node co-location
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values: ["indexnode"]
+              topologyKey: kubernetes.io/hostname
+
+      initContainers:
+      - name: wait-for-indexcoord
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z indexcoord.milvus-prod.svc.cluster.local 31000; do sleep 5; done']
+
+      containers:
+      - name: indexnode
+        image: milvusdb/milvus:v2.4.0-gpu
+        command: ["milvus", "run", "indexnode"]
+        ports:
+        - containerPort: 21121
+          name: grpc
+        - containerPort: 9091
+          name: metrics
+
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "0"
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,utility"
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+        - name: KNOWHERE_BUILD_INDEX_THREADS
+          value: "8"
+
+        resources:
+          requests:
+            nvidia.com/gpu: 1
+            cpu: 8
+            memory: 32Gi
+          limits:
+            nvidia.com/gpu: 1
+            cpu: 8
+            memory: 32Gi
+
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+        - name: index-data
+          mountPath: /var/lib/milvus/index
+        - name: shared-memory
+          mountPath: /dev/shm
+
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9091
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9091
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+      - name: index-data
+        emptyDir:
+          sizeLimit: 50Gi
+      - name: shared-memory
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: indexnode
+  namespace: milvus-prod
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: milvus
+    component: indexnode
+  ports:
+  - port: 21121
+    targetPort: 21121
+    protocol: TCP
+    name: grpc

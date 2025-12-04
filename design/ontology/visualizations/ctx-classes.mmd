@@ -1,0 +1,51 @@
+```mermaid
+classDiagram
+    %% GMC-O CTX Namespace
+    
+    class CulturalContext {
+    }
+    class ctx:Holiday {
+    }
+    class Halloween {
+    }
+    class Valentine'sDay {
+    }
+    class Christmas {
+    }
+    class SocialSetting {
+    }
+    class DateNight {
+    }
+    class FamilyGathering {
+    }
+    class SoloViewing {
+    }
+    class EnvironmentalFactors {
+    }
+    class ctx:TimeOfDay {
+    }
+    class EarlyMorning(6-9AM) {
+    }
+    class LateNight(10PM-2AM) {
+    }
+    class ctx:DeviceType {
+    }
+    class ctx:MobileDevice {
+    }
+    class ctx:TVDevice {
+    }
+    
+    CulturalContext <|-- ctx:Holiday
+    ctx:Holiday <|-- Halloween
+    ctx:Holiday <|-- Valentine'sDay
+    ctx:Holiday <|-- Christmas
+    SocialSetting <|-- DateNight
+    SocialSetting <|-- FamilyGathering
+    SocialSetting <|-- SoloViewing
+    EnvironmentalFactors <|-- ctx:TimeOfDay
+    ctx:TimeOfDay <|-- EarlyMorning(6-9AM)
+    ctx:TimeOfDay <|-- LateNight(10PM-2AM)
+    EnvironmentalFactors <|-- ctx:DeviceType
+    ctx:DeviceType <|-- ctx:MobileDevice
+    ctx:DeviceType <|-- ctx:TVDevice
+```

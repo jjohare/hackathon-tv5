@@ -1,0 +1,141 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-headless
+  namespace: milvus-prod
+  labels:
+    app: etcd
+spec:
+  clusterIP: None
+  ports:
+  - port: 2379
+    name: client
+    protocol: TCP
+  - port: 2380
+    name: peer
+    protocol: TCP
+  selector:
+    app: etcd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+  namespace: milvus-prod
+  labels:
+    app: etcd
+spec:
+  type: ClusterIP
+  ports:
+  - port: 2379
+    name: client
+    targetPort: 2379
+    protocol: TCP
+  selector:
+    app: etcd
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: etcd
+  namespace: milvus-prod
+  labels:
+    app: etcd
+    component: metadata
+spec:
+  serviceName: etcd-headless
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: etcd
+  template:
+    metadata:
+      labels:
+        app: etcd
+        component: metadata
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "2379"
+        prometheus.io/path: "/metrics"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values: ["etcd"]
+            topologyKey: topology.kubernetes.io/zone
+      containers:
+      - name: etcd
+        image: quay.io/coreos/etcd:v3.5.10
+        ports:
+        - containerPort: 2379
+          name: client
+        - containerPort: 2380
+          name: peer
+        env:
+        - name: ETCD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ETCD_INITIAL_CLUSTER
+          value: "etcd-0=http://etcd-0.etcd-headless:2380,etcd-1=http://etcd-1.etcd-headless:2380,etcd-2=http://etcd-2.etcd-headless:2380"
+        - name: ETCD_INITIAL_CLUSTER_STATE
+          value: "new"
+        - name: ETCD_INITIAL_CLUSTER_TOKEN
+          value: "milvus-etcd-cluster"
+        - name: ETCD_LISTEN_CLIENT_URLS
+          value: "http://0.0.0.0:2379"
+        - name: ETCD_LISTEN_PEER_URLS
+          value: "http://0.0.0.0:2380"
+        - name: ETCD_ADVERTISE_CLIENT_URLS
+          value: "http://$(ETCD_NAME).etcd-headless:2379"
+        - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+          value: "http://$(ETCD_NAME).etcd-headless:2380"
+        - name: ETCD_QUOTA_BACKEND_BYTES
+          value: "8589934592"  # 8GB
+        - name: ETCD_AUTO_COMPACTION_RETENTION
+          value: "1"
+        - name: ETCD_SNAPSHOT_COUNT
+          value: "10000"
+        resources:
+          requests:
+            cpu: 2
+            memory: 8Gi
+          limits:
+            cpu: 4
+            memory: 16Gi
+        volumeMounts:
+        - name: data
+          mountPath: /etcd-data
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 2379
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 2379
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 100Gi

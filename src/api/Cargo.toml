@@ -1,0 +1,57 @@
+[package]
+name = "media-gateway-api"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "media_gateway_api"
+path = "lib.rs"
+
+[[bin]]
+name = "media-gateway-api"
+path = "main.rs"
+
+[dependencies]
+# Core async runtime
+tokio = { version = "1.35", features = ["full"] }
+futures = "0.3"
+
+# Web framework
+axum = "0.7"
+tower = "0.5"
+tower-http = { version = "0.5", features = ["cors", "trace", "compression-gzip"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# OpenAPI documentation
+utoipa = { version = "4.1", features = ["axum_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "6.0", features = ["axum"] }
+
+# GraphQL - disabled for now due to axum version conflicts
+# async-graphql = { version = "7.0", features = ["dataloader"] }
+# async-graphql-axum = "7.0"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Utilities
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rand = "0.8"
+
+# Performance
+dashmap = "5.5"
+parking_lot = "0.12"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+tokio-test = "0.4"
+
+[[bench]]
+name = "api_benchmarks"
+harness = false

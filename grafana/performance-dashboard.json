@@ -1,0 +1,290 @@
+{
+  "dashboard": {
+    "title": "Hybrid Architecture Performance Dashboard",
+    "uid": "hybrid-perf",
+    "version": 1,
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Queries Per Second",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "legendFormat": "QPS",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Queries/sec",
+            "format": "short"
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "lt",
+                "params": [7000]
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "name": "QPS Below Target"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Latency Percentiles",
+        "type": "graph",
+        "gridPos": {
+          "x": 12,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[1m]))",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[1m]))",
+            "legendFormat": "p95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[1m]))",
+            "legendFormat": "p99",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Latency (ms)",
+            "format": "ms"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 10,
+            "colorMode": "critical",
+            "op": "gt",
+            "fill": true,
+            "line": true
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "GPU Utilization (100x T4)",
+        "type": "heatmap",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 24,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "DCGM_FI_DEV_GPU_UTIL",
+            "legendFormat": "GPU {{gpu}}",
+            "refId": "A"
+          }
+        ],
+        "dataFormat": "tsbuckets",
+        "color": {
+          "mode": "spectrum",
+          "colorScheme": "interpolateRdYlGn"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[1m]) / rate(http_requests_total[1m]) * 100",
+            "legendFormat": "Error Rate (%)",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Error Rate (%)",
+            "format": "percent",
+            "max": 5
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [1]
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "name": "Error Rate Above 1%"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Resource Usage",
+        "type": "graph",
+        "gridPos": {
+          "x": 12,
+          "y": 16,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "CPU Usage",
+            "refId": "A"
+          },
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+            "legendFormat": "Memory Usage",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(node_network_transmit_bytes_total[1m]) / 1024 / 1024",
+            "legendFormat": "Network TX (MB/s)",
+            "refId": "C"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Usage",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Query Type Breakdown",
+        "type": "piechart",
+        "gridPos": {
+          "x": 0,
+          "y": 24,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "sum by (query_type) (rate(http_requests_total[5m]))",
+            "legendFormat": "{{query_type}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Connection Pool Health",
+        "type": "stat",
+        "gridPos": {
+          "x": 8,
+          "y": 24,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "connection_pool_active",
+            "legendFormat": "Active Connections",
+            "refId": "A"
+          },
+          {
+            "expr": "connection_pool_idle",
+            "legendFormat": "Idle Connections",
+            "refId": "B"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "value": 0,
+              "color": "green"
+            },
+            {
+              "value": 80,
+              "color": "yellow"
+            },
+            {
+              "value": 95,
+              "color": "red"
+            }
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "title": "Cache Hit Rate",
+        "type": "graph",
+        "gridPos": {
+          "x": 16,
+          "y": 24,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(cache_hits[1m]) / (rate(cache_hits[1m]) + rate(cache_misses[1m])) * 100",
+            "legendFormat": "Hit Rate",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Hit Rate (%)",
+            "format": "percent",
+            "min": 0,
+            "max": 100
+          }
+        ]
+      }
+    ]
+  }
+}

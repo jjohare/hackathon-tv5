@@ -1,0 +1,32 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.org/broken#> .
+
+:Person a owl:Class ;
+    rdfs:label "Person"@en ;
+    rdfs:comment "A person"@en .
+
+# ERROR: Declared as functional but not as ObjectProperty or DatatypeProperty
+:badFunctionalProperty a owl:FunctionalProperty ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:string ;
+    rdfs:label "bad functional property"@en .
+
+# VALID: Proper functional ObjectProperty
+:hasUniqueIdentifier a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :Identifier ;
+    rdfs:label "has unique identifier"@en ;
+    rdfs:comment "Each person has exactly one identifier"@en .
+
+:Identifier a owl:Class ;
+    rdfs:label "Identifier"@en ;
+    rdfs:comment "Unique identifier"@en .
+
+# VALID: Proper functional DatatypeProperty
+:socialSecurityNumber a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:string ;
+    rdfs:label "social security number"@en ;
+    rdfs:comment "Each person has exactly one SSN"@en .

@@ -1,0 +1,203 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: milvus-config
+  namespace: milvus-prod
+data:
+  milvus.yaml: |
+    # Milvus 2.4+ Configuration for 100x T4 GPU Cluster
+
+    etcd:
+      endpoints:
+        - etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379
+        - etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379
+        - etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379
+      rootPath: milvus
+      metaSubPath: meta
+      kvSubPath: kv
+      use:
+        embed: false
+
+    minio:
+      address: minio.milvus-prod.svc.cluster.local
+      port: 9000
+      accessKeyID: minioadmin
+      secretAccessKey: minioadmin123
+      useSSL: false
+      bucketName: milvus-bucket
+      rootPath: file
+      useIAM: false
+
+    pulsar:
+      address: pulsar.milvus-prod.svc.cluster.local
+      port: 6650
+      maxMessageSize: 5242880  # 5MB
+
+    rocksmq:
+      path: /var/lib/milvus/rdb_data
+
+    rootCoord:
+      address: rootcoord.milvus-prod.svc.cluster.local
+      port: 53100
+      dmlChannelNum: 100  # Match GPU count for parallelism
+      maxPartitionNum: 4096
+      minSegmentSizeToEnableIndex: 1024
+
+    dataCoord:
+      address: datacoord.milvus-prod.svc.cluster.local
+      port: 13333
+      enableCompaction: true
+      enableGarbageCollection: true
+      gc:
+        interval: 3600  # 1 hour
+        missingTolerance: 86400  # 24 hours
+        dropTolerance: 86400
+
+    dataNode:
+      port: 21124
+      dataSync:
+        flowGraph:
+          maxQueueLength: 16384
+          maxParallelism: 1024
+
+    indexCoord:
+      address: indexcoord.milvus-prod.svc.cluster.local
+      port: 31000
+      gc:
+        interval: 600
+      scheduler:
+        interval: 1000
+
+    indexNode:
+      port: 21121
+      enableDisk: true
+      maxDiskUsagePercentage: 95
+      buildParallel: 8  # Parallel index builds per node
+
+    queryCoord:
+      address: querycoord.milvus-prod.svc.cluster.local
+      port: 19531
+      autoHandoff: true
+      autoBalance: true
+      balanceIntervalSeconds: 60
+      overloadedMemoryThresholdPercentage: 90
+
+    queryNode:
+      port: 21123
+      gracefulStopTimeout: 30
+      stats:
+        publishInterval: 1000
+      cache:
+        enabled: true
+        memoryLimit: 8589934592  # 8GB per query node
+
+      # GPU-specific settings
+      gpu:
+        enabled: true
+        buildIndexDevice: "gpu"
+        searchDevice: "gpu"
+        # Will be set per-pod via CUDA_VISIBLE_DEVICES
+
+      grouping:
+        enabled: true
+        maxNQ: 1000
+        topKMergeRatio: 10.0
+
+    proxy:
+      port: 19530
+      http:
+        enabled: true
+        port: 9091
+      grpc:
+        serverMaxRecvSize: 536870912  # 512MB
+        serverMaxSendSize: 536870912
+        clientMaxRecvSize: 104857600  # 100MB
+        clientMaxSendSize: 104857600
+      maxNameLength: 255
+      maxFieldNum: 256
+      maxDimension: 32768
+      maxShardNum: 256
+      maxTaskNum: 10240
+
+    common:
+      security:
+        authorizationEnabled: false  # Enable in production
+        tlsMode: 0
+      gracefulTime: 5000
+      gracefulStopTimeout: 30
+
+      # Storage settings
+      storageType: minio
+
+      # Session settings
+      session:
+        ttl: 60
+        retryTimes: 30
+
+      # Distributed lock settings
+      locks:
+        metrics:
+          enable: true
+
+    # GPU index configuration
+    indexNode:
+      knowhereConfig:
+        # cuVS GPU acceleration
+        gpu_build_threshold: 10000  # Use GPU for indexes >10K vectors
+
+        # GPU_IVF_FLAT parameters (baseline)
+        gpu_ivf_flat:
+          nlist: 2048
+          nprobe: 128
+
+        # GPU_CAGRA parameters (NVIDIA's optimized ANN)
+        gpu_cagra:
+          intermediate_graph_degree: 128
+          graph_degree: 64
+          itopk_size: 128
+          search_width: 4
+          max_iterations: 0
+          team_size: 0
+
+        # Fallback CPU index
+        hnsw:
+          M: 32
+          efConstruction: 360
+          efSearch: 200
+
+    # Query node GPU memory management
+    queryNode:
+      segcore:
+        chunkRows: 1024000  # Optimize for T4 memory
+        knowhereThreadPoolSize: 32
+        knowhereBuildThreadPoolSize: 16
+
+        # Enable SIMD for CPU fallback
+        enableSIMD: true
+
+        # Memory pool settings
+        memoryPoolSize: 8589934592  # 8GB
+
+    # Logging
+    log:
+      level: info
+      format: json
+      file:
+        rootPath: /var/log/milvus
+        maxSize: 300  # MB
+        maxAge: 10    # days
+        maxBackups: 20
+      grpc:
+        logLevel: WARNING
+
+    # Metrics
+    metrics:
+      enabled: true
+      address: 0.0.0.0
+      port: 9091
+
+    # Tracing
+    trace:
+      exporter: stdout
+      sampleFraction: 0.01  # 1% sampling

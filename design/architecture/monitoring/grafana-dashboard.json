@@ -1,0 +1,274 @@
+{
+  "dashboard": {
+    "title": "GMC-O Production Cluster",
+    "tags": ["gmc-o", "gpu", "production"],
+    "timezone": "UTC",
+    "refresh": "10s",
+    "rows": [
+      {
+        "title": "System Overview",
+        "panels": [
+          {
+            "title": "Total Requests per Second",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum(rate(inference_request_total[5m]))",
+                "legendFormat": "Total RPS"
+              }
+            ],
+            "yaxes": [{"format": "reqps"}],
+            "alert": {
+              "conditions": [
+                {
+                  "evaluator": {"type": "lt", "params": [100000]},
+                  "operator": {"type": "and"},
+                  "query": {"params": ["A", "5m", "now"]},
+                  "type": "query"
+                }
+              ]
+            }
+          },
+          {
+            "title": "Latency Percentiles",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "job:inference_latency_seconds:p50",
+                "legendFormat": "p50"
+              },
+              {
+                "expr": "job:inference_latency_seconds:p95",
+                "legendFormat": "p95"
+              },
+              {
+                "expr": "job:inference_latency_seconds:p99",
+                "legendFormat": "p99"
+              }
+            ],
+            "yaxes": [{"format": "ms"}],
+            "thresholds": [
+              {"value": 0.100, "colorMode": "critical"}
+            ]
+          },
+          {
+            "title": "Cache Hit Rate",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "sum(rate(cache_hits_total[5m])) / sum(rate(cache_requests_total[5m]))"
+              }
+            ],
+            "format": "percentunit",
+            "valueName": "current",
+            "thresholds": "0.70,0.90",
+            "colors": ["#d44a3a", "#e0b400", "#299c46"]
+          },
+          {
+            "title": "Error Rate",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "sum(rate(inference_errors_total[5m])) / sum(rate(inference_request_total[5m]))"
+              }
+            ],
+            "format": "percentunit",
+            "valueName": "current",
+            "thresholds": "0.001,0.01",
+            "colors": ["#299c46", "#e0b400", "#d44a3a"]
+          }
+        ]
+      },
+      {
+        "title": "GPU Cluster Health",
+        "panels": [
+          {
+            "title": "GPU Utilization by Node",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "gpu_utilization_percent",
+                "format": "time_series",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yAxis": {"format": "percent"},
+            "color": {
+              "mode": "spectrum",
+              "cardColor": "#b4ff00",
+              "colorScale": "sqrt",
+              "exponent": 0.5,
+              "min": 0,
+              "max": 100
+            }
+          },
+          {
+            "title": "GPU Memory Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum(gpu_memory_used_bytes) / sum(gpu_memory_total_bytes)",
+                "legendFormat": "Cluster Average"
+              },
+              {
+                "expr": "gpu_memory_used_bytes / gpu_memory_total_bytes",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yaxes": [{"format": "percentunit", "max": 1}]
+          },
+          {
+            "title": "GPU Temperature",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "gpu_temperature_celsius",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yaxes": [{"format": "celsius"}],
+            "thresholds": [
+              {"value": 85, "colorMode": "critical"}
+            ]
+          },
+          {
+            "title": "Healthy GPU Nodes",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "sum(up{job=\"gpu-shard\"})"
+              }
+            ],
+            "valueName": "current",
+            "thresholds": "95,99",
+            "colors": ["#d44a3a", "#e0b400", "#299c46"],
+            "postfix": " / 100"
+          }
+        ]
+      },
+      {
+        "title": "Sharding & Replication",
+        "panels": [
+          {
+            "title": "Shard Health Status",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "shard_health_status",
+                "format": "table",
+                "instant": true
+              }
+            ],
+            "columns": [
+              {"text": "Shard ID", "value": "shard_id"},
+              {"text": "Replica Type", "value": "replica"},
+              {"text": "Status", "value": "value"}
+            ]
+          },
+          {
+            "title": "Replication Lag",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "shard_replication_lag_seconds",
+                "legendFormat": "Shard {{shard_id}}"
+              }
+            ],
+            "yaxes": [{"format": "s"}],
+            "thresholds": [
+              {"value": 2, "colorMode": "critical"}
+            ]
+          },
+          {
+            "title": "Data Distribution",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "sum(shard_item_count) by (shard_id)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Redis Cache Performance",
+        "panels": [
+          {
+            "title": "Cache Operations per Second",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum(rate(cache_hits_total[5m]))",
+                "legendFormat": "Hits"
+              },
+              {
+                "expr": "sum(rate(cache_misses_total[5m]))",
+                "legendFormat": "Misses"
+              }
+            ],
+            "yaxes": [{"format": "ops"}]
+          },
+          {
+            "title": "Redis Memory Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "redis_memory_used_bytes",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yaxes": [{"format": "bytes"}]
+          },
+          {
+            "title": "Redis Nodes Healthy",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "sum(up{job=\"redis-cluster\"})"
+              }
+            ],
+            "valueName": "current",
+            "postfix": " / 20"
+          }
+        ]
+      },
+      {
+        "title": "Cost & Efficiency",
+        "panels": [
+          {
+            "title": "Cost per 1M Requests (USD)",
+            "type": "singlestat",
+            "targets": [
+              {
+                "expr": "(48356 / 30 / 86400) / (sum(rate(inference_request_total[1h])) * 1000000)"
+              }
+            ],
+            "format": "currencyUSD",
+            "decimals": 3,
+            "valueName": "current"
+          },
+          {
+            "title": "Requests per Dollar",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "(sum(rate(inference_request_total[1h])) * 3600) / (48356 / 30 / 24)",
+                "legendFormat": "Requests per $1"
+              }
+            ]
+          },
+          {
+            "title": "GPU Efficiency (Requests/GPU)",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "sum(rate(inference_request_total[5m])) / sum(up{job=\"gpu-shard\"})",
+                "legendFormat": "RPS per GPU"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

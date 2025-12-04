@@ -1,0 +1,16 @@
+digraph GPU_Namespace {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial"];
+    edge [fontname="Arial"];
+    
+    "gpu:SemanticProcessing" [label="GPU Semantic Processing", fillcolor="#FFA07A", tooltip="CUDA-accelerated semantic analysis"];
+    "gpu:SemanticForceComputation" [label="Semantic Force Computation", fillcolor="#FFA07A", tooltip="Knowledge graph physics with type clustering and DAG layout"];
+    "gpu:OntologyConstraintEnforcement" [label="Ontology Constraint Enforcement", fillcolor="#FFA07A", tooltip="DisjointClasses, SubClassOf, SameAs GPU kernels"];
+    "gpu:VectorSimilaritySearch" [label="Vector Similarity Search", fillcolor="#FFA07A", tooltip="FAISS/cuVS HNSW indexing for ANN search"];
+    "gpu:GraphTraversal" [label="GPU Graph Traversal", fillcolor="#FFA07A", tooltip="SSSP, APSP, PageRank on CUDA"];
+    
+    "gpu:SemanticProcessing" -> "gpu:SemanticForceComputation";
+    "gpu:SemanticProcessing" -> "gpu:OntologyConstraintEnforcement";
+    "gpu:SemanticProcessing" -> "gpu:VectorSimilaritySearch";
+    "gpu:SemanticProcessing" -> "gpu:GraphTraversal";
+}

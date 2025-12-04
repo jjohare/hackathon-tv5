@@ -1,0 +1,408 @@
+openapi: 3.1.0
+info:
+  title: TV5 Media Gateway API
+  version: 1.0.0
+  description: |
+    GPU-accelerated semantic media recommendation system with AI agent integration.
+
+    Features:
+    - Semantic vector search (<10ms latency)
+    - Personalized recommendations
+    - MCP protocol support for AI agents
+    - HATEOAS navigation
+    - JSON-LD semantic web integration
+
+  contact:
+    name: Media Gateway Team
+    email: api@tv5monde.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.tv5monde.com
+    description: Production
+
+tags:
+  - name: media
+    description: Media discovery and search
+  - name: recommendations
+    description: Personalized recommendations
+  - name: agent
+    description: AI agent integration
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [agent]
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/v1/search:
+    post:
+      summary: Search media content
+      tags: [media]
+      operationId: searchMedia
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaSearchRequest'
+            examples:
+              french-noir:
+                summary: French noir films
+                value:
+                  query: "French noir films with existential themes"
+                  filters:
+                    language: "fr"
+                    min_rating: 7.0
+                  limit: 5
+              documentaries:
+                summary: Climate documentaries
+                value:
+                  query: "documentaries about climate change"
+                  filters:
+                    content_type: "documentary"
+                    year_range: [2018, 2024]
+                  limit: 3
+      responses:
+        '200':
+          description: Search results with HATEOAS links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponseHATEOAS'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+
+  /api/v1/recommendations/{user_id}:
+    get:
+      summary: Get personalized recommendations
+      tags: [recommendations]
+      operationId: getRecommendations
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User identifier
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+        - name: explain
+          in: query
+          schema:
+            type: boolean
+            default: false
+        - name: content_type
+          in: query
+          schema:
+            type: string
+            enum: [movie, series, documentary, short]
+      responses:
+        '200':
+          description: Personalized recommendations with JSON-LD
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationResponseLD'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/v1/mcp/manifest:
+    get:
+      summary: Get MCP tool manifest
+      tags: [agent]
+      operationId: getMCPManifest
+      responses:
+        '200':
+          description: MCP manifest for AI agents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MCPManifest'
+
+  /graphql:
+    post:
+      summary: GraphQL endpoint
+      tags: [media]
+      operationId: graphql
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                variables:
+                  type: object
+      responses:
+        '200':
+          description: GraphQL response
+
+components:
+  schemas:
+    MediaSearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: "French noir films with existential themes"
+        filters:
+          $ref: '#/components/schemas/SearchFilters'
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+
+    SearchFilters:
+      type: object
+      properties:
+        genres:
+          type: array
+          items:
+            type: string
+          example: ["drama", "thriller"]
+        min_rating:
+          type: number
+          minimum: 0.0
+          maximum: 10.0
+        language:
+          type: string
+          pattern: '^[a-z]{2}$'
+          example: "fr"
+        year_range:
+          type: array
+          items:
+            type: integer
+          minItems: 2
+          maxItems: 2
+        content_type:
+          type: string
+          enum: [movie, series, documentary, short]
+
+    MediaItem:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        similarity_score:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        explanation:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/MediaMetadata'
+
+    MediaMetadata:
+      type: object
+      properties:
+        genres:
+          type: array
+          items:
+            type: string
+        year:
+          type: integer
+        language:
+          type: string
+        rating:
+          type: number
+        duration_minutes:
+          type: integer
+        director:
+          type: string
+        cast:
+          type: array
+          items:
+            type: string
+
+    SearchResponseHATEOAS:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/MediaItem'
+            total:
+              type: integer
+            query_time_ms:
+              type: integer
+        _links:
+          $ref: '#/components/schemas/Links'
+
+    RecommendationResponseLD:
+      type: object
+      properties:
+        '@context':
+          type: object
+        '@type':
+          type: string
+        data:
+          type: object
+
+    MCPManifest:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/MCPTool'
+        auth:
+          type: array
+          items:
+            type: string
+        rate_limits:
+          $ref: '#/components/schemas/RateLimitInfo'
+
+    MCPTool:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        input_schema:
+          type: object
+        output_schema:
+          type: object
+        examples:
+          type: array
+          items:
+            type: object
+        avg_response_time_ms:
+          type: integer
+
+    RateLimitInfo:
+      type: object
+      properties:
+        requests_per_minute:
+          type: integer
+        requests_per_hour:
+          type: integer
+        burst_size:
+          type: integer
+
+    Links:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        related:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+        method:
+          type: string
+        title:
+          type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        version:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    RateLimit:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - bearerAuth: []
+  - apiKey: []

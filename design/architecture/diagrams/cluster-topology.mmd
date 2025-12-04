@@ -1,0 +1,80 @@
+graph TB
+    subgraph "Edge Layer"
+        LB[Global Load Balancer<br/>Cloud CDN<br/>DDoS Protection]
+        CACHE[Redis Cluster<br/>20 nodes, 400GB RAM<br/>95% hit rate]
+    end
+
+    subgraph "Routing Layer"
+        ENVOY[Envoy Proxy Pool<br/>10 instances<br/>Consistent Hashing]
+        ROUTER[Query Router<br/>gRPC Load Balancer]
+    end
+
+    subgraph "Compute - Region A (us-central1)"
+        subgraph "Zone A1"
+            GPU_A1_1[T4 GPU 1-3<br/>Shard 0-2 Primary]
+            GPU_A1_2[T4 GPU 34-36<br/>Shard 33-35 Replica]
+        end
+        subgraph "Zone A2"
+            GPU_A2_1[T4 GPU 4-6<br/>Shard 3-5 Primary]
+            GPU_A2_2[T4 GPU 37-39<br/>Shard 36-38 Replica]
+        end
+    end
+
+    subgraph "Compute - Region B (us-east1)"
+        subgraph "Zone B1"
+            GPU_B1_1[T4 GPU 41-43<br/>Shard 0-2 Replica]
+            GPU_B1_2[T4 GPU 44-46<br/>Shard 40-42 Primary]
+        end
+        subgraph "Zone B2"
+            GPU_B2_1[T4 GPU 47-49<br/>Shard 3-5 Replica]
+            GPU_B2_2[T4 GPU 50-52<br/>Shard 43-45 Primary]
+        end
+    end
+
+    subgraph "Compute - Region C (us-west1)"
+        subgraph "Zone C1"
+            GPU_C1_1[T4 GPU 81-83<br/>Shard 0-2 Replica]
+            GPU_C1_2[T4 GPU 84-86<br/>Shard 80-82 Primary]
+        end
+    end
+
+    subgraph "Data Layer"
+        PG[(PostgreSQL<br/>User Metadata<br/>Primary + 2 Replicas)]
+        S3[(Cloud Storage<br/>Embedding Backups<br/>600GB)]
+    end
+
+    subgraph "Observability"
+        PROM[(Prometheus<br/>Metrics Storage<br/>30 days retention)]
+        GRAF[Grafana<br/>Dashboards]
+        ALERT[Alertmanager<br/>PagerDuty Integration]
+    end
+
+    LB --> CACHE
+    CACHE --> ENVOY
+    ENVOY --> ROUTER
+
+    ROUTER --> GPU_A1_1 & GPU_A1_2 & GPU_A2_1 & GPU_A2_2
+    ROUTER --> GPU_B1_1 & GPU_B1_2 & GPU_B2_1 & GPU_B2_2
+    ROUTER --> GPU_C1_1 & GPU_C1_2
+
+    GPU_A1_1 -.->|Async Replication| GPU_B1_1
+    GPU_A1_1 -.->|Async Replication| GPU_C1_1
+
+    GPU_A1_1 --> PG
+    GPU_A1_1 --> S3
+
+    GPU_A1_1 & GPU_B1_1 & GPU_C1_1 --> PROM
+    PROM --> GRAF
+    PROM --> ALERT
+
+    classDef edge fill:#e1f5ff,stroke:#01579b
+    classDef routing fill:#fff9c4,stroke:#f57f17
+    classDef compute fill:#f3e5f5,stroke:#4a148c
+    classDef data fill:#e8f5e9,stroke:#1b5e20
+    classDef observ fill:#fce4ec,stroke:#880e4f
+
+    class LB,CACHE edge
+    class ENVOY,ROUTER routing
+    class GPU_A1_1,GPU_A1_2,GPU_A2_1,GPU_A2_2,GPU_B1_1,GPU_B1_2,GPU_B2_1,GPU_B2_2,GPU_C1_1,GPU_C1_2 compute
+    class PG,S3 data
+    class PROM,GRAF,ALERT observ

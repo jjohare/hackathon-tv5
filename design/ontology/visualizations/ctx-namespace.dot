@@ -1,0 +1,36 @@
+digraph CTX_Namespace {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial"];
+    edge [fontname="Arial"];
+    
+    "ctx:CulturalContext" [label="Cultural Context", fillcolor="#45B7D1", tooltip="Socio-cultural framework (holidays, events, regional norms)"];
+    "ctx:Holiday" [label="ctx:Holiday", fillcolor="#45B7D1", tooltip=""];
+    "ctx:Halloween" [label="Halloween", fillcolor="#45B7D1", tooltip=""];
+    "ctx:ValentinesDay" [label="Valentine's Day", fillcolor="#45B7D1", tooltip=""];
+    "ctx:Christmas" [label="Christmas", fillcolor="#45B7D1", tooltip=""];
+    "ctx:SocialSetting" [label="Social Setting", fillcolor="#45B7D1", tooltip="Immediate social environment"];
+    "ctx:DateNight" [label="Date Night", fillcolor="#45B7D1", tooltip=""];
+    "ctx:FamilyGathering" [label="Family Gathering", fillcolor="#45B7D1", tooltip=""];
+    "ctx:SoloViewing" [label="Solo Viewing", fillcolor="#45B7D1", tooltip=""];
+    "ctx:EnvironmentalFactors" [label="Environmental Factors", fillcolor="#45B7D1", tooltip="Physical viewing conditions"];
+    "ctx:TimeOfDay" [label="ctx:TimeOfDay", fillcolor="#45B7D1", tooltip=""];
+    "ctx:EarlyMorning" [label="Early Morning (6-9 AM)", fillcolor="#45B7D1", tooltip=""];
+    "ctx:LatNight" [label="Late Night (10 PM-2 AM)", fillcolor="#45B7D1", tooltip="User likely tired, prefers lighter content"];
+    "ctx:DeviceType" [label="ctx:DeviceType", fillcolor="#45B7D1", tooltip=""];
+    "ctx:MobileDevice" [label="ctx:MobileDevice", fillcolor="#45B7D1", tooltip="Small screen, shorter viewing sessions expected"];
+    "ctx:TVDevice" [label="ctx:TVDevice", fillcolor="#45B7D1", tooltip="Large screen, immersive viewing"];
+    
+    "ctx:CulturalContext" -> "ctx:Holiday";
+    "ctx:Holiday" -> "ctx:Halloween";
+    "ctx:Holiday" -> "ctx:ValentinesDay";
+    "ctx:Holiday" -> "ctx:Christmas";
+    "ctx:SocialSetting" -> "ctx:DateNight";
+    "ctx:SocialSetting" -> "ctx:FamilyGathering";
+    "ctx:SocialSetting" -> "ctx:SoloViewing";
+    "ctx:EnvironmentalFactors" -> "ctx:TimeOfDay";
+    "ctx:TimeOfDay" -> "ctx:EarlyMorning";
+    "ctx:TimeOfDay" -> "ctx:LatNight";
+    "ctx:EnvironmentalFactors" -> "ctx:DeviceType";
+    "ctx:DeviceType" -> "ctx:MobileDevice";
+    "ctx:DeviceType" -> "ctx:TVDevice";
+}

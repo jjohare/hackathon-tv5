@@ -1,0 +1,174 @@
+---
+# PodDisruptionBudget for query nodes (ensure availability during updates)
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: querynode-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 90  # Keep at least 90/100 query nodes running
+  selector:
+    matchLabels:
+      app: milvus
+      component: querynode
+---
+# PodDisruptionBudget for proxy
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: proxy-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 8  # Keep at least 8/10 proxies running
+  selector:
+    matchLabels:
+      app: milvus
+      component: proxy
+---
+# PodDisruptionBudget for index nodes
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: indexnode-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 7  # Keep at least 7/10 index nodes
+  selector:
+    matchLabels:
+      app: milvus
+      component: indexnode
+---
+# PodDisruptionBudget for etcd
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: etcd-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 2  # Maintain quorum
+  selector:
+    matchLabels:
+      app: etcd
+---
+# PodDisruptionBudget for MinIO
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: minio-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: minio
+---
+# PodDisruptionBudget for Pulsar
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pulsar-pdb
+  namespace: milvus-prod
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: pulsar
+---
+# HorizontalPodAutoscaler for proxy (scale 10-30 based on CPU)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: milvus-proxy-hpa
+  namespace: milvus-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: milvus-proxy
+  minReplicas: 10
+  maxReplicas: 30
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+---
+# HorizontalPodAutoscaler for data nodes
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: datanode-hpa
+  namespace: milvus-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: datanode
+  minReplicas: 20
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 120
+      policies:
+      - type: Pods
+        value: 5
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 120
+---
+# Priority Class for critical components
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: milvus-critical
+value: 1000000
+globalDefault: false
+description: "Priority for critical Milvus coordinator components"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: milvus-high
+value: 10000
+globalDefault: false
+description: "Priority for Milvus query and index nodes"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: milvus-normal
+value: 1000
+globalDefault: false
+description: "Priority for Milvus data nodes"

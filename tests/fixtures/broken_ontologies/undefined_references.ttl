@@ -1,0 +1,42 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.org/broken#> .
+
+:DefinedClass a owl:Class ;
+    rdfs:label "Defined Class"@en ;
+    rdfs:comment "This class is properly defined"@en .
+
+# ERROR: References undefined class in domain
+:propertyWithUndefinedDomain a owl:ObjectProperty ;
+    rdfs:domain :UndefinedClassA ;
+    rdfs:range :DefinedClass ;
+    rdfs:label "property with undefined domain"@en .
+
+# ERROR: References undefined class in range
+:propertyWithUndefinedRange a owl:ObjectProperty ;
+    rdfs:domain :DefinedClass ;
+    rdfs:range :UndefinedClassB ;
+    rdfs:label "property with undefined range"@en .
+
+# ERROR: Class inherits from undefined parent
+:ChildOfUndefined a owl:Class ;
+    rdfs:label "Child of Undefined"@en ;
+    rdfs:comment "ERROR: Parent class not defined"@en ;
+    rdfs:subClassOf :UndefinedParentClass .
+
+# VALID: References external ontology (schema.org) - should not error
+:validExternalReference a owl:ObjectProperty ;
+    rdfs:domain :DefinedClass ;
+    rdfs:range <http://schema.org/Person> ;
+    rdfs:label "valid external reference"@en .
+
+# VALID: Properly defined property chain
+:AnotherDefinedClass a owl:Class ;
+    rdfs:label "Another Defined Class"@en ;
+    rdfs:comment "Another properly defined class"@en .
+
+:validProperty a owl:ObjectProperty ;
+    rdfs:domain :DefinedClass ;
+    rdfs:range :AnotherDefinedClass ;
+    rdfs:label "valid property"@en .

@@ -1,0 +1,214 @@
+syntax = "proto3";
+
+package vector_search;
+
+// Vector search service running on each GPU node
+service VectorSearchNode {
+  // Search for similar vectors in this shard
+  rpc Search(SearchRequest) returns (SearchResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // Get node statistics
+  rpc GetStats(StatsRequest) returns (StatsResponse);
+
+  // Batch search for multiple queries
+  rpc BatchSearch(BatchSearchRequest) returns (BatchSearchResponse);
+}
+
+// Distributed coordinator service
+service SearchCoordinator {
+  // Distributed search across all shards
+  rpc DistributedSearch(DistributedSearchRequest) returns (DistributedSearchResponse);
+
+  // Get cluster topology
+  rpc GetTopology(TopologyRequest) returns (TopologyResponse);
+}
+
+message SearchRequest {
+  // Query embedding vector
+  repeated float embedding = 1;
+
+  // Number of nearest neighbors to return
+  uint32 k = 2;
+
+  // Optional filters
+  map<string, string> filters = 3;
+
+  // Request ID for tracing
+  string request_id = 4;
+
+  // Timeout in milliseconds
+  uint32 timeout_ms = 5;
+}
+
+message SearchResponse {
+  // Search results
+  repeated SearchResult results = 1;
+
+  // Processing time in microseconds
+  uint64 processing_time_us = 2;
+
+  // Number of vectors searched
+  uint64 vectors_searched = 3;
+
+  // Request ID
+  string request_id = 4;
+
+  // Node ID that processed this request
+  string node_id = 5;
+}
+
+message SearchResult {
+  // Embedding ID
+  string id = 1;
+
+  // Similarity score (higher is better)
+  float score = 2;
+
+  // Metadata
+  map<string, string> metadata = 3;
+}
+
+message BatchSearchRequest {
+  repeated SearchRequest requests = 1;
+}
+
+message BatchSearchResponse {
+  repeated SearchResponse responses = 1;
+}
+
+message HealthCheckRequest {
+  string service_name = 1;
+}
+
+message HealthCheckResponse {
+  enum Status {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+
+  Status status = 1;
+  string message = 2;
+
+  // Resource utilization
+  float gpu_utilization = 3;
+  float memory_utilization = 4;
+  uint64 active_requests = 5;
+}
+
+message StatsRequest {
+  bool include_detailed_metrics = 1;
+}
+
+message StatsResponse {
+  // Total embeddings in this shard
+  uint64 total_embeddings = 1;
+
+  // Index statistics
+  string index_type = 2;
+  uint64 index_size_bytes = 3;
+
+  // Performance metrics
+  PerformanceMetrics metrics = 4;
+
+  // Node information
+  string node_id = 5;
+  string gpu_model = 6;
+}
+
+message PerformanceMetrics {
+  // Query latency percentiles (microseconds)
+  uint64 p50_latency_us = 1;
+  uint64 p95_latency_us = 2;
+  uint64 p99_latency_us = 3;
+
+  // Throughput (queries per second)
+  float qps = 4;
+
+  // Error rate (0-1)
+  float error_rate = 5;
+}
+
+message DistributedSearchRequest {
+  // Query embedding
+  repeated float embedding = 1;
+
+  // Global k (results to return)
+  uint32 k = 2;
+
+  // Filters
+  map<string, string> filters = 3;
+
+  // Request ID
+  string request_id = 4;
+
+  // Search strategy
+  SearchStrategy strategy = 5;
+
+  // Enable request hedging
+  bool enable_hedging = 6;
+
+  // Timeout for entire distributed search
+  uint32 timeout_ms = 7;
+}
+
+enum SearchStrategy {
+  // Query all shards
+  EXHAUSTIVE = 0;
+
+  // Query subset of shards based on LSH
+  LSH_FILTERED = 1;
+
+  // Query shards adaptively based on intermediate results
+  ADAPTIVE = 2;
+}
+
+message DistributedSearchResponse {
+  // Aggregated and re-ranked results
+  repeated SearchResult results = 1;
+
+  // Total processing time
+  uint64 total_time_us = 2;
+
+  // Per-shard timing information
+  repeated ShardTiming shard_timings = 3;
+
+  // Number of shards queried
+  uint32 shards_queried = 4;
+
+  // Number of shards that responded successfully
+  uint32 shards_succeeded = 5;
+
+  // Request ID
+  string request_id = 6;
+}
+
+message ShardTiming {
+  string shard_id = 1;
+  uint64 latency_us = 2;
+  uint64 vectors_searched = 3;
+  bool success = 4;
+  string error_message = 5;
+}
+
+message TopologyRequest {
+  bool include_health = 1;
+}
+
+message TopologyResponse {
+  repeated ShardInfo shards = 1;
+  uint64 total_embeddings = 2;
+  uint32 replication_factor = 3;
+}
+
+message ShardInfo {
+  string shard_id = 1;
+  string node_address = 2;
+  repeated uint64 hash_range = 3;
+  uint64 embedding_count = 4;
+  HealthCheckResponse health = 5;
+}

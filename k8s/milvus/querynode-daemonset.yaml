@@ -1,0 +1,187 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: milvus-querynode
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: querynode
+spec:
+  selector:
+    matchLabels:
+      app: milvus
+      component: querynode
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 10
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: querynode
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Target GPU nodes only
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-Tesla-T4
+
+      # Tolerate GPU taint
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+
+      # Pin to dedicated GPU pool
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-accelerator
+                operator: In
+                values: ["nvidia-tesla-t4"]
+
+      # High priority for query nodes
+      priorityClassName: system-cluster-critical
+
+      # Init container: Wait for dependencies
+      initContainers:
+      - name: wait-for-etcd
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z etcd.milvus-prod.svc.cluster.local 2379; do echo waiting for etcd; sleep 2; done']
+      - name: wait-for-rootcoord
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z rootcoord.milvus-prod.svc.cluster.local 53100; do echo waiting for rootcoord; sleep 5; done']
+      - name: gpu-check
+        image: nvidia/cuda:12.2.0-base-ubuntu22.04
+        command:
+        - sh
+        - -c
+        - |
+          nvidia-smi --query-gpu=index,name,driver_version,memory.total --format=csv
+          if [ $? -ne 0 ]; then
+            echo "GPU not available"
+            exit 1
+          fi
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+
+      containers:
+      - name: querynode
+        image: milvusdb/milvus:v2.4.0-gpu
+        imagePullPolicy: IfNotPresent
+        command:
+        - milvus
+        - run
+        - querynode
+
+        ports:
+        - containerPort: 21123
+          name: grpc
+          protocol: TCP
+        - containerPort: 9091
+          name: metrics
+          protocol: TCP
+
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
+        # GPU environment
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "0"
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,utility"
+        - name: LD_LIBRARY_PATH
+          value: "/usr/local/nvidia/lib64:/usr/local/cuda/lib64"
+
+        # Milvus configuration
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+
+        # Performance tuning
+        - name: KNOWHERE_GPU_MEM_POOL_SIZE
+          value: "8589934592"  # 8GB GPU memory pool
+        - name: GOMAXPROCS
+          value: "8"
+
+        resources:
+          requests:
+            nvidia.com/gpu: 1
+            cpu: 8
+            memory: 32Gi
+          limits:
+            nvidia.com/gpu: 1
+            cpu: 8
+            memory: 32Gi
+
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+          readOnly: true
+        - name: cache
+          mountPath: /var/lib/milvus/cache
+        - name: shared-memory
+          mountPath: /dev/shm
+
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9091
+            scheme: HTTP
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9091
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+      - name: cache
+        emptyDir:
+          sizeLimit: 10Gi
+      - name: shared-memory
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Gi
+
+      # DNS configuration for service discovery
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

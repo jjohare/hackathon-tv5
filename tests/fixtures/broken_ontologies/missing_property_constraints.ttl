@@ -1,0 +1,45 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.org/broken#> .
+
+:Person a owl:Class ;
+    rdfs:label "Person"@en ;
+    rdfs:comment "A person entity"@en .
+
+:Organization a owl:Class ;
+    rdfs:label "Organization"@en ;
+    rdfs:comment "An organization entity"@en .
+
+# ERROR: Missing rdfs:domain
+:propertyWithoutDomain a owl:ObjectProperty ;
+    rdfs:range :Organization ;
+    rdfs:label "property without domain"@en .
+
+# ERROR: Missing rdfs:range
+:propertyWithoutRange a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:label "property without range"@en .
+
+# ERROR: Missing both
+:propertyWithoutDomainOrRange a owl:ObjectProperty ;
+    rdfs:label "property without domain or range"@en .
+
+# ERROR: DatatypeProperty missing rdfs:range
+:dataPropertyWithoutRange a owl:DatatypeProperty ;
+    rdfs:domain :Person ;
+    rdfs:label "data property without range"@en .
+
+# VALID: Complete property definition
+:worksFor a owl:ObjectProperty ;
+    rdfs:domain :Person ;
+    rdfs:range :Organization ;
+    rdfs:label "works for"@en ;
+    rdfs:comment "Indicates employment relationship"@en .
+
+# VALID: Complete datatype property
+:age a owl:DatatypeProperty ;
+    rdfs:domain :Person ;
+    rdfs:range xsd:integer ;
+    rdfs:label "age"@en ;
+    rdfs:comment "Person's age in years"@en .

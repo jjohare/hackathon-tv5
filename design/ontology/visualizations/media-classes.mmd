@@ -1,0 +1,110 @@
+```mermaid
+classDiagram
+    %% GMC-O MEDIA Namespace
+    
+    class CreativeWork {
+        +has_narrative_arc
+        +has_visual_aesthetic
+        +has_pacing
+    }
+    class Film {
+    }
+    class TVSeries {
+    }
+    class TVEpisode {
+    }
+    class VisualEmbedding {
+    }
+    class AudioEmbedding {
+    }
+    class TextualEmbedding {
+    }
+    class UnifiedMulti-ModalEmbedding {
+        +embedding_vector
+    }
+    class NarrativeStructure {
+    }
+    class LinearNarrative {
+    }
+    class Non-LinearNarrative {
+    }
+    class Hero'sJourney {
+    }
+    class EnsembleCastStructure {
+    }
+    class VisualAesthetic {
+    }
+    class FilmNoirAesthetic {
+    }
+    class Neon/CyberpunkAesthetic {
+    }
+    class PastelAesthetic {
+    }
+    class NaturalisticAesthetic {
+    }
+    class PacingMetrics {
+        +average_shot_length_(seconds)
+        +cuts_per_minute
+    }
+    class FastPaced {
+    }
+    class ModeratePaced {
+    }
+    class SlowPaced {
+    }
+    class Mood {
+    }
+    class Tense/Suspenseful {
+    }
+    class Uplifting/Joyful {
+    }
+    class Melancholic/Sad {
+    }
+    class Intense/Action-Packed {
+    }
+    class Genre {
+    }
+    class media:Action {
+    }
+    class media:Drama {
+    }
+    class media:Comedy {
+    }
+    class ScienceFiction {
+    }
+    class media:Horror {
+    }
+    class media:Romance {
+    }
+    class media:Documentary {
+    }
+    class media:Thriller {
+    }
+    
+    CreativeWork <|-- Film
+    CreativeWork <|-- TVSeries
+    CreativeWork <|-- TVEpisode
+    NarrativeStructure <|-- LinearNarrative
+    NarrativeStructure <|-- Non-LinearNarrative
+    NarrativeStructure <|-- Hero'sJourney
+    NarrativeStructure <|-- EnsembleCastStructure
+    VisualAesthetic <|-- FilmNoirAesthetic
+    VisualAesthetic <|-- Neon/CyberpunkAesthetic
+    VisualAesthetic <|-- PastelAesthetic
+    VisualAesthetic <|-- NaturalisticAesthetic
+    PacingMetrics <|-- FastPaced
+    PacingMetrics <|-- ModeratePaced
+    PacingMetrics <|-- SlowPaced
+    Mood <|-- Tense/Suspenseful
+    Mood <|-- Uplifting/Joyful
+    Mood <|-- Melancholic/Sad
+    Mood <|-- Intense/Action-Packed
+    Genre <|-- media:Action
+    Genre <|-- media:Drama
+    Genre <|-- media:Comedy
+    Genre <|-- ScienceFiction
+    Genre <|-- media:Horror
+    Genre <|-- media:Romance
+    Genre <|-- media:Documentary
+    Genre <|-- media:Thriller
+```

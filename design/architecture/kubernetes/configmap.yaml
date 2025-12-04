@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gmc-o-config
+  namespace: gmc-o-prod
+data:
+  # GPU Server Configuration
+  HNSW_EF_SEARCH: "200"
+  HNSW_M: "32"
+  EMBEDDING_DIM: "1024"
+  MAX_BATCH_SIZE: "10"
+  INFERENCE_TIMEOUT_MS: "100"
+
+  # Redis Configuration
+  REDIS_CLUSTER_ENDPOINTS: "redis-cluster.gmc-o-prod.svc.cluster.local:6379"
+  CACHE_TTL_SECONDS: "300"
+  CACHE_MAX_MEMORY_MB: "18432"
+
+  # Sharding Configuration
+  NUM_SHARDS: "100"
+  REPLICATION_FACTOR: "3"
+
+  # Performance Tuning
+  CUDA_VISIBLE_DEVICES: "0"
+  OMP_NUM_THREADS: "4"
+  GRPC_WORKER_THREADS: "8"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envoy-config
+  namespace: gmc-o-prod
+data:
+  envoy.yaml: |
+    static_resources:
+      listeners:
+      - name: grpc_listener
+        address:
+          socket_address:
+            address: 0.0.0.0
+            port_value: 9090
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              stat_prefix: ingress_http
+              codec_type: AUTO
+              route_config:
+                name: local_route
+                virtual_hosts:
+                - name: backend
+                  domains: ["*"]
+                  routes:
+                  - match:
+                      prefix: "/recommendation"
+                    route:
+                      cluster: gpu_cluster
+                      timeout: 100ms
+                      retry_policy:
+                        retry_on: 5xx,reset,connect-failure,refused-stream
+                        num_retries: 2
+                        per_try_timeout: 30ms
+                        retry_host_predicate:
+                        - name: envoy.retry_host_predicates.previous_hosts
+                      hash_policy:
+                      - header:
+                          header_name: x-user-id
+              http_filters:
+              - name: envoy.filters.http.router
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+      clusters:
+      - name: gpu_cluster
+        connect_timeout: 10ms
+        type: STRICT_DNS
+        lb_policy: RING_HASH
+        ring_hash_lb_config:
+          minimum_ring_size: 1024
+          maximum_ring_size: 8192
+          hash_function: XX_HASH
+        health_checks:
+        - timeout: 5s
+          interval: 10s
+          unhealthy_threshold: 3
+          healthy_threshold: 2
+          grpc_health_check: {}
+        load_assignment:
+          cluster_name: gpu_cluster
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: gpu-shard-headless.gmc-o-prod.svc.cluster.local
+                    port_value: 50051
+              load_balancing_weight: 100
+
+    admin:
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 9901

@@ -1,0 +1,300 @@
+---
+# Root Coordinator - Manages DDL and DML operations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rootcoord
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: rootcoord
+spec:
+  replicas: 1  # Single coordinator for consistency
+  selector:
+    matchLabels:
+      app: milvus
+      component: rootcoord
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: rootcoord
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      initContainers:
+      - name: wait-for-etcd
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z etcd.milvus-prod.svc.cluster.local 2379; do sleep 2; done']
+      containers:
+      - name: rootcoord
+        image: milvusdb/milvus:v2.4.0
+        command: ["milvus", "run", "rootcoord"]
+        ports:
+        - containerPort: 53100
+          name: grpc
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+        resources:
+          requests:
+            cpu: 4
+            memory: 8Gi
+          limits:
+            cpu: 8
+            memory: 16Gi
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rootcoord
+  namespace: milvus-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: milvus
+    component: rootcoord
+  ports:
+  - port: 53100
+    targetPort: 53100
+    protocol: TCP
+    name: grpc
+---
+# Data Coordinator - Manages data persistence and flush operations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datacoord
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: datacoord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milvus
+      component: datacoord
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: datacoord
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      initContainers:
+      - name: wait-for-rootcoord
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z rootcoord.milvus-prod.svc.cluster.local 53100; do sleep 5; done']
+      containers:
+      - name: datacoord
+        image: milvusdb/milvus:v2.4.0
+        command: ["milvus", "run", "datacoord"]
+        ports:
+        - containerPort: 13333
+          name: grpc
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+        resources:
+          requests:
+            cpu: 2
+            memory: 4Gi
+          limits:
+            cpu: 4
+            memory: 8Gi
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datacoord
+  namespace: milvus-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: milvus
+    component: datacoord
+  ports:
+  - port: 13333
+    targetPort: 13333
+    protocol: TCP
+    name: grpc
+---
+# Query Coordinator - Manages query node load balancing
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: querycoord
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: querycoord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milvus
+      component: querycoord
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: querycoord
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      initContainers:
+      - name: wait-for-rootcoord
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z rootcoord.milvus-prod.svc.cluster.local 53100; do sleep 5; done']
+      containers:
+      - name: querycoord
+        image: milvusdb/milvus:v2.4.0
+        command: ["milvus", "run", "querycoord"]
+        ports:
+        - containerPort: 19531
+          name: grpc
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+        resources:
+          requests:
+            cpu: 4
+            memory: 8Gi
+          limits:
+            cpu: 8
+            memory: 16Gi
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: querycoord
+  namespace: milvus-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: milvus
+    component: querycoord
+  ports:
+  - port: 19531
+    targetPort: 19531
+    protocol: TCP
+    name: grpc
+---
+# Index Coordinator - Manages index building tasks
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexcoord
+  namespace: milvus-prod
+  labels:
+    app: milvus
+    component: indexcoord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milvus
+      component: indexcoord
+  template:
+    metadata:
+      labels:
+        app: milvus
+        component: indexcoord
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      initContainers:
+      - name: wait-for-rootcoord
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z rootcoord.milvus-prod.svc.cluster.local 53100; do sleep 5; done']
+      containers:
+      - name: indexcoord
+        image: milvusdb/milvus:v2.4.0
+        command: ["milvus", "run", "indexcoord"]
+        ports:
+        - containerPort: 31000
+          name: grpc
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd-0.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-1.etcd-headless.milvus-prod.svc.cluster.local:2379,etcd-2.etcd-headless.milvus-prod.svc.cluster.local:2379"
+        - name: MINIO_ADDRESS
+          value: "minio.milvus-prod.svc.cluster.local:9000"
+        - name: PULSAR_ADDRESS
+          value: "pulsar://pulsar.milvus-prod.svc.cluster.local:6650"
+        resources:
+          requests:
+            cpu: 2
+            memory: 4Gi
+          limits:
+            cpu: 4
+            memory: 8Gi
+        volumeMounts:
+        - name: milvus-config
+          mountPath: /milvus/configs
+      volumes:
+      - name: milvus-config
+        configMap:
+          name: milvus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: indexcoord
+  namespace: milvus-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: milvus
+    component: indexcoord
+  ports:
+  - port: 31000
+    targetPort: 31000
+    protocol: TCP
+    name: grpc

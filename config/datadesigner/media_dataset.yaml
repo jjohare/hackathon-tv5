@@ -1,0 +1,180 @@
+name: tv5_media_dataset
+version: 1.0.0
+description: Synthetic media recommendation dataset for TV5MONDE hackathon
+
+stages:
+  - name: taxonomy_generation
+    type: llm_generator
+    config:
+      model: gpt-4-turbo
+      temperature: 0.8
+      max_parallel_requests: 4
+      buffer_size: 1000
+    columns:
+      - name: genre
+        type: categorical
+        sampler: hierarchical
+        prompt: |
+          Generate a media genre from the GMC-O ontology.
+          Include parent genre and subgenres.
+          Format: "Action > Martial Arts"
+        validation:
+          - type: ontology_check
+            ontology: gmc_o
+
+      - name: mood
+        type: categorical
+        sampler: gaussian_mixture
+        categories: ["Uplifting", "Melancholic", "Tense", "Romantic", "Comedic"]
+        weights: [0.2, 0.15, 0.25, 0.2, 0.2]
+
+      - name: cultural_context
+        type: structured
+        template: |
+          {
+            "language": "{{ language }}",
+            "region": "{{ region }}",
+            "era": "{{ era }}",
+            "themes": {{ themes }}
+          }
+        dependencies:
+          language: ["French", "English", "Arabic", "Spanish", "Mandarin"]
+          region: ["Europe", "Africa", "Asia", "Americas"]
+
+  - name: media_content_generation
+    type: parallel_generator
+    dependencies: [taxonomy_generation]
+    batch_size: 10000
+    total_records: 100000000
+    config:
+      model: gpt-3.5-turbo
+      temperature: 0.9
+    columns:
+      - name: title
+        type: text
+        prompt: |
+          Generate a media title for:
+          Genre: {{ genre }}
+          Mood: {{ mood }}
+          Cultural context: {{ cultural_context }}
+        constraints:
+          min_length: 5
+          max_length: 100
+          unique: true
+
+      - name: description
+        type: text
+        prompt: |
+          Write a compelling 2-3 sentence description for this media:
+          Title: {{ title }}
+          Genre: {{ genre }}
+        length: 50-200
+
+      - name: popularity
+        type: numerical
+        sampler: zipf
+        parameters:
+          alpha: 1.5
+          min_value: 0.0
+          max_value: 1.0
+
+      - name: release_year
+        type: temporal
+        sampler: weighted_historical
+        range: [1920, 2024]
+        weights:
+          1920-1950: 0.05
+          1950-1980: 0.15
+          1980-2000: 0.25
+          2000-2020: 0.40
+          2020-2024: 0.15
+
+  - name: user_generation
+    type: demographic_generator
+    total_records: 10000000
+    columns:
+      - name: user_id
+        type: uuid
+
+      - name: demographics
+        type: structured
+        sampler: joint_distribution
+        template: |
+          {
+            "age": {{ age }},
+            "gender": "{{ gender }}",
+            "location": "{{ location }}",
+            "language_preferences": {{ languages }}
+          }
+
+      - name: psychographic_state
+        type: vector
+        dimensions: 3
+        sampler: vad_model  # Valence-Arousal-Dominance
+        constraints:
+          min_value: -1.0
+          max_value: 1.0
+
+      - name: taste_clusters
+        type: categorical_multi
+        sampler: dirichlet
+        categories: ["mainstream", "arthouse", "genre_fan", "nostalgic", "explorer"]
+        max_categories: 3
+
+  - name: interaction_generation
+    type: behavioral_generator
+    dependencies: [media_content_generation, user_generation]
+    total_records: 1000000000
+    config:
+      distribution: power_law
+    columns:
+      - name: user_id
+        type: reference
+        source: user_generation.user_id
+
+      - name: content_id
+        type: reference
+        source: media_content_generation.content_id
+        sampler: popularity_weighted
+
+      - name: interaction_type
+        type: categorical
+        categories: ["view", "like", "share", "save"]
+        weights: [0.7, 0.15, 0.05, 0.1]
+
+      - name: watch_time
+        type: numerical
+        sampler: beta
+        parameters:
+          alpha: 2
+          beta: 5
+        scale_to: content_duration
+
+      - name: timestamp
+        type: temporal
+        sampler: realistic_temporal
+        patterns:
+          daily: gaussian_peaks([8, 12, 20])  # Morning, lunch, evening
+          weekly: workweek_vs_weekend
+          seasonal: holiday_spikes
+
+quality_control:
+  - name: distribution_validation
+    checks:
+      - popularity_follows_zipf
+      - temporal_patterns_realistic
+      - cultural_diversity_maintained
+
+  - name: consistency_validation
+    checks:
+      - user_interactions_consistent
+      - content_metadata_complete
+      - no_impossible_combinations
+
+output:
+  format: parquet
+  compression: snappy
+  partitioning:
+    - by: release_year
+    - by: genre
+  path: /data/synthetic/tv5_media/

@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: milvus-prod
+  labels:
+    name: milvus-prod
+    environment: production
+    app: gmc-o-milvus
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: milvus-quota
+  namespace: milvus-prod
+spec:
+  hard:
+    requests.cpu: "500"
+    requests.memory: 3600Gi
+    requests.nvidia.com/gpu: "100"
+    limits.cpu: "800"
+    limits.memory: 4800Gi
+    limits.nvidia.com/gpu: "100"
+    persistentvolumeclaims: "130"
+    services.loadbalancers: "3"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: milvus-limits
+  namespace: milvus-prod
+spec:
+  limits:
+  - max:
+      cpu: "8"
+      memory: 48Gi
+      nvidia.com/gpu: "1"
+    min:
+      cpu: "100m"
+      memory: 128Mi
+    default:
+      cpu: "2"
+      memory: 4Gi
+    defaultRequest:
+      cpu: "500m"
+      memory: 2Gi
+    type: Container
+  - max:
+      cpu: "16"
+      memory: 64Gi
+    min:
+      cpu: "1"
+      memory: 1Gi
+    type: Pod

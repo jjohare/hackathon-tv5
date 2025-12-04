@@ -1,0 +1,58 @@
+```mermaid
+classDiagram
+    %% GMC-O USER Namespace
+    
+    class ViewerProfile {
+        +belongs_to_taste_cluster
+    }
+    class PsychographicState {
+    }
+    class SeekingComfort {
+    }
+    class SeekingChallenge {
+    }
+    class Nostalgic {
+    }
+    class Adventurous {
+    }
+    class TasteCluster {
+    }
+    class user:MainstreamCluster {
+    }
+    class user:ArtHouseCluster {
+    }
+    class user:GenreSpecialistCluster {
+    }
+    class ToleranceLevel {
+    }
+    class ViolenceTolerance {
+    }
+    class NarrativeComplexityTolerance {
+    }
+    class SubtitleWillingness {
+    }
+    class SlowPacingTolerance {
+    }
+    class InteractionHistory {
+    }
+    class WatchEvent {
+        +completion_percentage
+        +watch_timestamp
+    }
+    class SkipEvent {
+    }
+    class RatingEvent {
+    }
+    
+    PsychographicState <|-- SeekingComfort
+    PsychographicState <|-- SeekingChallenge
+    PsychographicState <|-- Nostalgic
+    PsychographicState <|-- Adventurous
+    TasteCluster <|-- user:MainstreamCluster
+    TasteCluster <|-- user:ArtHouseCluster
+    TasteCluster <|-- user:GenreSpecialistCluster
+    ToleranceLevel <|-- ViolenceTolerance
+    ToleranceLevel <|-- NarrativeComplexityTolerance
+    ToleranceLevel <|-- SubtitleWillingness
+    ToleranceLevel <|-- SlowPacingTolerance
+```

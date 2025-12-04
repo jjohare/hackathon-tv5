@@ -1,0 +1,15 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <http://example.org/broken#> .
+
+# ERROR: Missing rdfs:label and rdfs:comment
+:ClassWithoutLabel a owl:Class .
+
+# ERROR: Missing rdfs:comment
+:ClassWithoutComment a owl:Class ;
+    rdfs:label "Has Label But No Comment"@en .
+
+# VALID: Has both
+:ValidClass a owl:Class ;
+    rdfs:label "Valid Class"@en ;
+    rdfs:comment "This class has all required annotations"@en .

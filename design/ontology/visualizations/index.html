@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMC-O Ontology Explorer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .nav button.active {
+            background: #667eea;
+            color: white;
+        }
+        .content {
+            padding: 30px;
+            min-height: 600px;
+        }
+        .namespace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .namespace-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .namespace-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .namespace-card.media { border-color: #FF6B6B; }
+        .namespace-card.user { border-color: #4ECDC4; }
+        .namespace-card.ctx { border-color: #45B7D1; }
+        .namespace-card.gpu { border-color: #FFA07A; }
+        .namespace-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .class-list {
+            margin-top: 20px;
+        }
+        .class-item {
+            padding: 15px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .class-item h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        .class-item p {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 8px;
+            color: white;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        .stat p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 GMC-O Ontology Explorer</h1>
+            <p>Global Media & Context Ontology for GPU-Accelerated Recommendations</p>
+        </div>
+
+        <div class="nav">
+            <button class="active" onclick="showView('overview')">Overview</button>
+            <button onclick="showView('media')">Media Domain</button>
+            <button onclick="showView('user')">User Domain</button>
+            <button onclick="showView('ctx')">Context Domain</button>
+            <button onclick="showView('gpu')">GPU Processing</button>
+            <button onclick="showView('properties')">Properties</button>
+        </div>
+
+        <div class="content" id="content">
+            <!-- Content loaded by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const ontologyData = {
+  "header": {
+    "title": "GMC-O: Global Media & Context Ontology",
+    "description": "GPU-accelerated recommendation ontology for TV5 Monde",
+    "version": "2.0",
+    "author": [
+      "TV5 Monde Team"
+    ],
+    "iri": "http://recommendation.org/ontology/media"
+  },
+  "namespace": [
+    {
+      "prefix": "media",
+      "iri": "http://recommendation.org/ontology/media#"
+    },
+    {
+      "prefix": "user",
+      "iri": "http://recommendation.org/ontology/user#"
+    },
+    {
+      "prefix": "ctx",
+      "iri": "http://recommendation.org/ontology/context#"
+    },
+    {
+      "prefix": "tech",
+      "iri": "http://recommendation.org/ontology/tech-stack#"
+    },
+    {
+      "prefix": "sem",
+      "iri": "http://recommendation.org/ontology/semantic-descriptors#"
+    },
+    {
+      "prefix": "gpu",
+      "iri": "http://recommendation.org/ontology/gpu-processing#"
+    },
+    {
+      "prefix": "owl",
+      "iri": "http://www.w3.org/2002/07/owl#"
+    },
+    {
+      "prefix": "rdfs",
+      "iri": "http://www.w3.org/2000/01/rdf-schema#"
+    },
+    {
+      "prefix": "xsd",
+      "iri": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix": "schema",
+      "iri": "http://schema.org/"
+    },
+    {
+      "prefix": "eidr",
+      "iri": "http://eidr.org/ontology#"
+    }
+  ],
+  "class": [
+    {
+      "id": "0",
+      "type": "owl:Class",
+      "iri": "media:CreativeWork",
+      "label": "Creative Work",
+      "comment": "Top-level class for film, episode, or series with multi-modal semantic embeddings",
+      "attributes": [],
+      "subClassOf": "schema:CreativeWork"
+    },
+    {
+      "id": "1",
+      "type": "owl:Class",
+      "iri": "media:Film",
+      "label": "Film",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:CreativeWork"
+    },
+    {
+      "id": "2",
+      "type": "owl:Class",
+      "iri": "media:TVSeries",
+      "label": "TV Series",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:CreativeWork"
+    },
+    {
+      "id": "3",
+      "type": "owl:Class",
+      "iri": "media:TVEpisode",
+      "label": "TV Episode",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:CreativeWork"
+    },
+    {
+      "id": "4",
+      "type": "owl:Class",
+      "iri": "media:VisualEmbedding",
+      "label": "Visual Embedding",
+      "comment": "GPU-computed visual features from frame analysis (color, composition, motion)",
+      "attributes": []
+    },
+    {
+      "id": "5",
+      "type": "owl:Class",
+      "iri": "media:AudioEmbedding",
+      "label": "Audio Embedding",
+      "comment": "Audio semantic features (music, dialogue, ambient sound)",
+      "attributes": []
+    },
+    {
+      "id": "6",
+      "type": "owl:Class",
+      "iri": "media:TextualEmbedding",
+      "label": "Textual Embedding",
+      "comment": "NLP embeddings from scripts, subtitles, descriptions",
+      "attributes": []
+    },
+    {
+      "id": "7",
+      "type": "owl:Class",
+      "iri": "media:UnifiedEmbedding",
+      "label": "Unified Multi-Modal Embedding",
+      "comment": "1024-dimensional fused representation in hyperbolic space",
+      "attributes": []
+    },
+    {
+      "id": "8",
+      "type": "owl:Class",
+      "iri": "media:NarrativeStructure",
+      "label": "Narrative Structure",
+      "comment": "Architectural flow of story (Linear, Non-linear, Hero's Journey, Ensemble)",
+      "attributes": []
+    },
+    {
+      "id": "9",
+      "type": "owl:Class",
+      "iri": "media:LinearNarrative",
+      "label": "Linear Narrative",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:NarrativeStructure"
+    },
+    {
+      "id": "10",
+      "type": "owl:Class",
+      "iri": "media:NonLinearNarrative",
+      "label": "Non-Linear Narrative",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:NarrativeStructure"
+    },
+    {
+      "id": "11",
+      "type": "owl:Class",
+      "iri": "media:HerosJourney",
+      "label": "Hero's Journey",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:NarrativeStructure"
+    },
+    {
+      "id": "12",
+      "type": "owl:Class",
+      "iri": "media:EnsembleCast",
+      "label": "Ensemble Cast Structure",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:NarrativeStructure"
+    },
+    {
+      "id": "13",
+      "type": "owl:Class",
+      "iri": "media:VisualAesthetic",
+      "label": "Visual Aesthetic",
+      "comment": "GPU-derived color grading and lighting classification",
+      "attributes": []
+    },
+    {
+      "id": "14",
+      "type": "owl:Class",
+      "iri": "media:NoirAesthetic",
+      "label": "Film Noir Aesthetic",
+      "comment": "High contrast, low key lighting, chiaroscuro",
+      "attributes": [],
+      "subClassOf": "media:VisualAesthetic"
+    },
+    {
+      "id": "15",
+      "type": "owl:Class",
+      "iri": "media:NeonAesthetic",
+      "label": "Neon/Cyberpunk Aesthetic",
+      "comment": "Vibrant neon colors, futuristic urban environments",
+      "attributes": [],
+      "subClassOf": "media:VisualAesthetic"
+    },
+    {
+      "id": "16",
+      "type": "owl:Class",
+      "iri": "media:PastelAesthetic",
+      "label": "Pastel Aesthetic",
+      "comment": "Soft, desaturated colors, dreamy quality",
+      "attributes": [],
+      "subClassOf": "media:VisualAesthetic"
+    },
+    {
+      "id": "17",
+      "type": "owl:Class",
+      "iri": "media:NaturalisticAesthetic",
+      "label": "Naturalistic Aesthetic",
+      "comment": "Natural lighting, realistic color grading",
+      "attributes": [],
+      "subClassOf": "media:VisualAesthetic"
+    },
+    {
+      "id": "18",
+      "type": "owl:Class",
+      "iri": "media:Pacing",
+      "label": "Pacing Metrics",
+      "comment": "Quantified scene cuts per minute and dialogue density",
+      "attributes": []
+    },
+    {
+      "id": "19",
+      "type": "owl:Class",
+      "iri": "media:FastPaced",
+      "label": "Fast Paced",
+      "comment": "High cut frequency (>30 cuts/min), intense action",
+      "attributes": [],
+      "subClassOf": "media:Pacing"
+    },
+    {
+      "id": "20",
+      "type": "owl:Class",
+      "iri": "media:ModeratePaced",
+      "label": "Moderate Paced",
+      "comment": "Balanced pacing (10-30 cuts/min)",
+      "attributes": [],
+      "subClassOf": "media:Pacing"
+    },
+    {
+      "id": "21",
+      "type": "owl:Class",
+      "iri": "media:SlowPaced",
+      "label": "Slow Paced",
+      "comment": "Contemplative, long takes (<10 cuts/min)",
+      "attributes": [],
+      "subClassOf": "media:Pacing"
+    },
+    {
+      "id": "22",
+      "type": "owl:Class",
+      "iri": "media:Mood",
+      "label": "Mood",
+      "comment": "Emotional tone derived from audio-visual analysis",
+      "attributes": []
+    },
+    {
+      "id": "23",
+      "type": "owl:Class",
+      "iri": "media:Tense",
+      "label": "Tense/Suspenseful",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Mood"
+    },
+    {
+      "id": "24",
+      "type": "owl:Class",
+      "iri": "media:Uplifting",
+      "label": "Uplifting/Joyful",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Mood"
+    },
+    {
+      "id": "25",
+      "type": "owl:Class",
+      "iri": "media:Melancholic",
+      "label": "Melancholic/Sad",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Mood"
+    },
+    {
+      "id": "26",
+      "type": "owl:Class",
+      "iri": "media:Intense",
+      "label": "Intense/Action-Packed",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Mood"
+    },
+    {
+      "id": "27",
+      "type": "owl:Class",
+      "iri": "media:Genre",
+      "label": "Genre",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "schema:Genre"
+    },
+    {
+      "id": "28",
+      "type": "owl:Class",
+      "iri": "media:Action",
+      "label": "media:Action",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "29",
+      "type": "owl:Class",
+      "iri": "media:Drama",
+      "label": "media:Drama",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "30",
+      "type": "owl:Class",
+      "iri": "media:Comedy",
+      "label": "media:Comedy",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "31",
+      "type": "owl:Class",
+      "iri": "media:SciFi",
+      "label": "Science Fiction",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "32",
+      "type": "owl:Class",
+      "iri": "media:Horror",
+      "label": "media:Horror",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "33",
+      "type": "owl:Class",
+      "iri": "media:Romance",
+      "label": "media:Romance",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "34",
+      "type": "owl:Class",
+      "iri": "media:Documentary",
+      "label": "media:Documentary",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "35",
+      "type": "owl:Class",
+      "iri": "media:Thriller",
+      "label": "media:Thriller",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "media:Genre"
+    },
+    {
+      "id": "36",
+      "type": "owl:Class",
+      "iri": "user:ViewerProfile",
+      "label": "Viewer Profile",
+      "comment": "User profile with learning history and preferences",
+      "attributes": []
+    },
+    {
+      "id": "37",
+      "type": "owl:Class",
+      "iri": "user:PsychographicState",
+      "label": "Psychographic State",
+      "comment": "Current psychological inclination inferred from context",
+      "attributes": []
+    },
+    {
+      "id": "38",
+      "type": "owl:Class",
+      "iri": "user:SeekingComfort",
+      "label": "Seeking Comfort",
+      "comment": "User wants familiar, low-stress content",
+      "attributes": [],
+      "subClassOf": "user:PsychographicState"
+    },
+    {
+      "id": "39",
+      "type": "owl:Class",
+      "iri": "user:SeekingChallenge",
+      "label": "Seeking Challenge",
+      "comment": "User wants complex, thought-provoking content",
+      "attributes": [],
+      "subClassOf": "user:PsychographicState"
+    },
+    {
+      "id": "40",
+      "type": "owl:Class",
+      "iri": "user:Nostalgic",
+      "label": "Nostalgic",
+      "comment": "User drawn to content from past eras or childhood",
+      "attributes": [],
+      "subClassOf": "user:PsychographicState"
+    },
+    {
+      "id": "41",
+      "type": "owl:Class",
+      "iri": "user:Adventurous",
+      "label": "Adventurous",
+      "comment": "User open to new genres and foreign content",
+      "attributes": [],
+      "subClassOf": "user:PsychographicState"
+    },
+    {
+      "id": "42",
+      "type": "owl:Class",
+      "iri": "user:TasteCluster",
+      "label": "Taste Cluster",
+      "comment": "Dynamic grouping based on consumption vector similarity",
+      "attributes": []
+    },
+    {
+      "id": "43",
+      "type": "owl:Class",
+      "iri": "user:MainstreamCluster",
+      "label": "user:MainstreamCluster",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:TasteCluster"
+    },
+    {
+      "id": "44",
+      "type": "owl:Class",
+      "iri": "user:ArtHouseCluster",
+      "label": "user:ArtHouseCluster",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:TasteCluster"
+    },
+    {
+      "id": "45",
+      "type": "owl:Class",
+      "iri": "user:GenreSpecialistCluster",
+      "label": "user:GenreSpecialistCluster",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:TasteCluster"
+    },
+    {
+      "id": "46",
+      "type": "owl:Class",
+      "iri": "user:ToleranceLevel",
+      "label": "Tolerance Level",
+      "comment": "User-specific thresholds for content characteristics",
+      "attributes": []
+    },
+    {
+      "id": "47",
+      "type": "owl:Class",
+      "iri": "user:ViolenceTolerance",
+      "label": "Violence Tolerance",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:ToleranceLevel"
+    },
+    {
+      "id": "48",
+      "type": "owl:Class",
+      "iri": "user:ComplexityTolerance",
+      "label": "Narrative Complexity Tolerance",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:ToleranceLevel"
+    },
+    {
+      "id": "49",
+      "type": "owl:Class",
+      "iri": "user:SubtitleTolerance",
+      "label": "Subtitle Willingness",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:ToleranceLevel"
+    },
+    {
+      "id": "50",
+      "type": "owl:Class",
+      "iri": "user:SlowPacingTolerance",
+      "label": "Slow Pacing Tolerance",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "user:ToleranceLevel"
+    },
+    {
+      "id": "51",
+      "type": "owl:Class",
+      "iri": "user:InteractionHistory",
+      "label": "Interaction History",
+      "comment": "AgentDB-managed learning from user behavior",
+      "attributes": []
+    },
+    {
+      "id": "52",
+      "type": "owl:Class",
+      "iri": "user:WatchEvent",
+      "label": "Watch Event",
+      "comment": "User watched content (with completion %)",
+      "attributes": []
+    },
+    {
+      "id": "53",
+      "type": "owl:Class",
+      "iri": "user:SkipEvent",
+      "label": "Skip Event",
+      "comment": "User skipped/abandoned content",
+      "attributes": []
+    },
+    {
+      "id": "54",
+      "type": "owl:Class",
+      "iri": "user:RatingEvent",
+      "label": "Rating Event",
+      "comment": "Explicit user rating",
+      "attributes": []
+    },
+    {
+      "id": "55",
+      "type": "owl:Class",
+      "iri": "ctx:CulturalContext",
+      "label": "Cultural Context",
+      "comment": "Socio-cultural framework (holidays, events, regional norms)",
+      "attributes": []
+    },
+    {
+      "id": "56",
+      "type": "owl:Class",
+      "iri": "ctx:Holiday",
+      "label": "ctx:Holiday",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:CulturalContext"
+    },
+    {
+      "id": "57",
+      "type": "owl:Class",
+      "iri": "ctx:Halloween",
+      "label": "Halloween",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:Holiday"
+    },
+    {
+      "id": "58",
+      "type": "owl:Class",
+      "iri": "ctx:ValentinesDay",
+      "label": "Valentine's Day",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:Holiday"
+    },
+    {
+      "id": "59",
+      "type": "owl:Class",
+      "iri": "ctx:Christmas",
+      "label": "Christmas",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:Holiday"
+    },
+    {
+      "id": "60",
+      "type": "owl:Class",
+      "iri": "ctx:SocialSetting",
+      "label": "Social Setting",
+      "comment": "Immediate social environment",
+      "attributes": []
+    },
+    {
+      "id": "61",
+      "type": "owl:Class",
+      "iri": "ctx:DateNight",
+      "label": "Date Night",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:SocialSetting"
+    },
+    {
+      "id": "62",
+      "type": "owl:Class",
+      "iri": "ctx:FamilyGathering",
+      "label": "Family Gathering",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:SocialSetting"
+    },
+    {
+      "id": "63",
+      "type": "owl:Class",
+      "iri": "ctx:SoloViewing",
+      "label": "Solo Viewing",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:SocialSetting"
+    },
+    {
+      "id": "64",
+      "type": "owl:Class",
+      "iri": "ctx:EnvironmentalFactors",
+      "label": "Environmental Factors",
+      "comment": "Physical viewing conditions",
+      "attributes": []
+    },
+    {
+      "id": "65",
+      "type": "owl:Class",
+      "iri": "ctx:TimeOfDay",
+      "label": "ctx:TimeOfDay",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:EnvironmentalFactors"
+    },
+    {
+      "id": "66",
+      "type": "owl:Class",
+      "iri": "ctx:EarlyMorning",
+      "label": "Early Morning (6-9 AM)",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:TimeOfDay"
+    },
+    {
+      "id": "67",
+      "type": "owl:Class",
+      "iri": "ctx:LatNight",
+      "label": "Late Night (10 PM-2 AM)",
+      "comment": "User likely tired, prefers lighter content",
+      "attributes": [],
+      "subClassOf": "ctx:TimeOfDay"
+    },
+    {
+      "id": "68",
+      "type": "owl:Class",
+      "iri": "ctx:DeviceType",
+      "label": "ctx:DeviceType",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "ctx:EnvironmentalFactors"
+    },
+    {
+      "id": "69",
+      "type": "owl:Class",
+      "iri": "ctx:MobileDevice",
+      "label": "ctx:MobileDevice",
+      "comment": "Small screen, shorter viewing sessions expected",
+      "attributes": [],
+      "subClassOf": "ctx:DeviceType"
+    },
+    {
+      "id": "70",
+      "type": "owl:Class",
+      "iri": "ctx:TVDevice",
+      "label": "ctx:TVDevice",
+      "comment": "Large screen, immersive viewing",
+      "attributes": [],
+      "subClassOf": "ctx:DeviceType"
+    },
+    {
+      "id": "71",
+      "type": "owl:Class",
+      "iri": "gpu:SemanticProcessing",
+      "label": "GPU Semantic Processing",
+      "comment": "CUDA-accelerated semantic analysis",
+      "attributes": []
+    },
+    {
+      "id": "72",
+      "type": "owl:Class",
+      "iri": "gpu:SemanticForceComputation",
+      "label": "Semantic Force Computation",
+      "comment": "Knowledge graph physics with type clustering and DAG layout",
+      "attributes": [],
+      "subClassOf": "gpu:SemanticProcessing"
+    },
+    {
+      "id": "73",
+      "type": "owl:Class",
+      "iri": "gpu:OntologyConstraintEnforcement",
+      "label": "Ontology Constraint Enforcement",
+      "comment": "DisjointClasses, SubClassOf, SameAs GPU kernels",
+      "attributes": [],
+      "subClassOf": "gpu:SemanticProcessing"
+    },
+    {
+      "id": "74",
+      "type": "owl:Class",
+      "iri": "gpu:VectorSimilaritySearch",
+      "label": "Vector Similarity Search",
+      "comment": "FAISS/cuVS HNSW indexing for ANN search",
+      "attributes": [],
+      "subClassOf": "gpu:SemanticProcessing"
+    },
+    {
+      "id": "75",
+      "type": "owl:Class",
+      "iri": "gpu:GraphTraversal",
+      "label": "GPU Graph Traversal",
+      "comment": "SSSP, APSP, PageRank on CUDA",
+      "attributes": [],
+      "subClassOf": "gpu:SemanticProcessing"
+    },
+    {
+      "id": "76",
+      "type": "owl:Class",
+      "iri": "tech:DeliveryConstraint",
+      "label": "Delivery Constraint",
+      "comment": "Hardware/network limitations",
+      "attributes": []
+    },
+    {
+      "id": "77",
+      "type": "owl:Class",
+      "iri": "tech:HDRSupport",
+      "label": "tech:HDRSupport",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "tech:DeliveryConstraint"
+    },
+    {
+      "id": "78",
+      "type": "owl:Class",
+      "iri": "tech:BandwidthLimit",
+      "label": "tech:BandwidthLimit",
+      "comment": "",
+      "attributes": [],
+      "subClassOf": "tech:DeliveryConstraint"
+    },
+    {
+      "id": "79",
+      "type": "owl:Class",
+      "iri": "tech:LatencyRequirement",
+      "label": "Latency Requirement",
+      "comment": "P99 latency targets for recommendation serving",
+      "attributes": []
+    }
+  ],
+  "property": [
+    {
+      "id": "p0",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:hasNarrativeArc",
+      "label": "has narrative arc",
+      "domain": "media:CreativeWork",
+      "range": "media:NarrativeStructure",
+      "comment": ""
+    },
+    {
+      "id": "p1",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:hasVisualAesthetic",
+      "label": "has visual aesthetic",
+      "domain": "media:CreativeWork",
+      "range": "media:VisualAesthetic",
+      "comment": ""
+    },
+    {
+      "id": "p2",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:hasPacing",
+      "label": "has pacing",
+      "domain": "media:CreativeWork",
+      "range": "media:Pacing",
+      "comment": ""
+    },
+    {
+      "id": "p3",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:hasMood",
+      "label": "has mood",
+      "domain": "media:CreativeWork",
+      "range": "media:Mood",
+      "comment": ""
+    },
+    {
+      "id": "p4",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:hasGenre",
+      "label": "has genre",
+      "domain": "media:CreativeWork",
+      "range": "media:Genre",
+      "comment": ""
+    },
+    {
+      "id": "p5",
+      "type": "owl:ObjectProperty",
+      "iri": "sem:inducesPsychographicState",
+      "label": "induces psychographic state",
+      "domain": "media:CreativeWork",
+      "range": "user:PsychographicState",
+      "comment": "Predictive property: content likely induces state X"
+    },
+    {
+      "id": "p6",
+      "type": "owl:FunctionalProperty",
+      "iri": "sem:hasUnifiedEmbedding",
+      "label": "sem:hasUnifiedEmbedding",
+      "domain": "",
+      "range": "",
+      "comment": "Each creative work has exactly one unified embedding"
+    },
+    {
+      "id": "p7",
+      "type": "owl:ObjectProperty",
+      "iri": "ctx:isCulturallyRelevantTo",
+      "label": "culturally relevant to",
+      "domain": "media:CreativeWork",
+      "range": "ctx:CulturalContext",
+      "comment": ""
+    },
+    {
+      "id": "p8",
+      "type": "owl:ObjectProperty",
+      "iri": "ctx:suitableForSocialSetting",
+      "label": "suitable for social setting",
+      "domain": "media:CreativeWork",
+      "range": "ctx:SocialSetting",
+      "comment": ""
+    },
+    {
+      "id": "p9",
+      "type": "owl:FunctionalProperty",
+      "iri": "user:hasCurrentState",
+      "label": "user:hasCurrentState",
+      "domain": "",
+      "range": "",
+      "comment": "User has exactly one current psychographic state"
+    },
+    {
+      "id": "p10",
+      "type": "owl:ObjectProperty",
+      "iri": "user:belongsToCluster",
+      "label": "belongs to taste cluster",
+      "domain": "user:ViewerProfile",
+      "range": "user:TasteCluster",
+      "comment": ""
+    },
+    {
+      "id": "p11",
+      "type": "owl:ObjectProperty",
+      "iri": "tech:requiresCapability",
+      "label": "requires capability",
+      "domain": "media:CreativeWork",
+      "range": "tech:DeliveryConstraint",
+      "comment": ""
+    },
+    {
+      "id": "p12",
+      "type": "owl:DatatypeProperty",
+      "iri": "sem:embeddingVector",
+      "label": "embedding vector",
+      "domain": "media:UnifiedEmbedding",
+      "range": "xsd:string",
+      "comment": "1024-dimensional float array (serialized)"
+    },
+    {
+      "id": "p13",
+      "type": "owl:DatatypeProperty",
+      "iri": "sem:confidenceScore",
+      "label": "confidence score",
+      "domain": "",
+      "range": "xsd:float",
+      "comment": "Inference confidence (0.0-1.0)"
+    },
+    {
+      "id": "p14",
+      "type": "owl:DatatypeProperty",
+      "iri": "media:averageShotLength",
+      "label": "average shot length (seconds)",
+      "domain": "media:Pacing",
+      "range": "xsd:float",
+      "comment": ""
+    },
+    {
+      "id": "p15",
+      "type": "owl:DatatypeProperty",
+      "iri": "media:cutsPerMinute",
+      "label": "cuts per minute",
+      "domain": "media:Pacing",
+      "range": "xsd:float",
+      "comment": ""
+    },
+    {
+      "id": "p16",
+      "type": "owl:DatatypeProperty",
+      "iri": "media:duration",
+      "label": "duration (minutes)",
+      "domain": "media:CreativeWork",
+      "range": "xsd:integer",
+      "comment": ""
+    },
+    {
+      "id": "p17",
+      "type": "owl:DatatypeProperty",
+      "iri": "user:completionPercentage",
+      "label": "completion percentage",
+      "domain": "user:WatchEvent",
+      "range": "xsd:float",
+      "comment": "% of content watched (0.0-1.0)"
+    },
+    {
+      "id": "p18",
+      "type": "owl:DatatypeProperty",
+      "iri": "user:watchTimestamp",
+      "label": "watch timestamp",
+      "domain": "user:WatchEvent",
+      "range": "xsd:dateTime",
+      "comment": ""
+    },
+    {
+      "id": "p19",
+      "type": "owl:AnnotationProperty",
+      "iri": "sem:gpuKernelUsed",
+      "label": "GPU kernel used",
+      "domain": "",
+      "range": "",
+      "comment": "CUDA kernel function for this computation"
+    },
+    {
+      "id": "p20",
+      "type": "owl:AnnotationProperty",
+      "iri": "sem:processingTime",
+      "label": "processing time (ms)",
+      "domain": "",
+      "range": "",
+      "comment": "GPU processing time for semantic extraction"
+    }
+  ]
+};
+
+        function showView(view) {
+            const buttons = document.querySelectorAll('.nav button');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const content = document.getElementById('content');
+
+            if (view === 'overview') {
+                content.innerHTML = generateOverview();
+            } else if (view === 'properties') {
+                content.innerHTML = generatePropertiesView();
+            } else {
+                content.innerHTML = generateNamespaceView(view);
+            }
+        }
+
+        function generateOverview() {
+            const classes = ontologyData.class;
+            const properties = ontologyData.property;
+
+            const namespaces = {};
+            classes.forEach(cls => {
+                const ns = cls.iri.split(':')[0];
+                namespaces[ns] = (namespaces[ns] || 0) + 1;
+            });
+
+            let html = '<h2>Ontology Statistics</h2>';
+            html += '<div class="stats">';
+            html += '<div class="stat"><h3>' + classes.length + '</h3><p>Classes</p></div>';
+            html += '<div class="stat"><h3>' + properties.length + '</h3><p>Properties</p></div>';
+            html += '<div class="stat"><h3>' + Object.keys(namespaces).length + '</h3><p>Namespaces</p></div>';
+            html += '</div>';
+            html += '<h2>Namespaces</h2>';
+            html += '<div class="namespace-grid">' + generateNamespaceCards() + '</div>';
+            return html;
+        }
+
+        function generateNamespaceCards() {
+            const namespaces = {
+                'media': { name: 'Media & Content', desc: 'Films, series, genres, visual aesthetics', color: '#FF6B6B' },
+                'user': { name: 'User & Psychographics', desc: 'Profiles, preferences, tolerance levels', color: '#4ECDC4' },
+                'ctx': { name: 'Context', desc: 'Cultural, social, environmental factors', color: '#45B7D1' },
+                'gpu': { name: 'GPU Processing', desc: 'Semantic analysis, vector search, graph traversal', color: '#FFA07A' }
+            };
+
+            let html = '';
+            for (const [key, val] of Object.entries(namespaces)) {
+                const count = ontologyData.class.filter(c => c.iri.startsWith(key)).length;
+                html += '<div class="namespace-card ' + key + '" onclick="showView('' + key + '')">';
+                html += '<h3>' + val.name + '</h3>';
+                html += '<p>' + val.desc + '</p>';
+                html += '<p style="margin-top:10px; font-weight:600; color:' + val.color + ';">';
+                html += count + ' classes</p></div>';
+            }
+            return html;
+        }
+
+        function generateNamespaceView(namespace) {
+            const classes = ontologyData.class.filter(c => c.iri.startsWith(namespace));
+
+            let html = '<h2>' + namespace.toUpperCase() + ' Namespace</h2>';
+            html += '<p style="margin-bottom:20px; color:#718096;">';
+            html += classes.length + ' classes in this namespace</p>';
+            html += '<div class="class-list">';
+
+            classes.forEach(cls => {
+                html += '<div class="class-item">';
+                html += '<h4>' + cls.label + '</h4>';
+                html += '<p>' + (cls.comment || 'No description') + '</p>';
+                if (cls.subClassOf) {
+                    html += '<p style="margin-top:5px;"><strong>Parent:</strong> ' + cls.subClassOf + '</p>';
+                }
+                html += '</div>';
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        function generatePropertiesView() {
+            const properties = ontologyData.property;
+
+            let html = '<h2>Properties</h2>';
+            html += '<p style="margin-bottom:20px; color:#718096;">';
+            html += properties.length + ' properties defining relationships and attributes</p>';
+            html += '<div class="class-list">';
+
+            properties.forEach(prop => {
+                html += '<div class="class-item">';
+                html += '<h4>' + prop.label + '</h4>';
+                html += '<p>' + (prop.comment || 'No description') + '</p>';
+                html += '<p style="margin-top:5px;">';
+                html += '<strong>Type:</strong> ' + prop.type + '<br>';
+                if (prop.domain) {
+                    html += '<strong>Domain:</strong> ' + prop.domain + '<br>';
+                }
+                if (prop.range) {
+                    html += '<strong>Range:</strong> ' + prop.range;
+                }
+                html += '</p></div>';
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // Initialize with overview
+        showView('overview');
+    </script>
+</body>
+</html>

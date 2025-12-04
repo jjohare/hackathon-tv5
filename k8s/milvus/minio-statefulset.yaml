@@ -1,0 +1,142 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-headless
+  namespace: milvus-prod
+  labels:
+    app: minio
+spec:
+  clusterIP: None
+  ports:
+  - port: 9000
+    name: api
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: milvus-prod
+  labels:
+    app: minio
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+    name: api
+  - port: 9001
+    targetPort: 9001
+    protocol: TCP
+    name: console
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-secret
+  namespace: milvus-prod
+type: Opaque
+stringData:
+  rootUser: "minioadmin"
+  rootPassword: "minioadmin123"  # CHANGE IN PRODUCTION
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  namespace: milvus-prod
+  labels:
+    app: minio
+    component: storage
+spec:
+  serviceName: minio-headless
+  replicas: 4
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+        component: storage
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values: ["minio"]
+              topologyKey: topology.kubernetes.io/zone
+      containers:
+      - name: minio
+        image: minio/minio:RELEASE.2023-12-09T18-17-51Z
+        args:
+        - server
+        - http://minio-{0...3}.minio-headless.milvus-prod.svc.cluster.local/data
+        - --console-address
+        - ":9001"
+        env:
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: rootUser
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: rootPassword
+        - name: MINIO_PROMETHEUS_AUTH_TYPE
+          value: "public"
+        - name: MINIO_STORAGE_CLASS_STANDARD
+          value: "EC:2"
+        ports:
+        - containerPort: 9000
+          name: api
+        - containerPort: 9001
+          name: console
+        resources:
+          requests:
+            cpu: 2
+            memory: 8Gi
+          limits:
+            cpu: 4
+            memory: 16Gi
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        livenessProbe:
+          httpGet:
+            path: /minio/health/live
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /minio/health/ready
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd
+      resources:
+        requests:
+          storage: 500Gi

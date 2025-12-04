@@ -1,0 +1,243 @@
+---
+# Prometheus ServiceMonitor for Milvus components
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: milvus-metrics
+  namespace: milvus-prod
+  labels:
+    app: milvus
+spec:
+  selector:
+    matchLabels:
+      app: milvus
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    scheme: http
+---
+# Prometheus rules for Milvus
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: milvus-alerts
+  namespace: milvus-prod
+  labels:
+    app: milvus
+spec:
+  groups:
+  - name: milvus.latency
+    interval: 30s
+    rules:
+    - alert: MilvusHighP99Latency
+      expr: histogram_quantile(0.99, rate(milvus_proxy_req_latency_bucket[5m])) > 0.01
+      for: 5m
+      labels:
+        severity: critical
+        component: proxy
+      annotations:
+        summary: "Milvus p99 latency exceeds 10ms"
+        description: "p99 latency is {{ $value }}ms (target: <10ms)"
+
+    - alert: MilvusHighQueryLatency
+      expr: histogram_quantile(0.95, rate(milvus_querynode_search_latency_bucket[5m])) > 0.005
+      for: 5m
+      labels:
+        severity: warning
+        component: querynode
+      annotations:
+        summary: "Query node search latency high"
+        description: "p95 query latency is {{ $value }}ms"
+
+  - name: milvus.availability
+    interval: 30s
+    rules:
+    - alert: MilvusQueryNodeDown
+      expr: up{job="milvus-querynode"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        component: querynode
+      annotations:
+        summary: "Query node {{ $labels.pod }} is down"
+        description: "Query node has been down for 2 minutes"
+
+    - alert: MilvusQueryNodesLowCount
+      expr: count(up{job="milvus-querynode"} == 1) < 90
+      for: 5m
+      labels:
+        severity: warning
+        component: querynode
+      annotations:
+        summary: "Insufficient query nodes available"
+        description: "Only {{ $value }} query nodes running (target: 100)"
+
+    - alert: MilvusProxyDown
+      expr: up{job="milvus-proxy"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: proxy
+      annotations:
+        summary: "Milvus proxy {{ $labels.pod }} is down"
+
+    - alert: MilvusCoordinatorDown
+      expr: up{job=~"milvus-(root|data|query|index)coord"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        component: coordinator
+      annotations:
+        summary: "Milvus coordinator {{ $labels.job }} is down"
+
+  - name: milvus.performance
+    interval: 30s
+    rules:
+    - alert: MilvusHighQPS
+      expr: rate(milvus_proxy_req_count[5m]) > 10000
+      for: 10m
+      labels:
+        severity: info
+        component: proxy
+      annotations:
+        summary: "High QPS detected"
+        description: "QPS is {{ $value }}/sec (consider scaling proxies)"
+
+    - alert: MilvusLowCacheHitRate
+      expr: rate(milvus_querynode_cache_hit_count[5m]) / rate(milvus_querynode_cache_access_count[5m]) < 0.7
+      for: 10m
+      labels:
+        severity: warning
+        component: querynode
+      annotations:
+        summary: "Low cache hit rate"
+        description: "Cache hit rate is {{ $value }}% (target: >70%)"
+
+    - alert: MilvusGPUUtilizationLow
+      expr: avg(DCGM_FI_DEV_GPU_UTIL{namespace="milvus-prod"}) < 20
+      for: 30m
+      labels:
+        severity: info
+        component: querynode
+      annotations:
+        summary: "GPU utilization low"
+        description: "Average GPU utilization is {{ $value }}% (check workload)"
+
+  - name: milvus.resources
+    interval: 30s
+    rules:
+    - alert: MilvusHighMemoryUsage
+      expr: container_memory_usage_bytes{namespace="milvus-prod",container="querynode"} / container_spec_memory_limit_bytes{namespace="milvus-prod",container="querynode"} > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        component: querynode
+      annotations:
+        summary: "Query node {{ $labels.pod }} high memory usage"
+        description: "Memory usage is {{ $value }}%"
+
+    - alert: MilvusGPUMemoryHigh
+      expr: DCGM_FI_DEV_FB_USED{namespace="milvus-prod"} / DCGM_FI_DEV_FB_FREE{namespace="milvus-prod"} > 0.95
+      for: 5m
+      labels:
+        severity: critical
+        component: querynode
+      annotations:
+        summary: "GPU memory critically high"
+        description: "GPU {{ $labels.gpu }} memory usage is {{ $value }}%"
+
+    - alert: MilvusStorageFull
+      expr: kubelet_volume_stats_used_bytes{namespace="milvus-prod"} / kubelet_volume_stats_capacity_bytes{namespace="milvus-prod"} > 0.85
+      for: 10m
+      labels:
+        severity: warning
+        component: storage
+      annotations:
+        summary: "Storage volume {{ $labels.persistentvolumeclaim }} filling up"
+        description: "Volume usage is {{ $value }}%"
+
+  - name: milvus.etcd
+    interval: 30s
+    rules:
+    - alert: EtcdHighLatency
+      expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket{namespace="milvus-prod"}[5m])) > 0.1
+      for: 5m
+      labels:
+        severity: warning
+        component: etcd
+      annotations:
+        summary: "etcd high commit latency"
+        description: "p99 commit latency is {{ $value }}s"
+
+    - alert: EtcdNoLeader
+      expr: etcd_server_has_leader{namespace="milvus-prod"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        component: etcd
+      annotations:
+        summary: "etcd has no leader"
+        description: "etcd cluster cannot elect a leader"
+---
+# Grafana Dashboard ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: milvus-dashboard
+  namespace: milvus-prod
+  labels:
+    grafana_dashboard: "1"
+data:
+  milvus-overview.json: |
+    {
+      "dashboard": {
+        "title": "Milvus 100x T4 GPU Cluster",
+        "tags": ["milvus", "gpu", "vector-search"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "title": "QPS",
+            "targets": [
+              {"expr": "rate(milvus_proxy_req_count[5m])"}
+            ],
+            "type": "graph"
+          },
+          {
+            "title": "P99 Latency (ms)",
+            "targets": [
+              {"expr": "histogram_quantile(0.99, rate(milvus_proxy_req_latency_bucket[5m])) * 1000"}
+            ],
+            "type": "graph"
+          },
+          {
+            "title": "Query Nodes Status",
+            "targets": [
+              {"expr": "count(up{job=\"milvus-querynode\"} == 1)"}
+            ],
+            "type": "stat"
+          },
+          {
+            "title": "GPU Utilization (%)",
+            "targets": [
+              {"expr": "DCGM_FI_DEV_GPU_UTIL{namespace=\"milvus-prod\"}"}
+            ],
+            "type": "heatmap"
+          },
+          {
+            "title": "GPU Memory (GB)",
+            "targets": [
+              {"expr": "DCGM_FI_DEV_FB_USED{namespace=\"milvus-prod\"} / 1024 / 1024 / 1024"}
+            ],
+            "type": "graph"
+          },
+          {
+            "title": "Cache Hit Rate",
+            "targets": [
+              {"expr": "rate(milvus_querynode_cache_hit_count[5m]) / rate(milvus_querynode_cache_access_count[5m])"}
+            ],
+            "type": "graph"
+          }
+        ]
+      }
+    }

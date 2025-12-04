@@ -32,6 +32,9 @@ pub mod reasoning;
 pub mod pathfinding;
 pub mod gpu_bridge;
 
+// Unified pipeline module (all 3 optimization phases)
+pub mod unified_gpu;
+
 pub use engine::{GpuSemanticEngine, GpuConfig, GpuMetrics};
 pub use kernels::{KernelModules, KernelError};
 pub use memory::{MemoryPool, DeviceBuffer, PinnedBuffer};
@@ -40,6 +43,9 @@ pub use similarity::{SimilarityMatrix, SimilarityConfig};
 pub use reasoning::{OntologyConstraints, ReasoningResult};
 pub use pathfinding::{Path, PathfindingConfig};
 pub use gpu_bridge::{GpuBridge, GpuTransferManager, GpuBridgeError, ParsedAxiom, ViolationReport, SerializationStats, GpuHandle};
+
+// Unified pipeline exports
+pub use unified_gpu::{GPUPipeline, GPUPipelineBuilder, PipelineStats};
 
 /// Result type for GPU operations
 pub type GpuResult<T> = Result<T, GpuError>;

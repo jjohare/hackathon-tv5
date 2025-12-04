@@ -1,0 +1,13 @@
+[package]
+name = "ontology-validator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sophia = { version = "0.8", features = ["all_parsers"] }
+sophia_api = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+tempfile = "3.8"

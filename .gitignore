@@ -137,3 +137,54 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Rust
+target/
+Cargo.lock
+*.rs.bk
+*.pdb
+
+# Cloned repositories (temporary research)
+temp-ruvector/
+temp-datadesigner/
+
+# CUDA/PTX files
+*.ptx
+*.cubin
+*.fatbin
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Generated files
+src/rust/models/generated.rs
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Claude Flow metrics (generated)
+design/.claude-flow/metrics/

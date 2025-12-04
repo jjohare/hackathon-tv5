@@ -228,7 +228,276 @@ impl SemanticForcesInput {
     }
 }
 
-/// GPU memory layout for ontology constraints kernel
+/// OWL constraint type IDs for GPU processing
+#[repr(u32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum ConstraintType {
+    DisjointWith = 1,
+    SubClassOf = 2,
+    EquivalentClass = 3,
+    InverseOf = 4,
+    FunctionalProperty = 5,
+    InverseFunctionalProperty = 6,
+    TransitiveProperty = 7,
+    SymmetricProperty = 8,
+    AsymmetricProperty = 9,
+    ReflexiveProperty = 10,
+    IrreflexiveProperty = 11,
+    ObjectPropertyDomain = 12,
+    ObjectPropertyRange = 13,
+    DataPropertyDomain = 14,
+    DataPropertyRange = 15,
+    AllValuesFrom = 16,
+    SomeValuesFrom = 17,
+    HasValue = 18,
+    MinCardinality = 19,
+    MaxCardinality = 20,
+    ExactCardinality = 21,
+}
+
+impl ConstraintType {
+    pub fn from_u32(value: u32) -> Option<Self> {
+        match value {
+            1 => Some(Self::DisjointWith),
+            2 => Some(Self::SubClassOf),
+            3 => Some(Self::EquivalentClass),
+            4 => Some(Self::InverseOf),
+            5 => Some(Self::FunctionalProperty),
+            6 => Some(Self::InverseFunctionalProperty),
+            7 => Some(Self::TransitiveProperty),
+            8 => Some(Self::SymmetricProperty),
+            9 => Some(Self::AsymmetricProperty),
+            10 => Some(Self::ReflexiveProperty),
+            11 => Some(Self::IrreflexiveProperty),
+            12 => Some(Self::ObjectPropertyDomain),
+            13 => Some(Self::ObjectPropertyRange),
+            14 => Some(Self::DataPropertyDomain),
+            15 => Some(Self::DataPropertyRange),
+            16 => Some(Self::AllValuesFrom),
+            17 => Some(Self::SomeValuesFrom),
+            18 => Some(Self::HasValue),
+            19 => Some(Self::MinCardinality),
+            20 => Some(Self::MaxCardinality),
+            21 => Some(Self::ExactCardinality),
+            _ => None,
+        }
+    }
+
+    pub fn to_u32(self) -> u32 {
+        self as u32
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::DisjointWith => "DisjointWith",
+            Self::SubClassOf => "SubClassOf",
+            Self::EquivalentClass => "EquivalentClass",
+            Self::InverseOf => "InverseOf",
+            Self::FunctionalProperty => "FunctionalProperty",
+            Self::InverseFunctionalProperty => "InverseFunctionalProperty",
+            Self::TransitiveProperty => "TransitiveProperty",
+            Self::SymmetricProperty => "SymmetricProperty",
+            Self::AsymmetricProperty => "AsymmetricProperty",
+            Self::ReflexiveProperty => "ReflexiveProperty",
+            Self::IrreflexiveProperty => "IrreflexiveProperty",
+            Self::ObjectPropertyDomain => "ObjectPropertyDomain",
+            Self::ObjectPropertyRange => "ObjectPropertyRange",
+            Self::DataPropertyDomain => "DataPropertyDomain",
+            Self::DataPropertyRange => "DataPropertyRange",
+            Self::AllValuesFrom => "AllValuesFrom",
+            Self::SomeValuesFrom => "SomeValuesFrom",
+            Self::HasValue => "HasValue",
+            Self::MinCardinality => "MinCardinality",
+            Self::MaxCardinality => "MaxCardinality",
+            Self::ExactCardinality => "ExactCardinality",
+        }
+    }
+}
+
+/// GPU constraint representation as flat integer array
+/// Format: [subject_id, predicate_id, object_id, constraint_type, ...]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GpuConstraintGraph {
+    /// Flat array of constraint quads: [subj, pred, obj, type, subj, pred, obj, type, ...]
+    pub constraint_data: Vec<u32>,
+    /// Constraint weights/strengths [0.0, 1.0]
+    pub constraint_weights: Vec<f32>,
+    /// Number of constraints
+    pub constraint_count: usize,
+    /// Elements per constraint (4: subject, predicate, object, type)
+    pub elements_per_constraint: usize,
+}
+
+impl GpuConstraintGraph {
+    pub fn new() -> Self {
+        Self {
+            constraint_data: Vec::new(),
+            constraint_weights: Vec::new(),
+            constraint_count: 0,
+            elements_per_constraint: 4,
+        }
+    }
+
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            constraint_data: Vec::with_capacity(capacity * 4),
+            constraint_weights: Vec::with_capacity(capacity),
+            constraint_count: 0,
+            elements_per_constraint: 4,
+        }
+    }
+
+    pub fn add_constraint(
+        &mut self,
+        subject_id: u32,
+        predicate_id: u32,
+        object_id: u32,
+        constraint_type: ConstraintType,
+        weight: f32,
+    ) {
+        self.constraint_data.push(subject_id);
+        self.constraint_data.push(predicate_id);
+        self.constraint_data.push(object_id);
+        self.constraint_data.push(constraint_type.to_u32());
+        self.constraint_weights.push(weight.clamp(0.0, 1.0));
+        self.constraint_count += 1;
+    }
+
+    pub fn size_bytes(&self) -> usize {
+        self.constraint_data.len() * std::mem::size_of::<u32>()
+            + self.constraint_weights.len() * std::mem::size_of::<f32>()
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        if self.constraint_data.len() != self.constraint_count * self.elements_per_constraint {
+            return Err(format!(
+                "Invalid constraint data length: expected {}, got {}",
+                self.constraint_count * self.elements_per_constraint,
+                self.constraint_data.len()
+            ));
+        }
+
+        if self.constraint_weights.len() != self.constraint_count {
+            return Err(format!(
+                "Invalid weights length: expected {}, got {}",
+                self.constraint_count,
+                self.constraint_weights.len()
+            ));
+        }
+
+        for (i, &weight) in self.constraint_weights.iter().enumerate() {
+            if !(0.0..=1.0).contains(&weight) {
+                return Err(format!("Weight at index {} out of range: {}", i, weight));
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl Default for GpuConstraintGraph {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// GPU violation result from kernel execution
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GpuViolationResult {
+    /// Constraint indices that were violated
+    pub violated_constraint_indices: Vec<u32>,
+    /// Severity scores for each violation [0.0, 1.0]
+    pub violation_severities: Vec<f32>,
+    /// Total number of violations detected
+    pub total_violations: usize,
+}
+
+impl GpuViolationResult {
+    pub fn new() -> Self {
+        Self {
+            violated_constraint_indices: Vec::new(),
+            violation_severities: Vec::new(),
+            total_violations: 0,
+        }
+    }
+
+    pub fn add_violation(&mut self, constraint_index: u32, severity: f32) {
+        self.violated_constraint_indices.push(constraint_index);
+        self.violation_severities.push(severity.clamp(0.0, 1.0));
+        self.total_violations += 1;
+    }
+
+    pub fn merge(&mut self, other: GpuViolationResult) {
+        self.violated_constraint_indices
+            .extend(other.violated_constraint_indices);
+        self.violation_severities
+            .extend(other.violation_severities);
+        self.total_violations += other.total_violations;
+    }
+}
+
+impl Default for GpuViolationResult {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Entity ID mapping for GPU serialization
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EntityIdMap {
+    /// Map from entity IRI to GPU ID
+    pub iri_to_id: std::collections::HashMap<String, u32>,
+    /// Map from GPU ID to entity IRI
+    pub id_to_iri: std::collections::HashMap<u32, String>,
+    /// Next available ID
+    pub next_id: u32,
+}
+
+impl EntityIdMap {
+    pub fn new() -> Self {
+        Self {
+            iri_to_id: std::collections::HashMap::new(),
+            id_to_iri: std::collections::HashMap::new(),
+            next_id: 0,
+        }
+    }
+
+    pub fn get_or_create_id(&mut self, iri: &str) -> u32 {
+        if let Some(&id) = self.iri_to_id.get(iri) {
+            id
+        } else {
+            let id = self.next_id;
+            self.next_id += 1;
+            self.iri_to_id.insert(iri.to_string(), id);
+            self.id_to_iri.insert(id, iri.to_string());
+            id
+        }
+    }
+
+    pub fn get_id(&self, iri: &str) -> Option<u32> {
+        self.iri_to_id.get(iri).copied()
+    }
+
+    pub fn get_iri(&self, id: u32) -> Option<&str> {
+        self.id_to_iri.get(&id).map(|s| s.as_str())
+    }
+
+    pub fn len(&self) -> usize {
+        self.iri_to_id.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.iri_to_id.is_empty()
+    }
+}
+
+impl Default for EntityIdMap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// GPU memory layout for ontology constraints kernel (legacy compatibility)
 #[repr(C)]
 #[derive(Debug, Clone)]
 pub struct OntologyConstraintsInput {
@@ -247,15 +516,15 @@ pub struct OntologyConstraintsInput {
     /// Fused embeddings [n × dims]
     pub embeddings: Vec<f32>,
 
-    /// Constraint graph [m × 3] (subject, predicate, object)
-    pub constraint_graph: Vec<i32>,
+    /// Constraint graph [m × 4] (subject, predicate, object, type)
+    pub constraint_graph: Vec<u32>,
 
     /// Constraint weights [m]
     pub constraint_weights: Vec<f32>,
 }
 
 impl OntologyConstraintsInput {
-    /// Create input for ontology constraints kernel
+    /// Create input for ontology constraints kernel (legacy format)
     pub fn new(
         embeddings: Vec<Vec<f32>>,
         constraints: Vec<(i32, i32, i32)>,
@@ -267,11 +536,12 @@ impl OntologyConstraintsInput {
 
         let embeddings_flat = embeddings.into_iter().flatten().collect();
 
-        let mut constraint_graph = Vec::with_capacity((m * 3) as usize);
+        let mut constraint_graph = Vec::with_capacity((m * 4) as usize);
         for (s, p, o) in constraints {
-            constraint_graph.push(s);
-            constraint_graph.push(p);
-            constraint_graph.push(o);
+            constraint_graph.push(s as u32);
+            constraint_graph.push(p as u32);
+            constraint_graph.push(o as u32);
+            constraint_graph.push(ConstraintType::SubClassOf.to_u32());
         }
 
         Self {
@@ -285,10 +555,32 @@ impl OntologyConstraintsInput {
         }
     }
 
+    /// Create from GpuConstraintGraph
+    pub fn from_gpu_graph(
+        embeddings: Vec<Vec<f32>>,
+        graph: &GpuConstraintGraph,
+    ) -> Self {
+        let n = embeddings.len() as u32;
+        let m = graph.constraint_count as u32;
+        let dims = embeddings.first().map(|e| e.len()).unwrap_or(1024) as u32;
+
+        let embeddings_flat = embeddings.into_iter().flatten().collect();
+
+        Self {
+            n,
+            m,
+            dims,
+            _padding: 0,
+            embeddings: embeddings_flat,
+            constraint_graph: graph.constraint_data.clone(),
+            constraint_weights: graph.constraint_weights.clone(),
+        }
+    }
+
     /// Memory requirements (bytes)
     pub fn memory_required(&self) -> usize {
         let embeddings_size = self.n as usize * self.dims as usize * 4;
-        let constraints_size = self.m as usize * 3 * 4;
+        let constraints_size = self.m as usize * 4 * 4;
         let weights_size = self.m as usize * 4;
 
         embeddings_size + constraints_size + weights_size

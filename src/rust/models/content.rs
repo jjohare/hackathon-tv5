@@ -51,63 +51,14 @@ pub enum ContentType {
     Miniseries,
 }
 
-/// Genre classification (GMC-O ontology aligned)
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum Genre {
-    Action,
-    Adventure,
-    Animation,
-    Biography,
-    Comedy,
-    Crime,
-    Documentary,
-    Drama,
-    Family,
-    Fantasy,
-    Horror,
-    Mystery,
-    Romance,
-    SciFi,
-    Thriller,
-    War,
-    Western,
-    /// Custom genre not in standard list
-    Custom(String),
-}
+// Genre is now auto-generated from ontology in models/generated.rs
+pub use super::generated::Genre;
 
-/// Visual aesthetic classification (GPU-derived)
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum VisualAesthetic {
-    /// Dark, high-contrast (Film Noir style)
-    Noir,
-    /// Bright neon colors (Cyberpunk style)
-    Neon,
-    /// Soft, muted colors (Wes Anderson style)
-    Pastel,
-    /// Low saturation, gritty
-    Desaturated,
-    /// Natural, documentary style
-    Naturalistic,
-    /// High saturation, vibrant
-    Vibrant,
-}
+// VisualAesthetic is now auto-generated from ontology in models/generated.rs
+pub use super::generated::VisualAesthetic;
 
-/// Narrative structure classification (LLM-derived)
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum NarrativeStructure {
-    /// Linear chronological story
-    Linear,
-    /// Non-linear timeline (Pulp Fiction style)
-    NonLinear,
-    /// Hero's journey archetype
-    HerosJourney,
-    /// Multiple parallel storylines
-    EnsembleCast,
-    /// Circular narrative
-    Circular,
-    /// Frame story (story within story)
-    FrameStory,
-}
+// NarrativeStructure is now auto-generated from ontology in models/generated.rs
+pub use super::generated::NarrativeStructure;
 
 /// Pacing metrics (GPU motion analysis)
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]

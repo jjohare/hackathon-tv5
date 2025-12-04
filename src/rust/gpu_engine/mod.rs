@@ -30,6 +30,7 @@ pub mod streaming;
 pub mod similarity;
 pub mod reasoning;
 pub mod pathfinding;
+pub mod gpu_bridge;
 
 pub use engine::{GpuSemanticEngine, GpuConfig, GpuMetrics};
 pub use kernels::{KernelModules, KernelError};
@@ -38,6 +39,7 @@ pub use streaming::{StreamManager, StreamHandle};
 pub use similarity::{SimilarityMatrix, SimilarityConfig};
 pub use reasoning::{OntologyConstraints, ReasoningResult};
 pub use pathfinding::{Path, PathfindingConfig};
+pub use gpu_bridge::{GpuBridge, GpuTransferManager, GpuBridgeError, ParsedAxiom, ViolationReport, SerializationStats, GpuHandle};
 
 /// Result type for GPU operations
 pub type GpuResult<T> = Result<T, GpuError>;

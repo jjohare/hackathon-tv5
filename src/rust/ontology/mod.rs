@@ -76,6 +76,7 @@
 pub mod types;
 pub mod reasoner;
 pub mod loader;
+pub mod validator;
 
 // Re-export commonly used types
 pub use types::{
@@ -100,6 +101,11 @@ pub use loader::{
     OntologyLoader,
     Neo4jConfig,
     create_test_ontology,
+};
+
+pub use validator::{
+    OntologyValidator,
+    ValidationReport,
 };
 
 /// Version of the ontology module

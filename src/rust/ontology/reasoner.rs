@@ -5,7 +5,13 @@
 /// cultural context matching, and user preference reasoning with GPU acceleration hooks.
 
 use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
 use serde::{Deserialize, Serialize};
+use petgraph::graph::{DiGraph, NodeIndex};
+use petgraph::algo::tarjan_scc;
+use petgraph::visit::Dfs;
+use dashmap::DashMap;
+use rayon::prelude::*;
 use super::types::*;
 
 /// Core ontology structure for media reasoning
@@ -85,29 +91,70 @@ pub enum MediaAxiomType {
     DisjointGenre,
 }
 
+/// Constraint violation record
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConstraintViolation {
+    pub violation_type: ViolationType,
+    pub subject: String,
+    pub object: Option<String>,
+    pub severity: ViolationSeverity,
+    pub explanation: String,
+}
+
+/// Types of constraint violations
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum ViolationType {
+    DisjointGenreConflict,
+    CircularHierarchy,
+    CardinalityViolation,
+    DomainRangeViolation,
+    ParadoxicalProperty,
+    MutuallyExclusiveMood,
+}
+
+/// Severity levels for violations
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ViolationSeverity {
+    Warning,
+    Error,
+    Critical,
+}
+
 /// Production-ready media reasoner with caching and GPU hooks
 pub struct ProductionMediaReasoner {
-    /// Transitive closure cache for genre hierarchy
-    genre_closure_cache: HashMap<String, HashSet<String>>,
+    /// Transitive closure cache for genre hierarchy (thread-safe)
+    genre_closure_cache: Arc<DashMap<String, HashSet<String>>>,
 
-    /// Mood similarity matrix cache
-    mood_similarity_cache: HashMap<(String, String), f32>,
+    /// Mood similarity matrix cache (thread-safe)
+    mood_similarity_cache: Arc<DashMap<(String, String), f32>>,
+
+    /// Graph representation of genre hierarchy
+    genre_graph: Option<DiGraph<String, ()>>,
+
+    /// Node mapping for graph
+    genre_node_map: HashMap<String, NodeIndex>,
 
     /// GPU acceleration enabled flag
     gpu_enabled: bool,
 
     /// Batch size for GPU operations
     gpu_batch_size: usize,
+
+    /// Circular dependency detection cache
+    circular_deps_checked: bool,
 }
 
 impl ProductionMediaReasoner {
     /// Create new reasoner instance
     pub fn new() -> Self {
         Self {
-            genre_closure_cache: HashMap::new(),
-            mood_similarity_cache: HashMap::new(),
+            genre_closure_cache: Arc::new(DashMap::new()),
+            mood_similarity_cache: Arc::new(DashMap::new()),
+            genre_graph: None,
+            genre_node_map: HashMap::new(),
             gpu_enabled: false,
             gpu_batch_size: 1024,
+            circular_deps_checked: false,
         }
     }
 
@@ -118,15 +165,223 @@ impl ProductionMediaReasoner {
         self
     }
 
-    /// Compute transitive closure of genre hierarchy
+    /// Build graph representation from ontology
+    fn build_genre_graph(&mut self, ontology: &MediaOntology) {
+        let mut graph = DiGraph::new();
+        let mut node_map = HashMap::new();
+
+        // Create nodes for all genres
+        for genre in ontology.genre_hierarchy.keys() {
+            let node = graph.add_node(genre.clone());
+            node_map.insert(genre.clone(), node);
+        }
+
+        // Add parent genre nodes if not present
+        for parents in ontology.genre_hierarchy.values() {
+            for parent in parents {
+                if !node_map.contains_key(parent) {
+                    let node = graph.add_node(parent.clone());
+                    node_map.insert(parent.clone(), node);
+                }
+            }
+        }
+
+        // Add edges (child -> parent)
+        for (child, parents) in &ontology.genre_hierarchy {
+            let child_node = node_map[child];
+            for parent in parents {
+                let parent_node = node_map[parent];
+                graph.add_edge(child_node, parent_node, ());
+            }
+        }
+
+        self.genre_graph = Some(graph);
+        self.genre_node_map = node_map;
+    }
+
+    /// Compute transitive closure using petgraph (optimized for large graphs)
     fn compute_genre_closure(&mut self, ontology: &MediaOntology) {
+        self.build_genre_graph(ontology);
         self.genre_closure_cache.clear();
 
-        for genre in ontology.genre_hierarchy.keys() {
-            let mut ancestors = HashSet::new();
-            self.collect_parent_genres(genre, ontology, &mut ancestors);
-            self.genre_closure_cache.insert(genre.clone(), ancestors);
+        let graph = self.genre_graph.as_ref().unwrap();
+
+        // Parallel computation of transitive closure
+        let results: Vec<_> = self.genre_node_map.par_iter()
+            .map(|(genre, &node_idx)| {
+                let mut ancestors = HashSet::new();
+                let mut dfs = Dfs::new(graph, node_idx);
+
+                while let Some(visited) = dfs.next(graph) {
+                    if visited != node_idx {
+                        ancestors.insert(graph[visited].clone());
+                    }
+                }
+
+                (genre.clone(), ancestors)
+            })
+            .collect();
+
+        // Insert results into cache
+        for (genre, ancestors) in results {
+            self.genre_closure_cache.insert(genre, ancestors);
         }
+    }
+
+    /// Detect circular dependencies in genre hierarchy
+    pub fn detect_circular_dependencies(&mut self, ontology: &MediaOntology) -> Vec<ConstraintViolation> {
+        if self.genre_graph.is_none() {
+            self.build_genre_graph(ontology);
+        }
+
+        let graph = self.genre_graph.as_ref().unwrap();
+        let mut violations = Vec::new();
+
+        // Use Tarjan's algorithm to find strongly connected components
+        let sccs = tarjan_scc(graph);
+
+        for scc in sccs {
+            if scc.len() > 1 {
+                // Found circular dependency
+                let genres: Vec<String> = scc.iter()
+                    .map(|&idx| graph[idx].clone())
+                    .collect();
+
+                violations.push(ConstraintViolation {
+                    violation_type: ViolationType::CircularHierarchy,
+                    subject: genres.join(" -> "),
+                    object: None,
+                    severity: ViolationSeverity::Critical,
+                    explanation: format!(
+                        "Circular genre hierarchy detected: {}. This creates an infinite loop.",
+                        genres.join(" -> ")
+                    ),
+                });
+            }
+        }
+
+        self.circular_deps_checked = true;
+        violations
+    }
+
+    /// Check for disjoint genre violations
+    pub fn check_disjoint_violations(
+        &self,
+        media: &MediaEntity,
+        ontology: &MediaOntology,
+    ) -> Vec<ConstraintViolation> {
+        let mut violations = Vec::new();
+
+        // Check if media has genres from disjoint sets
+        for disjoint_set in &ontology.disjoint_genres {
+            let mut matched_genres = Vec::new();
+
+            for genre in &media.genres {
+                // Check direct membership
+                if disjoint_set.contains(genre) {
+                    matched_genres.push(genre.clone());
+                    continue;
+                }
+
+                // Check if genre is a subgenre of any disjoint genre
+                for disjoint_genre in disjoint_set {
+                    if self.is_subgenre_of_cached(genre, disjoint_genre, ontology) {
+                        matched_genres.push(genre.clone());
+                        break;
+                    }
+                }
+            }
+
+            if matched_genres.len() > 1 {
+                violations.push(ConstraintViolation {
+                    violation_type: ViolationType::DisjointGenreConflict,
+                    subject: media.id.clone(),
+                    object: Some(matched_genres.join(", ")),
+                    severity: ViolationSeverity::Error,
+                    explanation: format!(
+                        "Media '{}' has mutually exclusive genres: {}. These genres are defined as disjoint.",
+                        media.title, matched_genres.join(", ")
+                    ),
+                });
+            }
+        }
+
+        violations
+    }
+
+    /// Check for paradoxical properties (e.g., FamilyFriendly + Rated-R)
+    pub fn check_paradoxical_properties(
+        &self,
+        media: &MediaEntity,
+    ) -> Vec<ConstraintViolation> {
+        let mut violations = Vec::new();
+
+        // Define paradoxical combinations
+        let paradoxes = vec![
+            (vec!["FamilyFriendly", "Children"], vec!["Rated-R", "Mature", "Adult"]),
+            (vec!["Educational"], vec!["Exploitation", "Gratuitous"]),
+            (vec!["Peaceful", "Calm"], vec!["Action", "Horror", "Thriller"]),
+        ];
+
+        for (positive_tags, negative_tags) in paradoxes {
+            let has_positive = media.semantic_tags.iter()
+                .any(|tag| positive_tags.iter().any(|&p| tag.contains(p)))
+                || media.genres.iter()
+                .any(|g| positive_tags.iter().any(|&p| g.contains(p)));
+
+            let has_negative = media.semantic_tags.iter()
+                .any(|tag| negative_tags.iter().any(|&n| tag.contains(n)))
+                || media.genres.iter()
+                .any(|g| negative_tags.iter().any(|&n| g.contains(n)));
+
+            if has_positive && has_negative {
+                violations.push(ConstraintViolation {
+                    violation_type: ViolationType::ParadoxicalProperty,
+                    subject: media.id.clone(),
+                    object: None,
+                    severity: ViolationSeverity::Warning,
+                    explanation: format!(
+                        "Media '{}' has contradictory properties. Contains both {:?} and {:?} characteristics.",
+                        media.title, positive_tags, negative_tags
+                    ),
+                });
+            }
+        }
+
+        violations
+    }
+
+    /// Comprehensive constraint checking
+    pub fn check_all_constraints(
+        &mut self,
+        ontology: &MediaOntology,
+    ) -> Vec<ConstraintViolation> {
+        let mut all_violations = Vec::new();
+
+        // Check for circular dependencies
+        all_violations.extend(self.detect_circular_dependencies(ontology));
+
+        // Check each media entity
+        for media in ontology.media.values() {
+            all_violations.extend(self.check_disjoint_violations(media, ontology));
+            all_violations.extend(self.check_paradoxical_properties(media));
+        }
+
+        // Sort by severity
+        all_violations.sort_by(|a, b| b.severity.cmp(&a.severity));
+
+        all_violations
+    }
+
+    /// Helper to check subgenre relationship using cache
+    fn is_subgenre_of_cached(&self, child: &str, parent: &str, ontology: &MediaOntology) -> bool {
+        if let Some(ancestors) = self.genre_closure_cache.get(child) {
+            return ancestors.contains(parent);
+        }
+
+        // Fallback to recursive check
+        let mut visited = HashSet::new();
+        self.is_subgenre_recursive(child, parent, ontology, &mut visited)
     }
 
     /// Recursively collect all parent genres
@@ -151,13 +406,17 @@ impl ProductionMediaReasoner {
 
         self.compute_genre_closure(ontology);
 
-        for (child, ancestors) in &self.genre_closure_cache {
+        // Iterate through cache entries
+        for entry in self.genre_closure_cache.iter() {
+            let child = entry.key();
+            let ancestors = entry.value();
+
             let direct_parents = ontology.genre_hierarchy
-                .get(child)
+                .get(child.as_str())
                 .cloned()
                 .unwrap_or_default();
 
-            for ancestor in ancestors {
+            for ancestor in ancestors.iter() {
                 if !direct_parents.contains(ancestor) {
                     inferred.push(InferredMediaAxiom {
                         axiom_type: MediaAxiomType::SubGenreOf,
@@ -229,14 +488,12 @@ impl ProductionMediaReasoner {
     /// Infer genre from mood patterns
     fn infer_genre_from_moods(
         &self,
-        media: &MediaEntity,
-        ontology: &MediaOntology,
+        _media: &MediaEntity,
+        _ontology: &MediaOntology,
     ) -> Vec<InferredMediaAxiom> {
-        let mut inferred = Vec::new();
+        let inferred = Vec::new();
 
         // Create genre -> typical moods mapping
-        let mut genre_moods: HashMap<String, HashSet<String>> = HashMap::new();
-
         // This would be populated from ontology in production
         // For now, we'll skip if no genre-mood mappings exist
 
@@ -442,41 +699,88 @@ impl MediaReasoner for ProductionMediaReasoner {
     }
 
     fn match_cultural_context(&self, media: &MediaEntity, context: &CulturalContext) -> f32 {
-        let mut score = 0.0;
-        let mut factors = 0;
+        let mut weighted_score = 0.0;
+        let mut total_weight = 0.0;
 
-        // Language match
-        if media.cultural_context.contains(&context.language) {
-            score += 1.0;
+        // Language match (weight: 0.3)
+        let language_weight = 0.3;
+        let language_score = if media.cultural_context.contains(&context.language) {
+            1.0
+        } else {
+            // Partial credit for same language family (e.g., en-US vs en-GB)
+            let media_lang_base: String = media.cultural_context.iter()
+                .filter_map(|l| l.split('-').next())
+                .next()
+                .unwrap_or("")
+                .to_string();
+            let context_lang_base = context.language.split('-').next().unwrap_or("");
+
+            if media_lang_base == context_lang_base {
+                0.7
+            } else {
+                0.0
+            }
+        };
+        weighted_score += language_score * language_weight;
+        total_weight += language_weight;
+
+        // Regional match (weight: 0.25)
+        let region_weight = 0.25;
+        let region_score = if media.cultural_context.iter().any(|c| c.contains(&context.region)) {
+            1.0
+        } else {
+            0.0
+        };
+        weighted_score += region_score * region_weight;
+        total_weight += region_weight;
+
+        // Theme overlap with cultural relevance (weight: 0.25)
+        let theme_weight = 0.25;
+        if !media.themes.is_empty() && !context.cultural_themes.is_empty() {
+            let theme_overlap: usize = media.themes.iter()
+                .filter(|t| context.cultural_themes.contains(t))
+                .count();
+            let theme_score = (theme_overlap as f32) / (media.themes.len().max(context.cultural_themes.len()) as f32);
+            weighted_score += theme_score * theme_weight;
+            total_weight += theme_weight;
         }
-        factors += 1;
 
-        // Regional match
-        if media.cultural_context.contains(&context.region) {
-            score += 1.0;
+        // Regional preference alignment (weight: 0.15)
+        let preference_weight = 0.15;
+        let mut preference_score = 0.0;
+        let mut pref_count = 0;
+
+        for genre in &media.genres {
+            if let Some(&pref_val) = context.preferences.get(genre) {
+                preference_score += pref_val;
+                pref_count += 1;
+            }
         }
-        factors += 1;
 
-        // Theme overlap
-        let theme_overlap: usize = media.themes.iter()
-            .filter(|t| context.cultural_themes.contains(t))
+        if pref_count > 0 {
+            preference_score /= pref_count as f32;
+            weighted_score += preference_score * preference_weight;
+            total_weight += preference_weight;
+        }
+
+        // Taboo penalty (weight: 0.05, but negative)
+        let taboo_weight = 0.05;
+        let taboo_violations: usize = media.themes.iter()
+            .filter(|t| context.taboos.contains(t))
             .count();
 
-        if !media.themes.is_empty() {
-            score += (theme_overlap as f32) / (media.themes.len() as f32);
-            factors += 1;
+        if taboo_violations > 0 {
+            // Severe penalty for taboo violations
+            let taboo_penalty = -(taboo_violations as f32) * 0.5;
+            weighted_score += taboo_penalty.max(-1.0);
         }
+        total_weight += taboo_weight;
 
-        // Taboo check (negative scoring)
-        let has_taboo = media.themes.iter()
-            .any(|t| context.taboos.contains(t));
+        // Temporal context bonus (if content matches time-sensitive themes)
+        // This would integrate with DeliveryContext in production
 
-        if has_taboo {
-            score -= 0.5;
-        }
-
-        if factors > 0 {
-            (score / factors as f32).max(0.0).min(1.0)
+        if total_weight > 0.0 {
+            (weighted_score / total_weight).max(0.0).min(1.0)
         } else {
             0.5 // Neutral if no information
         }
@@ -632,7 +936,7 @@ impl ProductionMediaReasoner {
     }
 
     /// Calculate similarity to user's interaction history
-    fn calculate_history_similarity(&self, media: &MediaEntity, user: &UserProfile) -> f32 {
+    fn calculate_history_similarity(&self, _media: &MediaEntity, user: &UserProfile) -> f32 {
         if user.interaction_history.is_empty() {
             return 0.5; // Neutral for new users
         }

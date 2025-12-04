@@ -180,3 +180,7 @@ mod tests {
         assert!(err.to_string().contains("test"));
     }
 }
+
+// AgentDB modules
+pub mod storage;
+pub mod agentdb;

@@ -39,13 +39,23 @@
 - `ENHANCEMENTS.md` - Enhancement proposals
 - `ontology.md` - Ontology definitions
 
+### `/cleanup-2025-12-04/` - Document Consolidation (30 files)
+
+**Purpose**: Systematic cleanup of working documents, outdated analysis, and redundant files
+
+**Subdirectories**:
+- `/outdated/` (11 files) - Superseded analysis and completed work reports
+- `/redundant/` (4 files) - Duplicate content available in authoritative docs
+- `/working-docs/` (14 files) - Historical working documents and research explorations
+- `/temp/` (1 file) - Temporary/intermediate files
+
+See `cleanup-2025-12-04/README.md` for detailed manifest and restoration guidelines.
+
 ## Protected Files (Remain in Active Directory)
 
 These files were intentionally **NOT** archived as they contain current, authoritative documentation:
 
 - `ADAPTIVE_SSSP_ARCHITECTURE.md` - Current SSSP architecture specification
-- `DATABASE_UNIFICATION_ANALYSIS.md` - Current database unification analysis
-- `DATABASE_USAGE_ANALYSIS.md` - Current database usage analysis
 - `SSSP_BREAKTHROUGH_SUMMARY.md` - Current SSSP breakthrough summary
 - `README.md` - Main design directory README
 

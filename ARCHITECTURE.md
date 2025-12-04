@@ -101,110 +101,220 @@ The TV5 Monde Media Gateway is a **hybrid GPU-accelerated semantic discovery pla
 ### System Context Diagram
 
 ```
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        EXTERNAL SYSTEMS                                 │
+│                                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                │
+│  │   Content    │  │    User      │  │   AI Agents  │                │
+│  │  Providers   │  │ Applications │  │ (Claude/etc) │                │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                │
+│         │                 │                  │                         │
+│         │ Metadata        │ Queries          │ MCP Protocol            │
+│         │ Ingestion       │ (REST/GraphQL)   │ (JSON-RPC)             │
+│         │                 │                  │                         │
+└─────────┼─────────────────┼──────────────────┼─────────────────────────┘
+          │                 │                  │
+          ▼                 ▼                  ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     API GATEWAY LAYER                                   │
+│                                                                         │
+│  ┌────────────────────┐           ┌────────────────────┐              │
+│  │   REST API Server  │           │   MCP Server       │              │
+│  │  (Actix-web/Axum)  │           │  (JSON-RPC 2.0)    │              │
+│  │                    │           │                    │              │
+│  │ • Authentication   │           │ • Tool Discovery   │              │
+│  │ • Rate Limiting    │           │ • Streaming        │              │
+│  │ • Request Routing  │           │ • Context Mgmt     │              │
+│  │ • Response Cache   │           │ • Error Handling   │              │
+│  └─────────┬──────────┘           └─────────┬──────────┘              │
+│            │                                 │                         │
+└────────────┼─────────────────────────────────┼─────────────────────────┘
+             │                                 │
+             └────────────┬────────────────────┘
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                ORCHESTRATION & ROUTING LAYER                            │
+│                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │              Query Analyzer & Router                             │  │
+│  │                                                                  │  │
+│  │  • Complexity Analysis (O(log n) vs O(n) vs O(n²))             │  │
+│  │  • Resource Estimation (GPU memory, disk I/O)                   │  │
+│  │  • Path Selection (GPU / Vector DB / Hybrid)                    │  │
+│  │  • Load Balancing (Multi-GPU, DB shards)                        │  │
+│  │  • Fallback Strategy (GPU OOM → Vector DB)                      │  │
+│  └──────────────────────────┬───────────────────────────────────────┘  │
+│                             │                                           │
+└─────────────────────────────┼───────────────────────────────────────────┘
+                              │
+                ┌─────────────┴──────────────┐
+                │                            │
+                ▼                            ▼
+┌────────────────────────────┐  ┌──────────────────────────────┐
+│      GPU ENGINE LAYER      │  │  VECTOR DATABASE LAYER       │
+│      (CUDA Kernels)        │  │  (Qdrant / Milvus)           │
+│                            │  │                              │
+│ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
+│ │ Semantic Similarity    │ │  │ │ HNSW Index               │ │
+│ │ • Tensor Cores (FP16)  │ │  │ │ • M=32, efConstruction   │ │
+│ │ • Memory Coalescing    │ │  │ │ • Product Quantization   │ │
+│ │ • Shared Memory Cache  │ │  │ │ • Disk-backed Storage    │ │
+│ │ • 280 GB/s Bandwidth   │ │  │ │ • Horizontal Sharding    │ │
+│ └────────────────────────┘ │  │ └──────────────────────────┘ │
+│                            │  │                              │
+│ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
+│ │ Adaptive SSSP Engine   │ │  │ │ Metadata Filtering       │ │
+│ │ • GPU Dijkstra (<10K)  │ │  │ │ • Inverted Indices       │ │
+│ │ • Duan SSSP (>10M)     │ │  │ │ • Range Queries          │ │
+│ │ • Auto crossover       │ │  │ │ • Faceted Search         │ │
+│ └────────────────────────┘ │  │ └──────────────────────────┘ │
+│                            │  │                              │
+│ Memory: 16GB VRAM          │  │ Storage: 1TB+ Disk           │
+│ Latency: <10ms             │  │ Latency: 20-100ms            │
+│ Scale: 1M vectors          │  │ Scale: 100M+ vectors         │
+└────────────┬───────────────┘  └────────────┬─────────────────┘
+             │                               │
+             └───────────┬───────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  SEMANTIC ENRICHMENT LAYER                              │
+│                                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │               Knowledge Graph (Neo4j)                          │    │
+│  │                                                                │    │
+│  │  • GMC-O Ontology (Extended)                                  │    │
+│  │  • Entity Relationships (hasGenre, isPartOf, etc.)            │    │
+│  │  • APOC Procedures (Graph Algorithms)                         │    │
+│  │  • Cypher Queries (Pattern Matching)                          │    │
+│  │  • Inference Rules (OWL Reasoning)                            │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│              PERSONALIZATION & LEARNING LAYER                           │
+│                                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │        Reinforcement Learning Agent (AgentDB)                  │    │
+│  │                                                                │    │
+│  │  • Thompson Sampling (Contextual Bandits)                     │    │
+│  │  • User Context Embeddings (session, history, preferences)    │    │
+│  │  • Exploration/Exploitation Balance (ε-greedy)                │    │
+│  │  • Experience Replay & Distillation                           │    │
+│  │  • Cold-Start Handling (5-10 interactions)                    │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
+
 ```mermaid
 graph TD
-    A0["EXTERNAL SYSTEMS"]
-    A1["┌──────────────┐  ┌──────────────┐  ┌──────────────┐"]
-    A0 --> A1
-    A2["│   Content"]
-    A1 --> A2
-    A3["User"]
-    A2 --> A3
-    A4["AI Agents"]
-    A3 --> A4
-    A5["│  Providers"]
-    A4 --> A5
-    A6["Applications"]
-    A5 --> A6
-    A7["(Claude/etc)"]
-    A6 --> A7
-    A8["└──────┬───────┘  └──────┬───────┘  └──────┬───────┘"]
-    A7 --> A8
-    A9["│"]
-    A8 --> A9
-    A10["│ Metadata"]
-    A9 --> A10
-    A11["MCP Protocol"]
-    A10 --> A11
-    A12["│ Ingestion"]
-    A11 --> A12
-    A13["(JSON-RPC)"]
-    A12 --> A13
-    A16["API GATEWAY LAYER"]
-    A15 --> A16
-    A17["┌────────────────────┐           ┌────────────────────┐"]
-    A16 --> A17
-    A18["│   REST API Server"]
-    A17 --> A18
-    A19["MCP Server"]
-    A18 --> A19
-    A20["│  (Actix-web/Axum)"]
-    A19 --> A20
-    A21["(JSON-RPC 2.0)"]
-    A20 --> A21
-    A24["│ • Authentication"]
-    A23 --> A24
-    A25["• Tool Discovery"]
-    A24 --> A25
-    A26["│ • Rate Limiting"]
-    A25 --> A26
-    A27["• Streaming"]
-    A26 --> A27
-    A28["│ • Request Routing"]
-    A27 --> A28
-    A29["• Context Mgmt"]
-    A28 --> A29
-    A30["│ • Response Cache"]
-    A29 --> A30
-    A31["• Error Handling"]
-    A30 --> A31
-    A32["└─────────┬──────────┘           └─────────┬──────────┘"]
-    A31 --> A32
-    A34["ORCHESTRATION & ROUTING LAYER"]
-    A33 --> A34
-    A35["┌──────────────────────────────────────────────────────────────────┐"]
-    A34 --> A35
-    A36["│              Query Analyzer & Router"]
-    A35 --> A36
-    A38["│  • Complexity Analysis (O(log n) vs O(n) vs O(n²))"]
-    A37 --> A38
-    A39["│  • Resource Estimation (GPU memory, disk I/O)"]
-    A38 --> A39
-    A40["│  • Path Selection (GPU / Vector DB / Hybrid)"]
-    A39 --> A40
-    A41["│  • Load Balancing (Multi-GPU, DB shards)"]
-    A40 --> A41
-    A42["│  • Fallback Strategy (GPU OOM → Vector DB)"]
-    A41 --> A42
-    A43["└──────────────────────────┬───────────────────────────────────────┘"]
-    A42 --> A43
-    A45["GPU ENGINE LAYER"]
-    A44 --> A45
-    A46["VECTOR DATABASE LAYER"]
-    A45 --> A46
-    A47["(CUDA Kernels)"]
-    A46 --> A47
-    A48["(Qdrant / Milvus)"]
-    A47 --> A48
-    A50["┌────────────────────────┐"]
-    A49 --> A50
-    A51["┌──────────────────────────┐"]
-    A50 --> A51
-    A52["│ Semantic Similarity"]
-    A51 --> A52
-    A54["│ • Tensor Cores (FP16)"]
-    A53 --> A54
-    A56["│ • Memory Coalescing"]
-    A55 --> A56
-    A58["│ • Shared Memory Cache"]
-    A57 --> A58
-    A60["│ • 280 GB/s Bandwidth"]
-    A59 --> A60
-    A62["└────────────────────────┘"]
-    A61 --> A62
-    A63["└──────────────────────────┘"]
-    A62 --> A63
-    A67["│ Adaptive SSSP Engine"]
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│                        EXTERNAL SYSTEMS                                 │
+│                                                                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                │
+│  │   Content    │  │    User      │  │   AI Agents  │                │
+│  │  Providers   │  │ Applications │  │ (Claude/etc) │                │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                │
+│         │                 │                  │                         │
+│         │ Metadata        │ Queries          │ MCP Protocol            │
+│         │ Ingestion       │ (REST/GraphQL)   │ (JSON-RPC)             │
+│         │                 │                  │                         │
+└─────────┼─────────────────┼──────────────────┼─────────────────────────┘
+          │                 │                  │
+          ▼                 ▼                  ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     API GATEWAY LAYER                                   │
+│                                                                         │
+│  ┌────────────────────┐           ┌────────────────────┐              │
+│  │   REST API Server  │           │   MCP Server       │              │
+│  │  (Actix-web/Axum)  │           │  (JSON-RPC 2.0)    │              │
+│  │                    │           │                    │              │
+│  │ • Authentication   │           │ • Tool Discovery   │              │
+│  │ • Rate Limiting    │           │ • Streaming        │              │
+│  │ • Request Routing  │           │ • Context Mgmt     │              │
+│  │ • Response Cache   │           │ • Error Handling   │              │
+│  └─────────┬──────────┘           └─────────┬──────────┘              │
+│            │                                 │                         │
+└────────────┼─────────────────────────────────┼─────────────────────────┘
+             │                                 │
+             └────────────┬────────────────────┘
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                ORCHESTRATION & ROUTING LAYER                            │
+│                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │              Query Analyzer & Router                             │  │
+│  │                                                                  │  │
+│  │  • Complexity Analysis (O(log n) vs O(n) vs O(n²))             │  │
+│  │  • Resource Estimation (GPU memory, disk I/O)                   │  │
+│  │  • Path Selection (GPU / Vector DB / Hybrid)                    │  │
+│  │  • Load Balancing (Multi-GPU, DB shards)                        │  │
+│  │  • Fallback Strategy (GPU OOM → Vector DB)                      │  │
+│  └──────────────────────────┬───────────────────────────────────────┘  │
+│                             │                                           │
+└─────────────────────────────┼───────────────────────────────────────────┘
+                              │
+                ┌─────────────┴──────────────┐
+                │                            │
+                ▼                            ▼
+┌────────────────────────────┐  ┌──────────────────────────────┐
+│      GPU ENGINE LAYER      │  │  VECTOR DATABASE LAYER       │
+│      (CUDA Kernels)        │  │  (Qdrant / Milvus)           │
+│                            │  │                              │
+│ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
+│ │ Semantic Similarity    │ │  │ │ HNSW Index               │ │
+│ │ • Tensor Cores (FP16)  │ │  │ │ • M=32, efConstruction   │ │
+│ │ • Memory Coalescing    │ │  │ │ • Product Quantization   │ │
+│ │ • Shared Memory Cache  │ │  │ │ • Disk-backed Storage    │ │
+│ │ • 280 GB/s Bandwidth   │ │  │ │ • Horizontal Sharding    │ │
+│ └────────────────────────┘ │  │ └──────────────────────────┘ │
+│                            │  │                              │
+│ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
+│ │ Adaptive SSSP Engine   │ │  │ │ Metadata Filtering       │ │
+│ │ • GPU Dijkstra (<10K)  │ │  │ │ • Inverted Indices       │ │
+│ │ • Duan SSSP (>10M)     │ │  │ │ • Range Queries          │ │
+│ │ • Auto crossover       │ │  │ │ • Faceted Search         │ │
+│ └────────────────────────┘ │  │ └──────────────────────────┘ │
+│                            │  │                              │
+│ Memory: 16GB VRAM          │  │ Storage: 1TB+ Disk           │
+│ Latency: <10ms             │  │ Latency: 20-100ms            │
+│ Scale: 1M vectors          │  │ Scale: 100M+ vectors         │
+└────────────┬───────────────┘  └────────────┬─────────────────┘
+             │                               │
+             └───────────┬───────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                  SEMANTIC ENRICHMENT LAYER                              │
+│                                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │               Knowledge Graph (Neo4j)                          │    │
+│  │                                                                │    │
+│  │  • GMC-O Ontology (Extended)                                  │    │
+│  │  • Entity Relationships (hasGenre, isPartOf, etc.)            │    │
+│  │  • APOC Procedures (Graph Algorithms)                         │    │
+│  │  • Cypher Queries (Pattern Matching)                          │    │
+│  │  • Inference Rules (OWL Reasoning)                            │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│              PERSONALIZATION & LEARNING LAYER                           │
+│                                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐    │
+│  │        Reinforcement Learning Agent (AgentDB)                  │    │
+│  │                                                                │    │
+│  │  • Thompson Sampling (Contextual Bandits)                     │    │
+│  │  • User Context Embeddings (session, history, preferences)    │    │
+│  │  • Exploration/Exploitation Balance (ε-greedy)                │    │
+│  │  • Experience Replay & Distillation                           │    │
+│  │  • Cold-Start Handling (5-10 interactions)                    │    │
+│  └────────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
     A66 --> A67
     A69["│ • GPU Dijkstra (<10K)"]
     A68 --> A69
@@ -300,26 +410,52 @@ graph TD
 │  │  • Resource Estimation (GPU memory, disk I/O)                   │  │
 │  │  • Path Selection (GPU / Vector DB / Hybrid)                    │  │
 │  │  • Load Balancing (Multi-GPU, DB shards)                        │  │
-│  │  • Fallback Strategy (GPU OOM → Vector DB)                      │  │
-│  └──────────────────────────┬───────────────────────────────────────┘  │
-│                             │                                           │
-└─────────────────────────────┼───────────────────────────────────────────┘
-                              │
-                ┌─────────────┴──────────────┐
-                │                            │
-                ▼                            ▼
-┌────────────────────────────┐  ┌──────────────────────────────┐
-│      GPU ENGINE LAYER      │  │  VECTOR DATABASE LAYER       │
-│      (CUDA Kernels)        │  │  (Qdrant / Milvus)           │
-│                            │  │                              │
-│ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
-│ │ Semantic Similarity    │ │  │ │ HNSW Index               │ │
-│ │ • Tensor Cores (FP16)  │ │  │ │ • M=32, efConstruction   │ │
-│ │ • Memory Coalescing    │ │  │ │ • Product Quantization   │ │
-│ │ • Shared Memory Cache  │ │  │ │ • Disk-backed Storage    │ │
-│ │ • 280 GB/s Bandwidth   │ │  │ │ • Horizontal Sharding    │ │
-│ └────────────────────────┘ │  │ └──────────────────────────┘ │
-│                            │  │                              │
+<!-- Original ASCII diagram:
+    ├─> Parse & Validate
+    │   └─> Extract: [text, filters, limit, threshold]
+    │
+    ├─> Complexity Analysis
+    │   ├─> Candidate Set Size Estimation
+    │   │   └─> Filter Selectivity × Total Items
+    │   ├─> Semantic Complexity
+    │   │   └─> Multi-modal? Graph traversal? RL reranking?
+    │   └─> Resource Requirements
+    │       └─> GPU Memory, Disk I/O, Compute Time
+    │
+    └─> Path Selection
+        ├─> GPU Path (candidates < 10K && GPU available)
+        │   └─> Load → GPU Kernel → Results [<10ms]
+        │
+        ├─> Vector DB Path (candidates > 100K)
+        │   └─> HNSW Search → Filter → Results [20-100ms]
+        │
+        └─> Hybrid Path (10K < candidates < 100K)
+            └─> VectorDB (coarse) → GPU (rerank) [15-50ms]
+-->
+
+```mermaid
+graph TD
+    ├─> Parse & Validate
+    │   └─> Extract: [text, filters, limit, threshold]
+    │
+    ├─> Complexity Analysis
+    │   ├─> Candidate Set Size Estimation
+    │   │   └─> Filter Selectivity × Total Items
+    │   ├─> Semantic Complexity
+    │   │   └─> Multi-modal? Graph traversal? RL reranking?
+    │   └─> Resource Requirements
+    │       └─> GPU Memory, Disk I/O, Compute Time
+    │
+    └─> Path Selection
+        ├─> GPU Path (candidates < 10K && GPU available)
+        │   └─> Load → GPU Kernel → Results [<10ms]
+        │
+        ├─> Vector DB Path (candidates > 100K)
+        │   └─> HNSW Search → Filter → Results [20-100ms]
+        │
+        └─> Hybrid Path (10K < candidates < 100K)
+            └─> VectorDB (coarse) → GPU (rerank) [15-50ms]
+```
 │ ┌────────────────────────┐ │  │ ┌──────────────────────────┐ │
 │ │ Adaptive SSSP Engine   │ │  │ │ Metadata Filtering       │ │
 │ │ • GPU Dijkstra (<10K)  │ │  │ │ • Inverted Indices       │ │
@@ -701,17 +837,39 @@ pub async fn search(
 (:MediaItem)-[:IN_LANGUAGE]->(:Language)
 (:Genre)-[:SUBCLASS_OF*]->(:Genre)           // Transitive
 (:Topic)-[:RELATED_TO]->(:Topic)
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 1: REQUEST INGESTION (1-2ms)                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
+
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 1: REQUEST INGESTION (1-2ms)                                     │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
-
-**Inference Rules**:
 ```cypher
-// File: design/ontology/inference-rules.cypher
+<!-- Original ASCII diagram:
+    ↓
+  [API Gateway]
+    ├─> Authentication & Authorization (JWT)
+    ├─> Rate Limiting (1000 RPS per user)
+    ├─> Request Validation (JSON Schema)
+    └─> Query Parsing
+          ↓
+-->
 
-// Rule 1: Genre inheritance
-MATCH (item:MediaItem)-[:HAS_GENRE]->(genre:Genre)-[:SUBCLASS_OF*]->(parent:Genre)
-MERGE (item)-[:HAS_GENRE_INFERRED]->(parent)
-
-// Rule 2: Co-occurrence recommendations
+```mermaid
+graph TD
+    ↓
+  [API Gateway]
+    ├─> Authentication & Authorization (JWT)
+    ├─> Rate Limiting (1000 RPS per user)
+    ├─> Request Validation (JSON Schema)
+    └─> Query Parsing
+          ↓
+```
 MATCH (item1:MediaItem)-[:ABOUT_TOPIC]->(topic:Topic)<-[:ABOUT_TOPIC]-(item2:MediaItem)
 WHERE item1 <> item2
 WITH item1, item2, COUNT(topic) AS shared_topics
@@ -719,64 +877,158 @@ WHERE shared_topics >= 3
 MERGE (item1)-[:SIMILAR_CONTENT {score: shared_topics * 0.1}]->(item2)
 
 // Rule 3: Collaborative filtering
-MATCH (user:User)-[r:WATCHED]->(item:MediaItem)
-WITH user, item, r.rating AS rating
-WHERE rating >= 4.0
-MATCH (item)-[:SIMILAR_CONTENT]->(similar:MediaItem)
-WHERE NOT EXISTS((user)-[:WATCHED]->(similar))
-MERGE (user)-[:RECOMMENDED {score: rating * similar.score}]->(similar)
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 2: EMBEDDING GENERATION (2-5ms)                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+  Text → Embedding Model (Sentence Transformer)
+    ↓
+  [768-dim] → [1024-dim projection] (normalize + project)
+    ↓
+-->
+
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 2: EMBEDDING GENERATION (2-5ms)                                  │
+└─────────────────────────────────────────────────────────────────────────┘
+  Text → Embedding Model (Sentence Transformer)
+    ↓
+  [768-dim] → [1024-dim projection] (normalize + project)
+    ↓
 ```
 
 **GPU-Accelerated Reasoning** (CUDA):
-```cuda
-// File: src/cuda/kernels/ontology_reasoning.cu
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 3: ROUTING DECISION (0.1ms)                                      │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
 
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 3: ROUTING DECISION (0.1ms)                                      │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 __global__ void validate_ontology_constraints(
-    const int* entity_types,           // [num_entities]
-    const int* relationship_types,     // [num_relationships]
-    const int* subject_ids,            // [num_relationships]
-    const int* object_ids,             // [num_relationships]
-    const ConstraintRule* rules,       // [num_rules]
-    bool* violations                   // [num_relationships] - output
-) {
-    int rel_idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (rel_idx >= num_relationships) return;
+<!-- Original ASCII diagram:
+    ├─> Estimate Candidates:
+    │     • Total Items: 100M
+    │     • Filter Selectivity (language=fr): 15M
+    │     • Filter Selectivity (genre=Documentary): 8M
+    │     • Estimated Candidates: 1.2M
+    │
+    ├─> Resource Requirements:
+    │     • GPU Memory: 1.2M × 1024 × 2 bytes = 2.4 GB ✓
+    │     • GPU Compute: ~8ms ✓
+    │
+    └─> Selected Path: GPU_PATH
+-->
 
-    int subject_type = entity_types[subject_ids[rel_idx]];
+```mermaid
+graph TD
+    ├─> Estimate Candidates:
+    │     • Total Items: 100M
+    │     • Filter Selectivity (language=fr): 15M
+    │     • Filter Selectivity (genre=Documentary): 8M
+    │     • Estimated Candidates: 1.2M
+    │
+    ├─> Resource Requirements:
+    │     • GPU Memory: 1.2M × 1024 × 2 bytes = 2.4 GB ✓
+    │     • GPU Compute: ~8ms ✓
+    │
+    └─> Selected Path: GPU_PATH
+```
     int object_type = entity_types[object_ids[rel_idx]];
-    int rel_type = relationship_types[rel_idx];
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 4: GPU EXECUTION (8-12ms)                                        │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
 
-    // Check all constraints in parallel
+```mermaid
+graph TD
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 4: GPU EXECUTION (8-12ms)                                        │
+└─────────────────────────────────────────────────────────────────────────┘
+```
     for (int rule_idx = 0; rule_idx < num_rules; rule_idx++) {
-        ConstraintRule rule = rules[rule_idx];
-        if (rel_type == rule.relationship_type) {
-            if (!is_valid_domain(subject_type, rule.domain) ||
-                !is_valid_range(object_type, rule.range)) {
-                violations[rel_idx] = true;
-                return;
-            }
-        }
+<!-- Original ASCII diagram:
+    ↓ Transfer 2.4GB over PCIe Gen4 (32 GB/s)
+    ↓
+  [Tensor Core Similarity] (6ms)
+    ↓ compute_multimodal_similarity_tensor_cores<<<...>>>
+    ↓   • 1.2M pairs
+    ↓   • 25 TFLOPS throughput
+    ↓   • 280 GB/s memory bandwidth
+    ↓
+-->
+
+```mermaid
+graph TD
+    ↓ Transfer 2.4GB over PCIe Gen4 (32 GB/s)
+    ↓
+  [Tensor Core Similarity] (6ms)
+    ↓ compute_multimodal_similarity_tensor_cores<<<...>>>
+    ↓   • 1.2M pairs
+    ↓   • 25 TFLOPS throughput
+    ↓   • 280 GB/s memory bandwidth
+    ↓
+```
     }
-    violations[rel_idx] = false;
-}
+<!-- Original ASCII diagram:
+    ↓ GPU-accelerated heap sort
+    ↓
+  Results: [
+-->
+
+```mermaid
+graph TD
+    ↓ GPU-accelerated heap sort
+    ↓
+  Results: [
 ```
 
 ```mermaid
 flowchart LR
 ```
 
-<!-- Original ASCII diagram preserved:
-**Performance**: 33× faster constraint validation (850ms → 24ms)
-
----
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 5: SEMANTIC ENRICHMENT (3-7ms)                                   │
+└─────────────────────────────────────────────────────────────────────────┘
 -->
 
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 5: SEMANTIC ENRICHMENT (3-7ms)                                   │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+---
+<!-- Original ASCII diagram:
+    ↓
+  FOR EACH result:
+    ├─> MATCH (item:MediaItem {id: result.id})
+    ├─>       -[:HAS_GENRE]->(genre:Genre)
+    ├─>       -[:ABOUT_TOPIC]->(topic:Topic)
+    ├─>       -[:CREATED_BY]->(person:Person)
+    ├─> RETURN item, genre, topic, person
+    ↓
+-->
 
-### 6. Personalization & Learning Layer
-
-#### AgentDB Integration
-
-**State Management**:
+```mermaid
+flowchart LR
+    ↓
+  FOR EACH result:
+    ├─> MATCH (item:MediaItem {id: result.id})
+    ├─>       -[:HAS_GENRE]->(genre:Genre)
+    ├─>       -[:ABOUT_TOPIC]->(topic:Topic)
+    ├─>       -[:CREATED_BY]->(person:Person)
+    ├─> RETURN item, genre, topic, person
+    ↓
+```
 ```rust
 // File: src/learning/agent_db.rs
 pub struct PersonalizationAgent {
@@ -793,34 +1045,88 @@ impl PersonalizationAgent {
     ) -> Result<Vec<Recommendation>> {
         // 1. Encode context into embedding
         let context_embedding = self.context_encoder.encode(&user_context)?;
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 6: PERSONALIZATION (2-5ms, if user authenticated)                │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
 
-        // 2. Retrieve user state from AgentDB
-        let user_state = self.db.get_state(&user_context.user_id).await?;
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 6: PERSONALIZATION (2-5ms, if user authenticated)                │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-        // 3. Thompson Sampling for exploration/exploitation
-        let scores = candidates.iter().map(|item| {
-            self.policy.sample_reward(
+<!-- Original ASCII diagram:
+    ↓
+  User Context:
+    • Watch history: [doc_11111, doc_33333, ...]
+-->
+
+```mermaid
+graph TD
+    ↓
+  User Context:
+    • Watch history: [doc_11111, doc_33333, ...]
+```
                 &context_embedding,
                 &item.embedding,
-                &user_state
-            )
-        }).collect::<Vec<_>>();
+<!-- Original ASCII diagram:
+    ↓
+  Thompson Sampling:
+    FOR EACH result:
+-->
+
+```mermaid
+graph TD
+    ↓
+  Thompson Sampling:
+    FOR EACH result:
+```
 
         // 4. Select top-k items
-        let mut ranked: Vec<_> = candidates.iter()
-            .zip(scores.iter())
-            .collect();
+<!-- Original ASCII diagram:
+    ↓
+  Reranked Results: [
+    {id: "doc_12345", final_score: 0.96},  // Boosted by user preference
+-->
+
+```mermaid
+graph TD
+    ↓
+  Reranked Results: [
+    {id: "doc_12345", final_score: 0.96},  // Boosted by user preference
+```
         ranked.sort_by(|a, b| b.1.partial_cmp(a.1).unwrap());
 
         // 5. Store trajectory for learning
         self.db.store_trajectory(&user_context.user_id, Trajectory {
-            context: context_embedding,
-            actions: ranked.iter().map(|(item, _)| item.id.clone()).collect(),
-            timestamp: Utc::now(),
-        }).await?;
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 7: RESPONSE FORMATTING (0.5ms)                                   │
+└─────────────────────────────────────────────────────────────────────────┘
+-->
 
-        Ok(ranked.into_iter()
-            .take(user_context.limit)
+```mermaid
+sequenceDiagram
+    ┌─────────────────────────────────────────────────────────────────────────┐
+│ PHASE 7: RESPONSE FORMATTING (0.5ms)                                   │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+        }).await?;
+<!-- Original ASCII diagram:
+    ↓
+  {
+    "results": [...],
+-->
+
+```mermaid
+graph TD
+    ↓
+  {
+    "results": [...],
+```
             .map(|(item, score)| Recommendation {
                 item: item.clone(),
                 score: *score,
@@ -997,62 +1303,124 @@ graph TD
 <!-- Original ASCII diagram preserved:
     ↓ Transfer 2.4GB over PCIe Gen4 (32 GB/s)
     ↓
-  [Tensor Core Similarity] (6ms)
-    ↓ compute_multimodal_similarity_tensor_cores<<<...>>>
-    ↓   • 1.2M pairs
-    ↓   • 25 TFLOPS throughput
-    ↓   • 280 GB/s memory bandwidth
-    ↓
+<!-- Original ASCII diagram:
+                          ┌────────────────────┐
+                          │   Load Balancer    │
+                          │   (NGINX/HAProxy)  │
+                          └──────────┬─────────┘
+                                     │
+                     ┌───────────────┼───────────────┐
+                     │               │               │
+                     ▼               ▼               ▼
+              ┌────────────┐  ┌────────────┐  ┌────────────┐
+              │ API Server │  │ API Server │  │ API Server │
+              │  (Actix)   │  │  (Actix)   │  │  (Actix)   │
+              │  + MCP     │  │  + MCP     │  │  + MCP     │
+              └─────┬──────┘  └─────┬──────┘  └─────┬──────┘
+                    │               │               │
+                    └───────────────┼───────────────┘
+                                    │
+                     ┌──────────────┼──────────────┐
+                     │              │              │
+                     ▼              ▼              ▼
+              ┌────────────┐ ┌────────────┐ ┌────────────┐
+              │ GPU Node 1 │ │ GPU Node 2 │ │ GPU Node N │
+              │  (T4 GPU)  │ │  (T4 GPU)  │ │  (T4 GPU)  │
+              └────────────┘ └────────────┘ └────────────┘
+                     │              │              │
+                     └──────────────┼──────────────┘
+                                    │
+                     ┌──────────────┴──────────────┐
+                     │                             │
+                     ▼                             ▼
+              ┌────────────┐              ┌────────────┐
+              │  Qdrant    │              │   Neo4j    │
+              │  Cluster   │              │  Cluster   │
+              │ (Sharded)  │              │ (Replicas) │
+              └────────────┘              └────────────┘
+                     │                             │
+                     └─────────────┬───────────────┘
+                                   │
+                                   ▼
+                            ┌────────────┐
+                            │   Redis    │
+                            │  (Cache)   │
+                            └────────────┘
 -->
 
-  [Top-K Selection] (2ms)
 ```mermaid
 graph TD
+    ┌────────────────────┐
+                          │   Load Balancer    │
+                          │   (NGINX/HAProxy)  │
+                          └──────────┬─────────┘
+                                     │
+                     ┌───────────────┼───────────────┐
+                     │               │               │
+                     ▼               ▼               ▼
+              ┌────────────┐  ┌────────────┐  ┌────────────┐
+              │ API Server │  │ API Server │  │ API Server │
+              │  (Actix)   │  │  (Actix)   │  │  (Actix)   │
+              │  + MCP     │  │  + MCP     │  │  + MCP     │
+              └─────┬──────┘  └─────┬──────┘  └─────┬──────┘
+                    │               │               │
+                    └───────────────┼───────────────┘
+                                    │
+                     ┌──────────────┼──────────────┐
+                     │              │              │
+                     ▼              ▼              ▼
+              ┌────────────┐ ┌────────────┐ ┌────────────┐
+              │ GPU Node 1 │ │ GPU Node 2 │ │ GPU Node N │
+              │  (T4 GPU)  │ │  (T4 GPU)  │ │  (T4 GPU)  │
+              └────────────┘ └────────────┘ └────────────┘
+                     │              │              │
+                     └──────────────┼──────────────┘
+                                    │
+                     ┌──────────────┴──────────────┐
+                     │                             │
+                     ▼                             ▼
+              ┌────────────┐              ┌────────────┐
+              │  Qdrant    │              │   Neo4j    │
+              │  Cluster   │              │  Cluster   │
+              │ (Sharded)  │              │ (Replicas) │
+              └────────────┘              └────────────┘
+                     │                             │
+                     └─────────────┬───────────────┘
+                                   │
+                                   ▼
+                            ┌────────────┐
+                            │   Redis    │
+                            │  (Cache)   │
+                            └────────────┘
 ```
-
-<!-- Original ASCII diagram preserved:
-    ↓ GPU-accelerated heap sort
-    ↓
-  Results: [
--->
-
-    {id: "doc_12345", similarity: 0.94},
-    {id: "doc_67890", similarity: 0.91},
-    ...
-  ] (Top 10)
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant System
-    User->>System: PHASE 5: SEMANTIC ENRICHMENT (3-7ms)
-```
-
-<!-- Original ASCII diagram preserved:
-┌─────────────────────────────────────────────────────────────────────────┐
-│ PHASE 5: SEMANTIC ENRICHMENT (3-7ms)                                   │
-└─────────────────────────────────────────────────────────────────────────┘
--->
-
-  [Neo4j Graph Traversal]
-```mermaid
-flowchart LR
-```
-
 <!-- Original ASCII diagram preserved:
     ↓
   FOR EACH result:
     ├─> MATCH (item:MediaItem {id: result.id})
     ├─>       -[:HAS_GENRE]->(genre:Genre)
     ├─>       -[:ABOUT_TOPIC]->(topic:Topic)
-    ├─>       -[:CREATED_BY]->(person:Person)
-    ├─> RETURN item, genre, topic, person
-    ↓
+<!-- Original ASCII diagram:
+      │                            │                          │
+      ├─ API Servers (3×)          ├─ API Servers (3×)       ├─ API Servers (3×)
+      ├─ GPU Nodes (4×)            ├─ GPU Nodes (4×)         ├─ GPU Nodes (4×)
+      ├─ Qdrant Shard 1            ├─ Qdrant Shard 2         ├─ Qdrant Shard 3
+      └─ Neo4j Replica 1           └─ Neo4j Replica 2        └─ Neo4j Replica 3
+              │                            │                          │
+              └────────────────────────────┴──────────────────────────┘
+                                           │
 -->
 
-  Enriched Results: [
-    {
-      id: "doc_12345",
+```mermaid
+graph TD
+    │                            │                          │
+      ├─ API Servers (3×)          ├─ API Servers (3×)       ├─ API Servers (3×)
+      ├─ GPU Nodes (4×)            ├─ GPU Nodes (4×)         ├─ GPU Nodes (4×)
+      ├─ Qdrant Shard 1            ├─ Qdrant Shard 2         ├─ Qdrant Shard 3
+      └─ Neo4j Replica 1           └─ Neo4j Replica 2        └─ Neo4j Replica 3
+              │                            │                          │
+              └────────────────────────────┴──────────────────────────┘
+                                           │
+```
       title: "Climat: l'Urgence d'Agir",
       similarity: 0.94,
       genre: ["Documentary", "Science"],

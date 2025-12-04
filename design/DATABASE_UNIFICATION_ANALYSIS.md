@@ -212,10 +212,20 @@ Option 2: Neo4j + Redis
 -->
 
 
-Recommendation: If deprecating Redis, expect 3-5ms latency increase.
-```
+<!-- Original ASCII diagram:
+    ├─> Milvus (vector search)
+    ├─> Neo4j (graph)
+    ├─> PostgreSQL (AgentDB)
+    └─> Redis (cache)
+-->
 
-**Conclusion**: Redis significantly outperforms Neo4j for caching. Deprecating Redis adds 3-5ms latency.
+```mermaid
+graph TD
+    ├─> Milvus (vector search)
+    ├─> Neo4j (graph)
+    ├─> PostgreSQL (AgentDB)
+    └─> Redis (cache)
+```
 
 ---
 
@@ -240,9 +250,17 @@ graph TD
 ```
 
 **Pros**:
-- ✅ Proven, production-tested architecture
-- ✅ Best-in-class performance for each workload
-- ✅ GPU acceleration (Milvus)
+<!-- Original ASCII diagram:
+    └─> Neo4j (all workloads)
+```
+
+-->
+
+```mermaid
+graph TD
+    └─> Neo4j (all workloads)
+```
+```
 - ✅ Sub-millisecond caching (Redis)
 
 **Cons**:
@@ -275,9 +293,18 @@ graph TD
 - ✅ Minimal operational complexity
 - ✅ Unified query language (Cypher)
 - ✅ No inter-service network hops
-- ✅ Single backup/monitoring strategy
+<!-- Original ASCII diagram:
+    ├─> Milvus (vector search, GPU-accelerated)
+    └─> Neo4j (graph + AgentDB + cache)
+```
+-->
 
-**Cons**:
+```mermaid
+graph TD
+    ├─> Milvus (vector search, GPU-accelerated)
+    └─> Neo4j (graph + AgentDB + cache)
+```
+```
 - ❌ 2-3× slower vector search (no GPU)
 - ❌ 3-5× slower caching (no Redis)
 - ❌ 1.5-2× slower bulk writes (AgentDB)
@@ -315,8 +342,17 @@ graph TD
 ```
 
 <!-- Original ASCII diagram preserved:
-    ├─> Milvus (vector search, GPU-accelerated)
-    └─> Neo4j (graph + AgentDB + cache)
+<!-- Original ASCII diagram:
+    ├─> Neo4j (graph + vectors + AgentDB)
+    └─> Redis (cache only)
+```
+-->
+
+```mermaid
+graph TD
+    ├─> Neo4j (graph + vectors + AgentDB)
+    └─> Redis (cache only)
+```
 ```
 -->
 
@@ -391,37 +427,76 @@ graph TD
 
 <!-- Original ASCII diagram preserved:
     ├─> Neo4j (graph + vectors + AgentDB)
-    └─> Redis (cache only)
-```
+<!-- Original ASCII diagram:
+Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Milvus Vector Search (8.7ms)
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> AgentDB RL Reranking (5ms)
+  └─> Redis Cache Check (0.5ms)
 -->
 
-
-**Consolidation**:
 ```mermaid
+graph TD
+    Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Milvus Vector Search (8.7ms)
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> AgentDB RL Reranking (5ms)
+  └─> Redis Cache Check (0.5ms)
+```
 flowchart LR
 ```
 
 <!-- Original ASCII diagram preserved:
 - Milvus → Neo4j (vector index)
-- PostgreSQL → Neo4j (AgentDB state)
-
+<!-- Original ASCII diagram:
+Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Neo4j Vector Search (20ms) ⚠️
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> Neo4j RL Reranking (7ms) ⚠️
+  └─> Neo4j Cache (3ms) ⚠️
 -->
 
-**Pros**:
 ```mermaid
-flowchart LR
+graph TD
+    Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Neo4j Vector Search (20ms) ⚠️
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> Neo4j RL Reranking (7ms) ⚠️
+  └─> Neo4j Cache (3ms) ⚠️
+```
 ```
 
 <!-- Original ASCII diagram preserved:
 - ✅ 50% reduction in systems (4 → 2)
 - ✅ Sub-ms caching preserved
-- ✅ Simplified vector+graph queries
+<!-- Original ASCII diagram:
+Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Milvus Vector Search (8.7ms) ✅
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> Neo4j RL Reranking (7ms) ⚠️
+  └─> Neo4j Cache (3ms) ⚠️
 -->
 
-
-**Cons**:
-- ❌ 2-3× slower vector search (no GPU)
-- ❌ Higher Neo4j memory requirements
+```mermaid
+graph TD
+    Request → API Gateway (1ms)
+  ├─> Embedding Generation (3ms)
+  ├─> Routing (0.1ms)
+  ├─> Milvus Vector Search (8.7ms) ✅
+  ├─> Neo4j Graph Enrichment (2ms)
+  ├─> Neo4j RL Reranking (7ms) ⚠️
+  └─> Neo4j Cache (3ms) ⚠️
+```
 - ❌ Lose GPU acceleration
 
 **Performance Degradation**:
@@ -487,9 +562,18 @@ flowchart LR
 
 ### 4.4 End-to-End Query Latency Projection
 
-**Current Architecture** (Baseline):
-```
+<!-- Original ASCII diagram:
+| **PostgreSQL → Neo4j** | 15-20 | Medium | 10M user states | AgentDB queries | 5 days |
+| **Redis → Neo4j** | 8-12 | Low | Cache rebuild | Cache layer logic | 3 days |
+| **Milvus → Neo4j** | 25-35 | High | 100M vectors | Vector search queries | 10 days |
+-->
+
 ```mermaid
+flowchart LR
+    | **PostgreSQL → Neo4j** | 15-20 | Medium | 10M user states | AgentDB queries | 5 days |
+| **Redis → Neo4j** | 8-12 | Low | Cache rebuild | Cache layer logic | 3 days |
+| **Milvus → Neo4j** | 25-35 | High | 100M vectors | Vector search queries | 10 days |
+```
 graph TD
 ```
 
@@ -501,12 +585,24 @@ Request → API Gateway (1ms)
   ├─> Neo4j Graph Enrichment (2ms)
   ├─> AgentDB RL Reranking (5ms)
   └─> Redis Cache Check (0.5ms)
+<!-- Original ASCII diagram:
+Phase 2: Milvus → Neo4j (30 days)
+  ├─> Vector index creation (100M vectors)
+  ├─> Embedding migration (2TB data)
+  ├─> HNSW tuning (ef, M parameters)
+  ├─> Performance validation
+  └─> Fallback strategy (GPU → CPU)
 -->
 
-Total: 15ms p95 ✅
+```mermaid
+graph TD
+    Phase 2: Milvus → Neo4j (30 days)
+  ├─> Vector index creation (100M vectors)
+  ├─> Embedding migration (2TB data)
+  ├─> HNSW tuning (ef, M parameters)
+  ├─> Performance validation
+  └─> Fallback strategy (GPU → CPU)
 ```
-
-**Option B** (Neo4j Only):
 ```
 ```mermaid
 graph TD
@@ -636,23 +732,46 @@ Phase 1: PostgreSQL → Neo4j (15 days)
 -->
 
 
-```mermaid
-graph TD
-```
-
-<!-- Original ASCII diagram preserved:
-Phase 2: Milvus → Neo4j (30 days)
-  ├─> Vector index creation (100M vectors)
-  ├─> Embedding migration (2TB data)
-  ├─> HNSW tuning (ef, M parameters)
-  ├─> Performance validation
-  └─> Fallback strategy (GPU → CPU)
+<!-- Original ASCII diagram:
+┌─────────────────────────────────────────────────────┐
+│                  API GATEWAY                        │
+│              (Actix-web + MCP)                      │
+└──────────────────┬──────────────────────────────────┘
+                   │
+        ┌──────────┴─────────────┐
+        │                        │
+        ▼                        ▼
+┌──────────────────┐    ┌──────────────────────┐
+│     MILVUS       │    │       NEO4J          │
+│  Vector Search   │    │   (Unified Store)    │
+│                  │    │                      │
+│ • 100M vectors   │    │ • Knowledge Graph    │
+│ • GPU-accelerated│    │ • AgentDB State      │
+│ • HNSW + INT8    │    │ • Page Cache         │
+│ • 8.7ms p95      │    │ • Query Cache        │
+└──────────────────┘    └──────────────────────┘
 -->
 
-
 ```mermaid
-sequenceDiagram
-    participant User
+graph TD
+    ┌─────────────────────────────────────────────────────┐
+│                  API GATEWAY                        │
+│              (Actix-web + MCP)                      │
+└──────────────────┬──────────────────────────────────┘
+                   │
+        ┌──────────┴─────────────┐
+        │                        │
+        ▼                        ▼
+┌──────────────────┐    ┌──────────────────────┐
+│     MILVUS       │    │       NEO4J          │
+│  Vector Search   │    │   (Unified Store)    │
+│                  │    │                      │
+│ • 100M vectors   │    │ • Knowledge Graph    │
+│ • GPU-accelerated│    │ • AgentDB State      │
+│ • HNSW + INT8    │    │ • Page Cache         │
+│ • 8.7ms p95      │    │ • Query Cache        │
+└──────────────────┘    └──────────────────────┘
+```
     participant System
 ```
 

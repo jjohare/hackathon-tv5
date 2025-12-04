@@ -1,0 +1,42 @@
+[package]
+name = "media-recommendation-engine"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[lib]
+name = "recommendation_engine"
+path = "lib.rs"
+
+[[example]]
+name = "simple_similarity"
+path = "../examples/simple_similarity.rs"
+
+[dependencies]
+# Use workspace dependencies
+tokio.workspace = true
+cudarc = { workspace = true, optional = true }
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+futures.workspace = true
+tracing.workspace = true
+
+# Additional crate-specific dependencies
+rayon = "1.8"
+ndarray = "0.15"
+
+[features]
+default = ["gpu"]
+gpu = ["cudarc"]
+cpu-only = []
+
+[dev-dependencies]
+criterion = "0.5"
+tokio-test = "0.4"
+
+[[bench]]
+name = "similarity_benchmark"
+harness = false

@@ -1,0 +1,535 @@
+@prefix media: <http://recommendation.org/ontology/media#> .
+@prefix user: <http://recommendation.org/ontology/user#> .
+@prefix ctx: <http://recommendation.org/ontology/context#> .
+@prefix tech: <http://recommendation.org/ontology/tech-stack#> .
+@prefix sem: <http://recommendation.org/ontology/semantic-descriptors#> .
+@prefix gpu: <http://recommendation.org/ontology/gpu-processing#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <http://schema.org/> .
+@prefix eidr: <http://eidr.org/ontology#> .
+
+#################################################################
+#    ONTOLOGY METADATA
+#################################################################
+
+<http://recommendation.org/ontology/media> a owl:Ontology ;
+    rdfs:label "Global Media & Context Ontology for GPU-Accelerated Recommendations"@en ;
+    rdfs:comment "Extended ontology for TV5 Monde Media Gateway with GPU semantic processing"@en ;
+    owl:versionInfo "2.0" ;
+    schema:dateModified "2025-12-04"^^xsd:date .
+
+#################################################################
+#    DOMAIN: MEDIA & CONTENT (Enhanced with Multi-Modal Features)
+#################################################################
+
+media:CreativeWork a owl:Class ;
+    rdfs:label "Creative Work"@en ;
+    rdfs:comment "Top-level class for film, episode, or series with multi-modal semantic embeddings"@en ;
+    rdfs:subClassOf schema:CreativeWork .
+
+media:Film a owl:Class ;
+    rdfs:label "Film"@en ;
+    rdfs:subClassOf media:CreativeWork ;
+    owl:disjointWith media:TVSeries, media:TVEpisode .
+
+media:TVSeries a owl:Class ;
+    rdfs:label "TV Series"@en ;
+    rdfs:subClassOf media:CreativeWork .
+
+media:TVEpisode a owl:Class ;
+    rdfs:label "TV Episode"@en ;
+    rdfs:subClassOf media:CreativeWork .
+
+# Multi-Modal Embedding Components
+media:VisualEmbedding a owl:Class ;
+    rdfs:label "Visual Embedding"@en ;
+    rdfs:comment "GPU-computed visual features from frame analysis (color, composition, motion)"@en .
+
+media:AudioEmbedding a owl:Class ;
+    rdfs:label "Audio Embedding"@en ;
+    rdfs:comment "Audio semantic features (music, dialogue, ambient sound)"@en .
+
+media:TextualEmbedding a owl:Class ;
+    rdfs:label "Textual Embedding"@en ;
+    rdfs:comment "NLP embeddings from scripts, subtitles, descriptions"@en .
+
+media:UnifiedEmbedding a owl:Class ;
+    rdfs:label "Unified Multi-Modal Embedding"@en ;
+    rdfs:comment "1024-dimensional fused representation in hyperbolic space"@en .
+
+# Narrative Structure (Extended)
+media:NarrativeStructure a owl:Class ;
+    rdfs:label "Narrative Structure"@en ;
+    rdfs:comment "Architectural flow of story (Linear, Non-linear, Hero's Journey, Ensemble)"@en .
+
+media:LinearNarrative a owl:Class ;
+    rdfs:label "Linear Narrative"@en ;
+    rdfs:subClassOf media:NarrativeStructure .
+
+media:NonLinearNarrative a owl:Class ;
+    rdfs:label "Non-Linear Narrative"@en ;
+    rdfs:subClassOf media:NarrativeStructure .
+
+media:HerosJourney a owl:Class ;
+    rdfs:label "Hero's Journey"@en ;
+    rdfs:subClassOf media:NarrativeStructure .
+
+media:EnsembleCast a owl:Class ;
+    rdfs:label "Ensemble Cast Structure"@en ;
+    rdfs:subClassOf media:NarrativeStructure .
+
+# Visual Aesthetics (GPU-Computed)
+media:VisualAesthetic a owl:Class ;
+    rdfs:label "Visual Aesthetic"@en ;
+    rdfs:comment "GPU-derived color grading and lighting classification"@en .
+
+media:NoirAesthetic a owl:Class ;
+    rdfs:label "Film Noir Aesthetic"@en ;
+    rdfs:subClassOf media:VisualAesthetic ;
+    rdfs:comment "High contrast, low key lighting, chiaroscuro"@en .
+
+media:NeonAesthetic a owl:Class ;
+    rdfs:label "Neon/Cyberpunk Aesthetic"@en ;
+    rdfs:subClassOf media:VisualAesthetic ;
+    rdfs:comment "Vibrant neon colors, futuristic urban environments"@en .
+
+media:PastelAesthetic a owl:Class ;
+    rdfs:label "Pastel Aesthetic"@en ;
+    rdfs:subClassOf media:VisualAesthetic ;
+    rdfs:comment "Soft, desaturated colors, dreamy quality"@en .
+
+media:NaturalisticAesthetic a owl:Class ;
+    rdfs:label "Naturalistic Aesthetic"@en ;
+    rdfs:subClassOf media:VisualAesthetic ;
+    rdfs:comment "Natural lighting, realistic color grading"@en .
+
+# Pacing Metrics
+media:Pacing a owl:Class ;
+    rdfs:label "Pacing Metrics"@en ;
+    rdfs:comment "Quantified scene cuts per minute and dialogue density"@en .
+
+media:FastPaced a owl:Class ;
+    rdfs:label "Fast Paced"@en ;
+    rdfs:subClassOf media:Pacing ;
+    rdfs:comment "High cut frequency (>30 cuts/min), intense action"@en .
+
+media:ModeratePaced a owl:Class ;
+    rdfs:label "Moderate Paced"@en ;
+    rdfs:subClassOf media:Pacing ;
+    rdfs:comment "Balanced pacing (10-30 cuts/min)"@en .
+
+media:SlowPaced a owl:Class ;
+    rdfs:label "Slow Paced"@en ;
+    rdfs:subClassOf media:Pacing ;
+    rdfs:comment "Contemplative, long takes (<10 cuts/min)"@en .
+
+# Mood Classification
+media:Mood a owl:Class ;
+    rdfs:label "Mood"@en ;
+    rdfs:comment "Emotional tone derived from audio-visual analysis"@en .
+
+media:Tense a owl:Class ;
+    rdfs:subClassOf media:Mood ;
+    rdfs:label "Tense/Suspenseful"@en .
+
+media:Uplifting a owl:Class ;
+    rdfs:subClassOf media:Mood ;
+    rdfs:label "Uplifting/Joyful"@en .
+
+media:Melancholic a owl:Class ;
+    rdfs:subClassOf media:Mood ;
+    rdfs:label "Melancholic/Sad"@en .
+
+media:Intense a owl:Class ;
+    rdfs:subClassOf media:Mood ;
+    rdfs:label "Intense/Action-Packed"@en .
+
+# Genre Hierarchy (Schema.org Extended)
+media:Genre a owl:Class ;
+    rdfs:label "Genre"@en ;
+    rdfs:subClassOf schema:Genre .
+
+media:Action a owl:Class ;
+    rdfs:subClassOf media:Genre ;
+    owl:disjointWith media:Romance, media:Documentary .
+
+media:Drama a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+media:Comedy a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+media:SciFi a owl:Class ;
+    rdfs:subClassOf media:Genre ;
+    rdfs:label "Science Fiction"@en .
+
+media:Horror a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+media:Romance a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+media:Documentary a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+media:Thriller a owl:Class ;
+    rdfs:subClassOf media:Genre .
+
+#################################################################
+#    DOMAIN: USER & PSYCHOGRAPHICS (Enhanced with Learning)
+#################################################################
+
+user:ViewerProfile a owl:Class ;
+    rdfs:label "Viewer Profile"@en ;
+    rdfs:comment "User profile with learning history and preferences"@en .
+
+user:PsychographicState a owl:Class ;
+    rdfs:label "Psychographic State"@en ;
+    rdfs:comment "Current psychological inclination inferred from context"@en .
+
+user:SeekingComfort a owl:Class ;
+    rdfs:subClassOf user:PsychographicState ;
+    rdfs:label "Seeking Comfort"@en ;
+    rdfs:comment "User wants familiar, low-stress content"@en .
+
+user:SeekingChallenge a owl:Class ;
+    rdfs:subClassOf user:PsychographicState ;
+    rdfs:label "Seeking Challenge"@en ;
+    rdfs:comment "User wants complex, thought-provoking content"@en .
+
+user:Nostalgic a owl:Class ;
+    rdfs:subClassOf user:PsychographicState ;
+    rdfs:label "Nostalgic"@en ;
+    rdfs:comment "User drawn to content from past eras or childhood"@en .
+
+user:Adventurous a owl:Class ;
+    rdfs:subClassOf user:PsychographicState ;
+    rdfs:label "Adventurous"@en ;
+    rdfs:comment "User open to new genres and foreign content"@en .
+
+# Taste Clustering
+user:TasteCluster a owl:Class ;
+    rdfs:label "Taste Cluster"@en ;
+    rdfs:comment "Dynamic grouping based on consumption vector similarity"@en .
+
+user:MainstreamCluster a owl:Class ;
+    rdfs:subClassOf user:TasteCluster .
+
+user:ArtHouseCluster a owl:Class ;
+    rdfs:subClassOf user:TasteCluster .
+
+user:GenreSpecialistCluster a owl:Class ;
+    rdfs:subClassOf user:TasteCluster .
+
+# Tolerance Levels
+user:ToleranceLevel a owl:Class ;
+    rdfs:label "Tolerance Level"@en ;
+    rdfs:comment "User-specific thresholds for content characteristics"@en .
+
+user:ViolenceTolerance a owl:Class ;
+    rdfs:subClassOf user:ToleranceLevel ;
+    rdfs:label "Violence Tolerance"@en .
+
+user:ComplexityTolerance a owl:Class ;
+    rdfs:subClassOf user:ToleranceLevel ;
+    rdfs:label "Narrative Complexity Tolerance"@en .
+
+user:SubtitleTolerance a owl:Class ;
+    rdfs:subClassOf user:ToleranceLevel ;
+    rdfs:label "Subtitle Willingness"@en .
+
+user:SlowPacingTolerance a owl:Class ;
+    rdfs:subClassOf user:ToleranceLevel ;
+    rdfs:label "Slow Pacing Tolerance"@en .
+
+# Learning & Feedback
+user:InteractionHistory a owl:Class ;
+    rdfs:label "Interaction History"@en ;
+    rdfs:comment "AgentDB-managed learning from user behavior"@en .
+
+user:WatchEvent a owl:Class ;
+    rdfs:label "Watch Event"@en ;
+    rdfs:comment "User watched content (with completion %)"@en .
+
+user:SkipEvent a owl:Class ;
+    rdfs:label "Skip Event"@en ;
+    rdfs:comment "User skipped/abandoned content"@en .
+
+user:RatingEvent a owl:Class ;
+    rdfs:label "Rating Event"@en ;
+    rdfs:comment "Explicit user rating"@en .
+
+#################################################################
+#    DOMAIN: CONTEXT (The Where/When/Why)
+#################################################################
+
+ctx:CulturalContext a owl:Class ;
+    rdfs:label "Cultural Context"@en ;
+    rdfs:comment "Socio-cultural framework (holidays, events, regional norms)"@en .
+
+ctx:Holiday a owl:Class ;
+    rdfs:subClassOf ctx:CulturalContext .
+
+ctx:Halloween a owl:Class ;
+    rdfs:subClassOf ctx:Holiday ;
+    rdfs:label "Halloween"@en ;
+    sem:boostsGenre media:Horror .
+
+ctx:ValentinesDay a owl:Class ;
+    rdfs:subClassOf ctx:Holiday ;
+    rdfs:label "Valentine's Day"@en ;
+    sem:boostsGenre media:Romance .
+
+ctx:Christmas a owl:Class ;
+    rdfs:subClassOf ctx:Holiday ;
+    rdfs:label "Christmas"@en .
+
+# Social Setting
+ctx:SocialSetting a owl:Class ;
+    rdfs:label "Social Setting"@en ;
+    rdfs:comment "Immediate social environment"@en .
+
+ctx:DateNight a owl:Class ;
+    rdfs:subClassOf ctx:SocialSetting ;
+    rdfs:label "Date Night"@en .
+
+ctx:FamilyGathering a owl:Class ;
+    rdfs:subClassOf ctx:SocialSetting ;
+    rdfs:label "Family Gathering"@en .
+
+ctx:SoloViewing a owl:Class ;
+    rdfs:subClassOf ctx:SocialSetting ;
+    rdfs:label "Solo Viewing"@en .
+
+# Environmental Factors
+ctx:EnvironmentalFactors a owl:Class ;
+    rdfs:label "Environmental Factors"@en ;
+    rdfs:comment "Physical viewing conditions"@en .
+
+ctx:TimeOfDay a owl:Class ;
+    rdfs:subClassOf ctx:EnvironmentalFactors .
+
+ctx:EarlyMorning a owl:Class ;
+    rdfs:subClassOf ctx:TimeOfDay ;
+    rdfs:label "Early Morning (6-9 AM)"@en .
+
+ctx:LatNight a owl:Class ;
+    rdfs:subClassOf ctx:TimeOfDay ;
+    rdfs:label "Late Night (10 PM-2 AM)"@en ;
+    rdfs:comment "User likely tired, prefers lighter content"@en .
+
+ctx:DeviceType a owl:Class ;
+    rdfs:subClassOf ctx:EnvironmentalFactors .
+
+ctx:MobileDevice a owl:Class ;
+    rdfs:subClassOf ctx:DeviceType ;
+    rdfs:comment "Small screen, shorter viewing sessions expected"@en .
+
+ctx:TVDevice a owl:Class ;
+    rdfs:subClassOf ctx:DeviceType ;
+    rdfs:comment "Large screen, immersive viewing"@en .
+
+#################################################################
+#    DOMAIN: GPU PROCESSING & TECHNICAL STACK
+#################################################################
+
+gpu:SemanticProcessing a owl:Class ;
+    rdfs:label "GPU Semantic Processing"@en ;
+    rdfs:comment "CUDA-accelerated semantic analysis"@en .
+
+gpu:SemanticForceComputation a owl:Class ;
+    rdfs:subClassOf gpu:SemanticProcessing ;
+    rdfs:label "Semantic Force Computation"@en ;
+    rdfs:comment "Knowledge graph physics with type clustering and DAG layout"@en .
+
+gpu:OntologyConstraintEnforcement a owl:Class ;
+    rdfs:subClassOf gpu:SemanticProcessing ;
+    rdfs:label "Ontology Constraint Enforcement"@en ;
+    rdfs:comment "DisjointClasses, SubClassOf, SameAs GPU kernels"@en .
+
+gpu:VectorSimilaritySearch a owl:Class ;
+    rdfs:subClassOf gpu:SemanticProcessing ;
+    rdfs:label "Vector Similarity Search"@en ;
+    rdfs:comment "FAISS/cuVS HNSW indexing for ANN search"@en .
+
+gpu:GraphTraversal a owl:Class ;
+    rdfs:subClassOf gpu:SemanticProcessing ;
+    rdfs:label "GPU Graph Traversal"@en ;
+    rdfs:comment "SSSP, APSP, PageRank on CUDA"@en .
+
+# Technical Delivery
+tech:DeliveryConstraint a owl:Class ;
+    rdfs:label "Delivery Constraint"@en ;
+    rdfs:comment "Hardware/network limitations"@en .
+
+tech:HDRSupport a owl:Class ;
+    rdfs:subClassOf tech:DeliveryConstraint .
+
+tech:BandwidthLimit a owl:Class ;
+    rdfs:subClassOf tech:DeliveryConstraint .
+
+tech:LatencyRequirement a owl:Class ;
+    rdfs:label "Latency Requirement"@en ;
+    rdfs:comment "P99 latency targets for recommendation serving"@en .
+
+#################################################################
+#    OBJECT PROPERTIES (Relationships)
+#################################################################
+
+sem:hasNarrativeArc a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:NarrativeStructure ;
+    rdfs:label "has narrative arc"@en .
+
+sem:hasVisualAesthetic a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:VisualAesthetic ;
+    rdfs:label "has visual aesthetic"@en .
+
+sem:hasPacing a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:Pacing ;
+    rdfs:label "has pacing"@en .
+
+sem:hasMood a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:Mood ;
+    rdfs:label "has mood"@en .
+
+sem:hasGenre a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:Genre ;
+    rdfs:label "has genre"@en .
+
+sem:inducesPsychographicState a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range user:PsychographicState ;
+    rdfs:label "induces psychographic state"@en ;
+    rdfs:comment "Predictive property: content likely induces state X"@en .
+
+sem:hasUnifiedEmbedding a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range media:UnifiedEmbedding ;
+    rdfs:label "has unified embedding"@en .
+
+ctx:isCulturallyRelevantTo a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range ctx:CulturalContext ;
+    rdfs:label "culturally relevant to"@en .
+
+ctx:suitableForSocialSetting a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range ctx:SocialSetting ;
+    rdfs:label "suitable for social setting"@en .
+
+user:hasCurrentState a owl:ObjectProperty ;
+    rdfs:domain user:ViewerProfile ;
+    rdfs:range user:PsychographicState ;
+    rdfs:label "has current state"@en .
+
+user:belongsToCluster a owl:ObjectProperty ;
+    rdfs:domain user:ViewerProfile ;
+    rdfs:range user:TasteCluster ;
+    rdfs:label "belongs to taste cluster"@en .
+
+tech:requiresCapability a owl:ObjectProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range tech:DeliveryConstraint ;
+    rdfs:label "requires capability"@en .
+
+#################################################################
+#    DATATYPE PROPERTIES (Attributes)
+#################################################################
+
+sem:embeddingVector a owl:DatatypeProperty ;
+    rdfs:domain media:UnifiedEmbedding ;
+    rdfs:range xsd:string ;
+    rdfs:label "embedding vector"@en ;
+    rdfs:comment "1024-dimensional float array (serialized)"@en .
+
+sem:confidenceScore a owl:DatatypeProperty ;
+    rdfs:range xsd:float ;
+    rdfs:label "confidence score"@en ;
+    rdfs:comment "Inference confidence (0.0-1.0)"@en .
+
+media:averageShotLength a owl:DatatypeProperty ;
+    rdfs:domain media:Pacing ;
+    rdfs:range xsd:float ;
+    rdfs:label "average shot length (seconds)"@en .
+
+media:cutsPerMinute a owl:DatatypeProperty ;
+    rdfs:domain media:Pacing ;
+    rdfs:range xsd:float ;
+    rdfs:label "cuts per minute"@en .
+
+media:duration a owl:DatatypeProperty ;
+    rdfs:domain media:CreativeWork ;
+    rdfs:range xsd:integer ;
+    rdfs:label "duration (minutes)"@en .
+
+user:completionPercentage a owl:DatatypeProperty ;
+    rdfs:domain user:WatchEvent ;
+    rdfs:range xsd:float ;
+    rdfs:label "completion percentage"@en ;
+    rdfs:comment "% of content watched (0.0-1.0)"@en .
+
+user:watchTimestamp a owl:DatatypeProperty ;
+    rdfs:domain user:WatchEvent ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "watch timestamp"@en .
+
+#################################################################
+#    ANNOTATION PROPERTIES
+#################################################################
+
+sem:gpuKernelUsed a owl:AnnotationProperty ;
+    rdfs:label "GPU kernel used"@en ;
+    rdfs:comment "CUDA kernel function for this computation"@en .
+
+sem:processingTime a owl:AnnotationProperty ;
+    rdfs:label "processing time (ms)"@en ;
+    rdfs:comment "GPU processing time for semantic extraction"@en .
+
+#################################################################
+#    INFERENCE RULES (SWRL - For OWL Reasoner)
+#################################################################
+
+# Rule: If user watches 80%+ of horror films during October, boost horror recommendations
+# CreativeWork(?film) ∧ hasGenre(?film, Horror) ∧
+# ViewerProfile(?user) ∧ WatchEvent(?event) ∧
+# completionPercentage(?event, ?pct) ∧ greaterThan(?pct, 0.8) ∧
+# isCulturallyRelevantTo(?film, Halloween)
+# → recommendWith(?user, ?film, 0.9)
+
+# Rule: Late night mobile viewing → prefer short content
+# ViewerProfile(?user) ∧ hasCurrentState(?user, ?state) ∧
+# EnvironmentalFactors(?env) ∧ TimeOfDay(?env, LateNight) ∧
+# DeviceType(?device, MobileDevice) ∧
+# CreativeWork(?film) ∧ duration(?film, ?dur) ∧ lessThan(?dur, 60)
+# → recommendWith(?user, ?film, 0.8)
+
+#################################################################
+#    AXIOMS & CONSTRAINTS
+#################################################################
+
+# Disjoint Classes
+[ a owl:AllDisjointClasses ;
+  owl:members ( media:Film media:TVSeries media:TVEpisode )
+] .
+
+[ a owl:AllDisjointClasses ;
+  owl:members ( media:Action media:Romance media:Documentary )
+] .
+
+# Functional Properties
+sem:hasUnifiedEmbedding a owl:FunctionalProperty ;
+    rdfs:comment "Each creative work has exactly one unified embedding"@en .
+
+user:hasCurrentState a owl:FunctionalProperty ;
+    rdfs:comment "User has exactly one current psychographic state"@en .
+
+# Property Chains
+# If A hasGenre G1, and G1 subClassOf G2, then A hasGenre G2
+sem:hasGenre a owl:TransitiveProperty .

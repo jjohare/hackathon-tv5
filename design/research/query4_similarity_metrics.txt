@@ -1,0 +1,354 @@
+# Semantic Relatedness Metrics Research
+
+# Semantic Similarity Metrics for GPU-Accelerated Content Recommendation
+
+## Overview of Semantic Similarity Approaches
+
+Semantic similarity metrics for content recommendation systems operate across multiple dimensions: ontology-based structural measures, embedding-based approaches, and hybrid methods combining both paradigms. For TV/film content recommendation using OWL ontologies and knowledge graphs, the choice of metric significantly impacts both computational efficiency and recommendation quality.
+
+The fundamental challenge in GPU-accelerated semantic similarity computation involves balancing **computational parallelizability** with **semantic expressiveness**. GPU architectures excel at vector operations and matrix computations, making embedding-based and distance-based metrics particularly suitable for acceleration[1][2]. However, ontology-based measures require careful algorithmic restructuring to leverage GPU parallelism effectively.
+
+## Ontology-Based Similarity Measures
+
+### Structural Hierarchy Metrics
+
+**Wu-Palmer Similarity** measures semantic relatedness through the lowest common ancestor (LCA) in an ontology hierarchy:
+
+\[
+\text{sim}_{\text{WP}}(c_1, c_2) = \frac{2 \times \text{depth}(\text{LCA}(c_1, c_2))}{\text{depth}(c_1) + \text{depth}(c_2)}
+\]
+
+This metric ranges from 0 to 1, where 1 indicates identical concepts. For content recommendation, Wu-Palmer effectively captures hierarchical relationships (e.g., "Drama" and "Thriller" sharing a common parent "Genre").
+
+**Resnik Similarity** incorporates information content (IC) derived from corpus statistics:
+
+\[
+\text{sim}_{\text{Resnik}}(c_1, c_2) = \text{IC}(\text{LCA}(c_1, c_2)) = -\log P(c)
+\]
+
+where \(P(c)\) represents the probability of encountering concept \(c\) in the corpus. This approach is particularly valuable for content recommendation because it weights common ancestors by their specificity—rare shared ancestors indicate stronger semantic relatedness.
+
+**Lin Similarity** normalizes Resnik's measure by the information content of both concepts:
+
+\[
+\text{sim}_{\text{Lin}}(c_1, c_2) = \frac{2 \times \text{IC}(\text{LCA}(c_1, c_2))}{\text{IC}(c_1) + \text{IC}(c_2)}
+\]
+
+**Jiang-Conrath Distance** provides a symmetric metric combining path length and information content:
+
+\[
+\text{dist}_{\text{JC}}(c_1, c_2) = \text{IC}(c_1) + \text{IC}(c_2) - 2 \times \text{IC}(\text{LCA}(c_1, c_2))
+\]
+
+Converting to similarity: \(\text{sim}_{\text{JC}} = \frac{1}{1 + \text{dist}_{\text{JC}}}\)
+
+### GPU Parallelization Considerations for Ontology Metrics
+
+Ontology-based measures present computational challenges for GPU acceleration due to their inherent sequential nature—finding LCAs requires graph traversal. However, preprocessing strategies enable effective parallelization:
+
+**Precomputed Transitive Closure**: Store all ancestor relationships in a dense matrix format, enabling parallel LCA queries through bitwise operations on GPU.
+
+**Batch Processing**: Process multiple concept pairs simultaneously, with each GPU thread handling independent similarity computations[1]. This approach scales effectively when comparing large sets of content items.
+
+**Information Content Caching**: Precompute IC values for all ontology concepts and store in GPU global memory, eliminating repeated calculations during batch similarity computations.
+
+## Embedding-Based Similarity Metrics
+
+### Cosine Similarity in Latent Space
+
+Cosine similarity represents the most GPU-friendly semantic similarity metric, computing the angle between vector representations:
+
+\[
+\text{sim}_{\text{cosine}}(\mathbf{v}_1, \mathbf{v}_2) = \frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_1\| \|\mathbf{v}_2\|} = \frac{\sum_{i=1}^{d} v_{1i} v_{2i}}{\sqrt{\sum_{i=1}^{d} v_{1i}^2} \sqrt{\sum_{i=1}^{d} v_{2i}^2}}
+\]
+
+This metric achieves **80x speedup** on GPU implementations compared to CPU baselines for large-scale vector similarity computations[1]. For content recommendation, embeddings can be derived from:
+
+- **Knowledge graph embeddings** (TransE, DistMult, ComplEx) capturing entity relationships
+- **Text embeddings** from content descriptions (BERT, sentence transformers)
+- **Visual embeddings** from poster/thumbnail images (ResNet, Vision Transformers)
+- **Temporal embeddings** encoding release dates and viewing trends
+
+### Euclidean Distance
+
+\[
+\text{dist}_{\text{Euclidean}}(\mathbf{v}_1, \mathbf{v}_2) = \sqrt{\sum_{i=1}^{d} (v_{1i} - v_{2i})^2}
+\]
+
+Converting to similarity: \(\text{sim}_{\text{Euclidean}} = \frac{1}{1 + \text{dist}_{\text{Euclidean}}}\)
+
+Euclidean distance is computationally equivalent to cosine similarity for normalized vectors but provides intuitive geometric interpretation.
+
+### Wasserstein Distance for Distribution Comparison
+
+For comparing content represented as probability distributions over semantic attributes:
+
+\[
+W_p(\mathbf{u}, \mathbf{v}) = \left(\min_{\pi \in \Pi(\mathbf{u}, \mathbf{v})} \sum_{i,j} \pi_{ij} |x_i - y_j|^p\right)^{1/p}
+\]
+
+Wasserstein distance is accurate but computationally expensive, requiring optimal transport computation. GPU acceleration through specialized libraries (e.g., NVIDIA's cuML) enables practical application for large-scale content catalogs[6].
+
+## Path-Based Measures in Knowledge Graphs
+
+### Shortest Path Distance
+
+The simplest path-based metric measures the minimum number of edges between entities:
+
+\[
+\text{dist}_{\text{path}}(e_1, e_2) = \min_{\text{path}} |\text{path}(e_1, e_2)|
+\]
+
+For content recommendation, this captures direct relationships (e.g., "Actor A appeared in Film B").
+
+### Multi-Hop Relationship Aggregation
+
+Content often relates through multiple relationship types and intermediate entities. Aggregating multi-hop paths:
+
+\[
+\text{sim}_{\text{multi-hop}}(e_1, e_2) = \sum_{k=1}^{K} \alpha_k \sum_{\text{paths of length } k} \prod_{i=1}^{k} w_i
+\]
+
+where \(\alpha_k\) weights paths by length and \(w_i\) represents edge weights (relationship strength). This approach captures complex semantic relationships like "Film A and Film B share actors who worked with the same director."
+
+### Random Walk-Based Similarity
+
+Personalized PageRank and random walk kernels compute similarity through the probability of reaching one entity from another:
+
+\[
+\text{sim}_{\text{RW}}(e_1, e_2) = \sum_{t=0}^{\infty} \lambda^t P(\text{reach } e_2 \text{ from } e_1 \text{ in } t \text{ steps})
+\]
+
+GPU implementation leverages sparse matrix operations for efficient random walk computation across large knowledge graphs[1].
+
+## Information Content-Based Metrics
+
+Information content quantifies concept specificity in the ontology:
+
+\[
+\text{IC}(c) = -\log \frac{|D_c|}{|D|}
+\]
+
+where \(|D_c|\) is the number of documents annotated with concept \(c\) and \(|D|\) is the total document count.
+
+For content recommendation, IC can be computed from:
+
+- **Annotation frequency**: How often a genre/actor appears in the catalog
+- **User engagement**: Inverse of how many users have watched content with that attribute
+- **Temporal decay**: Recent content weighted more heavily than historical content
+
+Hybrid metrics combining IC with path distance provide nuanced similarity:
+
+\[
+\text{sim}_{\text{hybrid}}(c_1, c_2) = \alpha \cdot \text{sim}_{\text{path}}(c_1, c_2) + (1-\alpha) \cdot \text{sim}_{\text{IC}}(c_1, c_2)
+\]
+
+## Hybrid Approaches: Structure + Embeddings
+
+### Knowledge Graph Embedding Integration
+
+Modern recommendation systems combine ontology structure with learned embeddings:
+
+\[
+\text{sim}_{\text{hybrid}}(e_1, e_2) = \beta \cdot \text{sim}_{\text{embedding}}(e_1, e_2) + (1-\beta) \cdot \text{sim}_{\text{ontology}}(e_1, e_2)
+\]
+
+This approach leverages embedding expressiveness while maintaining ontology interpretability. GPU implementation processes embedding similarities in parallel while maintaining ontology-based constraints[1].
+
+### Attention-Based Fusion
+
+For multi-modal content (text, visual, audio), attention mechanisms weight different similarity modalities:
+
+\[
+\text{sim}_{\text{multi-modal}}(e_1, e_2) = \sum_{m \in \{\text{text}, \text{visual}, \text{audio}\}} \text{attention}_m \cdot \text{sim}_m(e_1, e_2)
+\]
+
+where attention weights are learned through neural networks and updated based on recommendation performance.
+
+## GPU Implementation Patterns
+
+### Batch Cosine Similarity Computation
+
+```cuda
+__global__ void batchCosineSimilarity(
+    float *vectors,      // Shape: [N, D]
+    float *similarities,  // Shape: [N, N]
+    int N, int D
+) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    
+    if (i >= N || j >= N) return;
+    
+    float dotProduct = 0.0f;
+    float normI = 0.0f;
+    float normJ = 0.0f;
+    
+    for (int k = 0; k < D; k++) {
+        float vi = vectors[i * D + k];
+        float vj = vectors[j * D + k];
+        
+        dotProduct += vi * vj;
+        normI += vi * vi;
+        normJ += vj * vj;
+    }
+    
+    normI = sqrtf(normI);
+    normJ = sqrtf(normJ);
+    
+    similarities[i * N + j] = (normI > 0 && normJ > 0) ? 
+        dotProduct / (normI * normJ) : 0.0f;
+}
+```
+
+This kernel assigns each thread to compute similarity between one pair of vectors, achieving high parallelism across the similarity matrix[1][2].
+
+### Optimized Memory Access Pattern
+
+```cuda
+__global__ void optimizedCosineSimilarity(
+    float *vectors,
+    float *similarities,
+    int N, int D
+) {
+    __shared__ float sharedVectorI[BLOCK_SIZE * D];
+    __shared__ float sharedVectorJ[BLOCK_SIZE * D];
+    
+    int blockI = blockIdx.x;
+    int blockJ = blockIdx.y;
+    int threadIdx_1d = threadIdx.y * blockDim.x + threadIdx.x;
+    
+    // Load vectors into shared memory for coalesced access
+    for (int k = threadIdx_1d; k < D; k += blockDim.x * blockDim.y) {
+        sharedVectorI[threadIdx.y * D + k] = 
+            vectors[blockI * blockDim.y * D + threadIdx.y * D + k];
+        sharedVectorJ[threadIdx.x * D + k] = 
+            vectors[blockJ * blockDim.x * D + threadIdx.x * D + k];
+    }
+    
+    __syncthreads();
+    
+    float dotProduct = 0.0f;
+    for (int k = 0; k < D; k++) {
+        dotProduct += sharedVectorI[threadIdx.y * D + k] * 
+                     sharedVectorJ[threadIdx.x * D + k];
+    }
+    
+    int i = blockI * blockDim.y + threadIdx.y;
+    int j = blockJ * blockDim.x + threadIdx.x;
+    
+    if (i < N && j < N) {
+        similarities[i * N + j] = dotProduct;
+    }
+}
+```
+
+Shared memory optimization reduces global memory bandwidth requirements, improving throughput for large-scale similarity computations[1].
+
+### Sparse Matrix Operations for Knowledge Graphs
+
+```cuda
+__global__ void sparsePathSimilarity(
+    int *csrRowPtr,      // CSR format row pointers
+    int *csrColIdx,      // CSR format column indices
+    float *csrValues,    // Edge weights
+    float *similarities,
+    int numNodes
+) {
+    int nodeI = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (nodeI >= numNodes) return;
+    
+    // Compute similarity to all other nodes via sparse adjacency
+    for (int nodeJ = 0; nodeJ < numNodes; nodeJ++) {
+        float sim = 0.0f;
+        
+        // Traverse neighbors of nodeI
+        for (int idx = csrRowPtr[nodeI]; idx < csrRowPtr[nodeI + 1]; idx++) {
+            int neighbor = csrColIdx[idx];
+            float weight = csrValues[idx];
+            
+            // Check if neighbor connects to nodeJ
+            for (int idx2 = csrRowPtr[neighbor]; 
+                 idx2 < csrRowPtr[neighbor + 1]; idx2++) {
+                if (csrColIdx[idx2] == nodeJ) {
+                    sim += weight * csrValues[idx2];
+                }
+            }
+        }
+        
+        similarities[nodeI * numNodes + nodeJ] = sim;
+    }
+}
+```
+
+Compressed Sparse Row (CSR) format efficiently represents knowledge graph adjacency matrices, enabling GPU-accelerated path-based similarity computation[1].
+
+## Integration Patterns for Real-Time Recommendation
+
+### Streaming Similarity Computation
+
+```python
+import torch
+import torch.nn.functional as F
+
+class StreamingRecommender:
+    def __init__(self, embedding_dim=768, batch_size=256):
+        self.embedding_dim = embedding_dim
+        self.batch_size = batch_size
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.content_embeddings = None
+        
+    def load_embeddings(self, embeddings_path):
+        """Load precomputed content embeddings to GPU"""
+        embeddings = torch.load(embeddings_path)
+        self.content_embeddings = embeddings.to(self.device)
+        
+    def compute_similarities(self, query_embedding):
+        """Compute cosine similarities for streaming queries"""
+        query_embedding = torch.tensor(
+            query_embedding, 
+            dtype=torch.float32
+        ).to(self.device)
+        
+        # Normalize for cosine similarity
+        query_norm = F.normalize(query_embedding, p=2, dim=0)
+        content_norm = F.normalize(self.content_embeddings, p=2, dim=1)
+        
+        # Batch matrix multiplication for efficiency
+        similarities = torch.mm(
+            content_norm, 
+            query_norm.unsqueeze(1)
+        ).squeeze()
+        
+        return similarities.cpu().numpy()
+    
+    def recommend(self, query_embedding, top_k=10):
+        """Return top-k recommendations"""
+        similarities = self.compute_similarities(query_embedding)
+        top_indices = torch.topk(
+            torch.tensor(similarities), 
+            k=top_k
+        ).indices.numpy()
+        
+        return top_indices
+```
+
+This pattern maintains embeddings in GPU memory, enabling sub-millisecond similarity computations for real-time recommendations.
+
+### Hybrid Ontology-Embedding Scoring
+
+```python
+class HybridSimilarityScorer:
+    def __init__(self, ontology, embeddings, alpha=0.6):
+        self.ontology = ontology
+        self.embeddings = embeddings
+        
+
+## Citations
+1. https://d-nb.info/1150306874/34
+2. https://www.irjet.net/archives/V10/i6/IRJET-V10I6161.pdf
+3. https://arxiv.org/abs/2404.00966
+4. https://dl.acm.org/doi/10.1007/s00500-023-08687-8
+5. https://ink.library.smu.edu.sg/cgi/viewcontent.cgi?article=10044&context=sis_research
+6. https://indico.truba.gov.tr/event/6/contributions/56/attachments/21/101/KubilayAtasu_EuroCC_12.02.2021_Part1_SimilaritySearch.pdf

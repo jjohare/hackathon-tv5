@@ -1,0 +1,254 @@
+# Standard TV/Film Ontologies Research
+
+# Standard Ontologies and Vocabularies for TV and Film Metadata in Semantic Reasoning Systems
+
+## Schema.org Media Ontologies
+
+### Core Media Types
+
+Schema.org provides three primary types for audiovisual content representation[1][2][3]:
+
+**VideoObject** serves as the foundational type for any video content, encompassing movies, TV episodes, clips, and embedded video elements. It supports essential properties including `duration`, `thumbnail`/`thumbnailUrl`, `contentLocation`, `contentRating`, and `uploadDate`[1]. The VideoObject type can be used standalone or as a value for the `video` property on CreativeWork types.
+
+**Movie** extends CreativeWork and represents theatrical or cinematic works. It supports properties like `director`, `actor`, `duration`, `inLanguage`, and integrates with action schemas through `potentialAction` (e.g., WatchAction for streaming links)[3]. The Movie type enables representation of both the abstract work and specific expressions through EIDR identifiers.
+
+**TVSeries** represents serialized television content and maintains hierarchical relationships through the `partOfTVSeries` property used on TVEpisode and TVSeason types[2]. This enables modeling of complex narrative structures across seasons and episodes.
+
+### Metadata Properties for Content Classification
+
+Schema.org provides standardized properties for media discovery and classification[1][2]:
+
+| Property | Type | Purpose |
+|----------|------|---------|
+| `contentRating` | Rating or Text | Official ratings (MPAA PG-13, etc.) |
+| `contentLocation` | Place | Geographic or narrative location depicted |
+| `inLanguage` | Language or Text | Language of content |
+| `temporalCoverage` | DateTime or Text | Time period covered by content |
+| `teaches` | DefinedTerm or Text | Learning outcomes for educational content |
+| `wordCount` | Integer | Textual content volume |
+| `timeRequired` | Duration | Typical consumption time |
+| `thumbnail` | ImageObject | Visual preview representation |
+
+### Trailer and Related Content
+
+The `trailer` property enables representation of promotional VideoObjects across Movie, TVSeries, MovieSeries, RadioSeries, TVSeries, VideoGame, and VideoGameSeries types[4]. This property accepts VideoObject values, allowing structured representation of marketing materials within the primary content schema.
+
+## EIDR (Entertainment Identifier Registry) Integration
+
+The search results indicate that Schema.org types like Movie and TVEpisode support dual EIDR representations for distinguishing between abstract works and specific expressions[2][3]:
+
+- **titleEIDR**: Identifies the general work or concept (e.g., "10.5240/1F2A-E1C5-680A-14C6-E76B-I")
+- **editEIDR**: Identifies specific edit or expression of the work (e.g., "10.5240/8A35-3BEE-6497-5D12-9E4F-3")
+
+This dual-identifier approach enables precise content identification for recommendation systems, particularly when distinguishing between theatrical cuts, director's cuts, and regional versions of the same work.
+
+## OWL/RDF Representation Patterns
+
+### JSON-LD Serialization for VideoObject
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "Episode Title",
+  "url": "https://example.com/video/123",
+  "duration": "PT45M",
+  "thumbnail": {
+    "@type": "ImageObject",
+    "url": "https://example.com/thumb.jpg"
+  },
+  "contentRating": "TV-14",
+  "uploadDate": "2025-12-04",
+  "partOfTVSeries": {
+    "@type": "TVSeries",
+    "name": "Series Name",
+    "url": "https://example.com/series/456"
+  }
+}
+```
+
+### TVSeries Hierarchical Structure
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "TVSeries",
+  "name": "Series Name",
+  "creator": {
+    "@type": "Person",
+    "name": "Creator Name"
+  },
+  "hasPart": [
+    {
+      "@type": "TVSeason",
+      "seasonNumber": 1,
+      "hasPart": [
+        {
+          "@type": "TVEpisode",
+          "episodeNumber": 1,
+          "name": "Episode Title",
+          "video": {
+            "@type": "VideoObject",
+            "url": "https://example.com/episode"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Movie with Action Schema
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Movie",
+  "name": "Movie Title",
+  "director": {
+    "@type": "Person",
+    "name": "Director Name"
+  },
+  "actor": [
+    {
+      "@type": "Person",
+      "name": "Actor Name"
+    }
+  ],
+  "potentialAction": {
+    "@type": "WatchAction",
+    "target": "https://example.com/watch?id=123"
+  },
+  "sameAs": "https://www.imdb.com/title/tt0000000/"
+}
+```
+
+## Ontology Interoperability Architecture
+
+### Multi-Vocabulary Integration Strategy
+
+For GPU-accelerated semantic reasoning systems, implement a unified ontology layer that maps between Schema.org, Dublin Core, and domain-specific vocabularies:
+
+**Schema.org as Primary Vocabulary**: Use Schema.org types as the primary representation layer due to widespread search engine support and comprehensive media type coverage.
+
+**Dublin Core Alignment**: Map Dublin Core properties (`dc:creator`, `dc:date`, `dc:language`, `dc:subject`) to Schema.org equivalents (`creator`, `datePublished`, `inLanguage`, `keywords`) for interoperability with library and archival systems.
+
+**SMPTE/EBU Metadata**: Integrate technical metadata from SMPTE (Society of Motion Picture and Television Engineers) standards and EBU (European Broadcasting Union) specifications through custom Schema.org extensions using `additionalType` properties for frame rates, color spaces, and audio specifications.
+
+### OWL Constraint Patterns for CUDA Kernel Optimization
+
+Define OWL constraints that can be efficiently evaluated by CUDA kernels:
+
+```
+Class: RecommendableContent
+  SubClassOf: 
+    (hasContentRating some Rating) AND
+    (hasLanguage some Language) AND
+    (hasDuration some Duration)
+
+Class: StreamableMovie
+  SubClassOf: Movie AND
+    (hasWatchAction some WatchAction) AND
+    (hasProvider some StreamingService)
+
+Class: SerialContent
+  SubClassOf: 
+    (hasPart some Episode) AND
+    (hasSeasonCount >= 1)
+```
+
+These constraints enable CUDA kernels to perform efficient filtering and classification during recommendation computation by pre-computing constraint satisfaction states.
+
+## TVAnytime and Industry Standards
+
+While the search results do not provide detailed TVAnytime specifications, the Schema.org framework demonstrates compatibility with broadcast metadata standards through:
+
+- **Event-based scheduling**: The Event type[9] supports temporal and location-based information for broadcast scheduling
+- **Provider information**: The `provider` property enables representation of distribution channels
+- **Temporal coverage**: The `temporalCoverage` property aligns with TVAnytime's time-based metadata requirements
+
+## Metadata Fields for Content Classification and Discovery
+
+### Essential Classification Properties
+
+Implement the following property hierarchy for recommendation system classification:
+
+**Content Type Hierarchy**: VideoObject → (Movie | TVSeries | TVEpisode | Clip)
+
+**Genre Classification**: Use `genre` property with controlled vocabularies (e.g., "Action", "Drama", "Documentary")
+
+**Audience Targeting**: Combine `contentRating`, `teaches`, and `targetAudience` properties for demographic filtering
+
+**Temporal Metadata**: Utilize `datePublished`, `dateModified`, `uploadDate`, and `temporalCoverage` for recency and historical context
+
+**Availability Metadata**: Implement `isAccessibleForFree`, `offers` (with pricing), and `expires` properties for streaming availability representation
+
+### CUDA Kernel Integration Points
+
+For GPU acceleration, structure metadata as:
+
+1. **Constraint Satisfaction Vectors**: Pre-compute boolean vectors for each content item indicating satisfaction of ontology constraints
+2. **Property Indexing**: Maintain GPU-resident hash tables mapping content identifiers to property values
+3. **Relationship Graphs**: Represent `partOfTVSeries`, `hasPart`, and `sameAs` relationships as adjacency matrices for efficient traversal
+4. **Rating Normalization**: Standardize `contentRating` values to numeric codes for rapid filtering
+
+## Technical Specifications for Recommendation Integration
+
+### RDF Triple Store Optimization
+
+Structure RDF triples for efficient SPARQL query execution on GPU:
+
+```
+?content rdf:type schema:Movie .
+?content schema:contentRating ?rating .
+?content schema:inLanguage ?lang .
+?content schema:actor ?actor .
+?actor schema:name ?actorName .
+```
+
+Partition triple stores by content type and frequently-queried properties to optimize GPU memory access patterns.
+
+### Semantic Similarity Computation
+
+Implement ontology-aware similarity metrics that leverage Schema.org hierarchies:
+
+- **Type-based similarity**: Measure distance in the type hierarchy (Movie vs. VideoObject)
+- **Property overlap**: Calculate Jaccard similarity over populated properties
+- **Reference alignment**: Compare `sameAs` URIs for cross-system entity resolution
+
+### Constraint Enforcement Architecture
+
+CUDA kernels should enforce constraints at three levels:
+
+1. **Schema validation**: Verify property types match Schema.org specifications
+2. **Cardinality constraints**: Enforce minimum/maximum property occurrences
+3. **Semantic constraints**: Evaluate OWL restrictions on property values and relationships
+
+## Current State and Version Information
+
+Schema.org Version 29.3 represents the latest standardization effort, with ongoing development tracked through GitHub and public staging environments[5][6]. The organization of schemas follows a modular approach enabling extension while maintaining backward compatibility[7].
+
+## Recommendations for Semantic Reasoning System Design
+
+**Unified Metadata Model**: Adopt Schema.org as the canonical representation with Dublin Core and SMPTE mappings for specialized use cases.
+
+**Constraint Compilation**: Pre-compile OWL constraints into CUDA-executable constraint satisfaction problems during system initialization.
+
+**Hierarchical Indexing**: Maintain multi-level indices (type hierarchy, property indices, relationship graphs) on GPU memory for rapid constraint evaluation.
+
+**Interoperability Layer**: Implement bidirectional mapping functions between Schema.org, EIDR, and domain-specific vocabularies to support heterogeneous data sources.
+
+**Temporal Metadata Handling**: Leverage `datePublished`, `expires`, and `temporalCoverage` properties for time-aware recommendation filtering in CUDA kernels.
+
+This architecture enables efficient semantic reasoning over media metadata while maintaining compatibility with industry standards and search engine requirements.
+
+## Citations
+1. https://schema.org/VideoObject
+2. https://schema.org/TVSeries
+3. https://schema.org/Movie
+4. https://schema.org/trailer
+5. https://schema.org/version/latest
+6. https://schema.org/docs/releases.html
+7. https://schema.org/docs/schemas.html
+8. https://asistdl.onlinelibrary.wiley.com/doi/10.1002/asi.24744
+9. https://schema.org/Event

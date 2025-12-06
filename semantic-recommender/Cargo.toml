@@ -57,17 +57,19 @@ path = "tests/chaos_tests.rs"
 name = "load_tests"
 path = "tests/load_tests.rs"
 
-[[bench]]
-name = "hybrid_benchmarks"
-harness = false
+# Benchmarks disabled - files not present
+# [[bench]]
+# name = "hybrid_benchmarks"
+# harness = false
 
-[[bench]]
-name = "performance_validation"
-harness = false
+# [[bench]]
+# name = "performance_validation"
+# harness = false
 
-[[bin]]
-name = "load-generator"
-path = "src/bin/load-generator.rs"
+# Binary disabled - file not present
+# [[bin]]
+# name = "load-generator"
+# path = "src/bin/load-generator.rs"
 
 [profile.release]
 opt-level = 3

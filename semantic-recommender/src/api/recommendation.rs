@@ -1,6 +1,6 @@
 use crate::error::ApiError;
 use crate::models::*;
-use crate::integration::AppState;
+use crate::integration::{AppState, EmbeddingService};
 use dashmap::DashMap;
 use std::sync::Arc;
 
@@ -14,6 +14,9 @@ pub struct RecommendationEngine {
 
     /// Optional GPU-accelerated state (None = CPU fallback mode)
     gpu_state: Option<Arc<AppState>>,
+
+    /// Embedding service for text-to-vector conversion
+    embedding_service: Option<Arc<EmbeddingService>>,
 }
 
 impl RecommendationEngine {
@@ -23,15 +26,20 @@ impl RecommendationEngine {
             cache: Arc::new(DashMap::new()),
             mock_data: Self::generate_mock_data(),
             gpu_state: None,
+            embedding_service: None,
         }
     }
 
     /// Create recommendation engine with GPU acceleration
     pub async fn with_gpu(state: Arc<AppState>) -> Self {
+        // Clone embedding service from app state
+        let embedding_service = Some(state.embedding_service.clone());
+
         Self {
             cache: Arc::new(DashMap::new()),
             mock_data: Self::generate_mock_data(),
             gpu_state: Some(state),
+            embedding_service,
         }
     }
 
@@ -44,9 +52,38 @@ impl RecommendationEngine {
         }
     }
 
+    /// Generate embedding from text query
+    /// This demonstrates the text-to-vector conversion bridge
+    fn generate_embedding(&self, text: &str) -> Vec<f32> {
+        if let Some(emb_service) = &self.embedding_service {
+            tracing::debug!("Generating embedding for query: {}", text);
+            let embedding = emb_service.embed_text(text);
+            tracing::debug!("Generated {}-dimensional embedding", embedding.len());
+            embedding
+        } else {
+            // Fallback: empty embedding
+            tracing::warn!("No embedding service available, using empty embedding");
+            vec![]
+        }
+    }
+
     /// Search for media content
     pub async fn search(&self, req: &MediaSearchRequest) -> Result<MediaSearchResponse, ApiError> {
         let start = std::time::Instant::now();
+
+        // BRIDGE DEMONSTRATION: Convert text query to embedding
+        let query_embedding = self.generate_embedding(&req.query);
+        if !query_embedding.is_empty() {
+            tracing::info!(
+                "🔗 BRIDGE: Converted '{}' to {}-dim vector for semantic search",
+                req.query,
+                query_embedding.len()
+            );
+            // In production, this embedding would be sent to:
+            // - Milvus for vector similarity search
+            // - GPU kernels for accelerated computation
+            // - HybridStorageCoordinator for multi-backend queries
+        }
 
         // Check cache first
         if let Some(cached) = self.cache.get(&req.query) {

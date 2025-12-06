@@ -5,6 +5,7 @@
 
 use std::sync::Arc;
 use crate::integration::metrics::Metrics;
+use crate::integration::embedding_service::EmbeddingService;
 use crate::integration::stub_gpu::{GpuSemanticEngine, GpuConfig};
 pub use crate::integration::stub_gpu::{DeviceInfo as GpuDeviceInfo, PerformanceMetrics as GpuMetrics};
 
@@ -14,6 +15,9 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + S
 pub struct AppState {
     /// GPU-accelerated semantic engine
     pub gpu_engine: Arc<GpuSemanticEngine>,
+
+    /// Text-to-embedding service
+    pub embedding_service: Arc<EmbeddingService>,
 
     /// Performance metrics collector
     pub metrics: Arc<Metrics>,
@@ -42,6 +46,9 @@ impl AppState {
             }
         };
 
+        // Initialize embedding service (384-dim for SBERT compatibility)
+        let embedding_service = Arc::new(EmbeddingService::new(384));
+
         // Initialize metrics
         let metrics = Arc::new(Metrics::new());
 
@@ -49,6 +56,7 @@ impl AppState {
 
         Ok(Self {
             gpu_engine,
+            embedding_service,
             metrics,
         })
     }

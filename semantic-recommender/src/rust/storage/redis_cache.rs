@@ -1,10 +1,11 @@
-// Redis caching layer for AgentDB - 5ms policy lookups
+// Redis caching layer for AgentDB and Recommendations - 5ms lookups
 use anyhow::{Context, Result};
 use redis::aio::ConnectionManager;
 use redis::{AsyncCommands, Client};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Duration;
+use super::{Recommendation, StorageResult, StorageError};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Policy {
@@ -52,6 +53,50 @@ impl AgentDBCache {
         let key = format!("policy:{}:{}:{}", policy.agent_id, policy.user_id, policy.state_hash);
         let data = serde_json::to_string(policy)?;
         self.client.set_ex(&key, data, self.ttl.as_secs() as usize).await?;
+        Ok(())
+    }
+}
+
+/// Redis cache for recommendation results
+pub struct RedisCache {
+    client: ConnectionManager,
+    ttl: Duration,
+}
+
+impl RedisCache {
+    pub async fn new(redis_url: &str, ttl_secs: u64) -> Result<Self> {
+        let client = Client::open(redis_url)?;
+        let manager = ConnectionManager::new(client).await?;
+        Ok(Self {
+            client: manager,
+            ttl: Duration::from_secs(ttl_secs),
+        })
+    }
+
+    pub async fn get(&self, key: &str) -> StorageResult<Option<Vec<Recommendation>>> {
+        let mut conn = self.client.clone();
+        let data: Option<String> = conn.get(key).await
+            .map_err(|e| StorageError::Redis(e.to_string()))?;
+
+        match data {
+            Some(s) => {
+                let recommendations = serde_json::from_str(&s)
+                    .map_err(|e| StorageError::Serialization(e))?;
+                Ok(Some(recommendations))
+            }
+            None => Ok(None),
+        }
+    }
+
+    pub async fn set(&self, key: &str, recommendations: &[Recommendation], ttl: Option<Duration>) -> StorageResult<()> {
+        let mut conn = self.client.clone();
+        let data = serde_json::to_string(recommendations)
+            .map_err(|e| StorageError::Serialization(e))?;
+
+        let ttl_secs = ttl.unwrap_or(self.ttl).as_secs() as usize;
+        conn.set_ex(key, data, ttl_secs).await
+            .map_err(|e| StorageError::Redis(e.to_string()))?;
+
         Ok(())
     }
 }

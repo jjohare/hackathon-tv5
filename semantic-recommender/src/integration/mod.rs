@@ -4,6 +4,7 @@
 /// GPU-powered semantic search and recommendation system.
 
 pub mod app_state;
+pub mod embedding_service;
 pub mod health;
 pub mod metrics;
 pub mod stub_gpu;
@@ -12,5 +13,6 @@ pub mod stub_gpu;
 mod tests;
 
 pub use app_state::AppState;
+pub use embedding_service::EmbeddingService;
 pub use health::{HealthResponse, ComponentHealth, GpuInfo};
 pub use metrics::Metrics;

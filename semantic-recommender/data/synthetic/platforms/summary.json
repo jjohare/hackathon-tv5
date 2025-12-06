@@ -1,0 +1,15 @@
+{
+  "total_movies": 62423,
+  "movies_with_platforms": 52182,
+  "platform_distribution": {
+    "tv5monde": 9397,
+    "netflix": 22027,
+    "amazon": 18622,
+    "mubi": 6282,
+    "criterion": 5025,
+    "disney": 12334,
+    "hbo": 15405,
+    "apple": 9389
+  },
+  "avg_platforms_per_movie": 1.5776396520513272
+}

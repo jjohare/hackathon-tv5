@@ -1,0 +1,93 @@
+# Rust
+target/
+Cargo.lock
+*.rs.bk
+*.pdb
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Python testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs
+*.wasm
+*.ptx
+*.cubin
+*.fatbin
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Development and temporary directories
+.swarm/
+archive/
+temp/
+tmp/
+other-kernels/
+other-scripts/
+other-src/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Testing results
+results/
+benchmarks/
+benches/
+
+# CUDA temporary files
+benchmark_t4.cu
+t4_comprehensive_benchmark.cu
+
+# Git repositories (cloned for research)
+temp-*/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Environment files
+.env
+.env.*
+!.env.example

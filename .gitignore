@@ -202,3 +202,17 @@ scripts/auth*.sh
 # Claude Flow and Swarm directories (generated/temporary)
 .claude-flow/
 .swarm/
+
+# Semantic Recommender specific
+semantic-recommender/target/
+semantic-recommender/venv/
+semantic-recommender/archive/
+semantic-recommender/.swarm/
+semantic-recommender/other-kernels/
+semantic-recommender/other-scripts/
+semantic-recommender/other-src/
+semantic-recommender/benchmark_t4.cu
+semantic-recommender/t4_comprehensive_benchmark.cu
+semantic-recommender/results/
+semantic-recommender/benches/
+semantic-recommender/benchmarks/

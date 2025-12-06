@@ -120,3 +120,9 @@ data/synthetic/*.json
 *.tar.gz
 *.tar
 *.zip
+
+# Ontology repositories (cloned from external sources - see docs/ONTOLOGY_SOURCES.md)
+data/ontologies/ada/
+data/ontologies/movies/
+data/ontologies/omc/
+whelk-rs/

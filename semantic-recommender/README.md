@@ -148,6 +148,10 @@ Built for the [Agentics Foundation Hackathon](https://github.com/agenticsorg/hac
 
 ## 💡 The "Four-Brain" Hybrid Architecture
 
+![Semantic Recommender Architecture](docs/semantic-recommender.jpeg)
+
+*Hybrid four-brain system combining GPU acceleration (316K QPS), formal ontology reasoning (Whelk-rs EL++), knowledge graphs (Neo4j), and personalization (Thompson Sampling) for sub-millisecond explainable recommendations at unprecedented scale.*
+
 <div align="center">
 
 ```mermaid

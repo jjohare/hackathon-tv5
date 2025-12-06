@@ -1,0 +1,99 @@
+# CUDA Kernel Makefile - A100 Optimized (sm_80)
+# 5x memory bandwidth, TF32 Tensor Cores, 108 SMs
+
+NVCC := nvcc
+CUDA_ARCH := sm_80
+BUILD_DIR := build_a100
+
+# A100-specific optimizations
+NVCCFLAGS := -arch=$(CUDA_ARCH) \
+             -O3 -DNDEBUG \
+             -use_fast_math \
+             -Xptxas -v,-warn-lmem-usage \
+             --ptxas-options=-allow-expensive-optimizations=true \
+             -lineinfo \
+             -dlto
+
+# Enable TF32 for matmul (19x faster than FP32)
+NVCCFLAGS += -DTF32_ENABLED
+
+# Async copy pipeline support
+NVCCFLAGS += -DUSE_ASYNC_COPY
+
+# L2 cache hints
+NVCCFLAGS += -DUSE_L2_PERSISTENCE
+
+# Include paths
+INCLUDES := -I. -I/usr/local/cuda/include
+
+# Source files
+SRCS := semantic_similarity.cu \
+        semantic_similarity_fp16.cu \
+        semantic_similarity_tf32.cu \
+        graph_search.cu \
+        ontology_reasoning.cu
+
+# PTX output for inspection
+PTXS := $(SRCS:%.cu=$(BUILD_DIR)/%.ptx)
+
+# Cubin (GPU binary)
+CUBINS := $(SRCS:%.cu=$(BUILD_DIR)/%.cubin)
+
+.PHONY: all clean ptx cubin info
+
+all: $(BUILD_DIR) $(CUBINS)
+
+ptx: $(BUILD_DIR) $(PTXS)
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Compile to PTX
+$(BUILD_DIR)/%.ptx: %.cu
+	$(NVCC) $(NVCCFLAGS) $(INCLUDES) -ptx $< -o $@
+	@echo "=== PTX Info: $@ ==="
+	@grep -E "\.reg \.|\.shared \.|\.local \." $@ || true
+
+# Compile to cubin
+$(BUILD_DIR)/%.cubin: %.cu
+	$(NVCC) $(NVCCFLAGS) $(INCLUDES) -cubin $< -o $@
+	@echo "=== Cubin Info: $@ ==="
+	@cuobjdump -sass $@ | head -30 || true
+
+# Special rules for TF32 kernel (new file)
+$(BUILD_DIR)/semantic_similarity_tf32.cubin: semantic_similarity_tf32.cu
+	$(NVCC) $(NVCCFLAGS) $(INCLUDES) \
+	        -DTF32_WMMA \
+	        -cubin $< -o $@
+
+# Launch configuration analysis
+info:
+	@echo "A100 GPU Configuration:"
+	@echo "  Architecture: sm_80"
+	@echo "  SMs: 108 (vs 40 on T4)"
+	@echo "  CUDA Cores: 6912 (vs 2560 on T4)"
+	@echo "  Tensor Cores: 432 (vs 320 on T4)"
+	@echo "  Memory Bandwidth: 1.6 TB/s (vs 320 GB/s on T4)"
+	@echo "  L2 Cache: 40 MB (vs 5 MB on T4)"
+	@echo "  TF32 Performance: 312 TFLOPS (19x faster than FP32)"
+	@echo ""
+	@echo "Recommended Launch Configs:"
+	@echo "  semantic_similarity: <<<108*4, 256>>> (occupancy 4)"
+	@echo "  graph_search: <<<108*2, 512>>> (high register usage)"
+	@echo "  ontology_reasoning: <<<108*8, 128>>> (memory-bound)"
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+# Benchmark targets
+benchmark: $(CUBINS)
+	@echo "Run benchmarks with:"
+	@echo "  nsys profile --stats=true ./benchmark"
+	@echo "  ncu --set full --target-processes all ./benchmark"
+
+# Show register/shared memory usage
+stats: $(PTXS)
+	@for ptx in $(PTXS); do \
+		echo "=== $$ptx ==="; \
+		grep -E "\.reg \.|\.shared \.|\.local \." $$ptx; \
+	done

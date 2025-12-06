@@ -1,707 +1,329 @@
-# TV5 Monde Media Gateway: GPU-Accelerated Semantic Discovery Platform
+# Agentics Foundation TV5 Hackathon
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CUDA](https://img.shields.io/badge/CUDA-12.2%2B-76B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit)
-[![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange?logo=rust)](https://www.rust-lang.org)
-[![Performance](https://img.shields.io/badge/Speedup-500--1000x-brightgreen)](#performance-highlights)
-[![Hackathon](https://img.shields.io/badge/Agentics%20Foundation-Media%20Gateway%20Hackathon-blueviolet)](https://agentics.org/hackathon)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![npm version](https://img.shields.io/badge/npm-agentics--hackathon-red.svg)](https://www.npmjs.com/package/agentics-hackathon)
+[![Discord](https://img.shields.io/badge/Discord-Agentics-7289da.svg)](https://discord.agentics.org)
 
-<div align="center">
+> **Build the future of agentic AI - Supported by Google Cloud**
 
-```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                                                                          ║
-║   🚀 GPU-ACCELERATED SEMANTIC MEDIA GATEWAY                             ║
-║                                                                          ║
-║   Solving the 45-minute content decision problem with                   ║
-║   intelligent semantic search and ontology reasoning                    ║
-║                                                                          ║
-║   • 500-1000x Performance Improvement                                   ║
-║   • 100M+ Media Entity Support                                          ║
-║   • <10ms Search Latency                                                ║
-║   • Multi-Modal Understanding                                           ║
-║                                                                          ║
-╚══════════════════════════════════════════════════════════════════════════╝
-```
+The **Agentics Foundation TV5 Hackathon** repository provides CLI tools, MCP servers, and reference implementations for building agentic AI solutions. This includes the **AI Media Discovery** demo app showcasing the Agent-Ready Web (ARW) specification.
 
-**Presented by the Agentics Foundation with TV5 Monde USA, Google & Kaltura**
-
-[Quick Start](#quick-start) · [Architecture](#architecture-overview) · [Performance](#performance-highlights) · [Documentation](#documentation) · [API](#api-overview)
-
-</div>
+🌐 **Website:** [agentics.org/hackathon](https://agentics.org/hackathon)
+💬 **Discord:** [discord.agentics.org](https://discord.agentics.org)
+📦 **npm:** `npx agentics-hackathon`
 
 ---
 
-## 🎯 The Challenge We Solved
+## 🎯 The Challenge
 
-**The Problem**: Every night, millions spend up to 45 minutes deciding what to watch — billions of hours lost daily to content fragmentation.
+Every night, millions spend up to **45 minutes deciding what to watch** — billions of hours lost every day. Not from lack of content, but from fragmentation across streaming platforms.
 
-**Our Solution**: A GPU-accelerated semantic discovery platform that:
-- Understands content meaning, not just keywords
-- Reasons over rich media ontologies (GMC-O compliant)
-- Delivers results in <10ms for 100M+ entities
-- Learns from user interactions in real-time
-- Supports AI agents via MCP protocol
-
----
-
-## ⚡ Performance Highlights
-
-### End-to-End Improvement: **500-1000x Faster**
-
-| Phase | Optimization | Speedup | Status |
-|-------|-------------|---------|--------|
-| **Baseline** | CPU naive implementation | 1× (reference) | ✅ |
-| **Phase 1** | FP16 + Tensor Cores | 8-10× | ✅ COMPLETE |
-| **Phase 2** | Memory Coalescing | 4-5× (40-50× total) | ✅ COMPLETE |
-| **Phase 3** | Hybrid Architecture | 10-20× (500-1000× total) | ✅ COMPLETE |
-
-### Real-World Impact
-
-**Search Latency** (100M vectors, 1024 dims):
-```
-Before: 12,000ms (12 seconds) ❌
-After:    12ms (0.012 seconds) ✅
-
-Improvement: 1000× faster
-```
-
-**Infrastructure Cost** (24/7 operation):
-```
-Before: $14,400/month (12× A100 GPUs) 💸
-After:     $600/month (1× T4 GPU)      💰
-
-Savings: $13,800/month (96% reduction)
-```
-
-**User Experience**:
-```
-Traditional: "Searching for French documentaries..." [12s delay]
-Our System: [Results appear instantly - 12ms] ⚡
-```
-
----
-
-## 🏆 SSSP Breakthrough: Adaptive Algorithm Selection
-
-**Major Achievement**: Intelligent dual-algorithm architecture combining **GPU Dijkstra** (small graphs) with **Duan et al.'s** breakthrough algorithm ([arXiv:2504.17033](https://arxiv.org/abs/2504.17033), **STOC 2025 Best Paper Award**) for large-scale graphs.
-
-### Adaptive SSSP Architecture
-
-**Innovation**: Automatic algorithm selection based on graph characteristics
-- **Small graphs (<10K nodes)**: GPU Dijkstra → **1.2ms** latency
-- **Large graphs (100M+ nodes)**: Duan SSSP → **110ms** latency (4.5× faster than GPU Dijkstra)
-- **Automatic crossover**: System selects optimal algorithm based on `n` and `m`
-
-### The Breakthrough Algorithm (Duan et al.)
-
-**Theoretical**: First algorithm to beat Dijkstra's O(m + n log n) bound after **66 years** (1959-2025)
-- **Complexity**: O(m log^(2/3) n) vs Dijkstra's O(m + n log n)
-- **Speedup**: 4.5× fewer operations on large sparse graphs
-- **Example**: 100M nodes → 2.66B ops reduced to 585M ops
-
-### Our Complete Implementation
-
-✅ **Dual-path hybrid architecture**:
-- **Path 1**: GPU Dijkstra (optimized for T4 Tensor Cores)
-- **Path 2**: Duan SSSP with CPU-WASM/GPU coordination
-  - Adaptive heap with group operations
-  - GPU k-step relaxation with SPT tracking
-  - Pivot detection (influential nodes)
-  - Recursive frontier shrinking
-  - Bounded Dijkstra for base cases
-
-```rust
-// Intelligent algorithm selection
-fn select_sssp_algorithm(n: usize, m: usize) -> SSSPAlgorithm {
-    let k = (n as f64).log2().cbrt();
-    let crossover = (m as f64 * (n as f64).log2().powf(2.0/3.0))
-                  < (m as f64 + n as f64 * (n as f64).log2());
-
-    if n < 10_000 || !crossover {
-        SSSPAlgorithm::GPUDijkstra  // 1.2ms for small graphs
-    } else {
-        SSSPAlgorithm::DuanSSP      // 110ms for 100M nodes (4.5× faster)
-    }
-}
-```
-
-**Performance Comparison**:
-
-| Graph Size | GPU Dijkstra | Duan SSSP | Speedup | Selected |
-|-----------|--------------|-----------|---------|----------|
-| 10K nodes | **1.2ms** | 2.8ms | 0.43× | GPU Dijkstra ✅ |
-| 1M nodes | 50ms | 45ms | 1.1× | Duan SSSP ✅ |
-| 10M nodes | 380ms | 85ms | 4.5× | Duan SSSP ✅ |
-| 100M nodes | 500ms | **110ms** | 4.5× | Duan SSSP ✅ |
-
-**Production Impact** (7,000 QPS, mixed workload):
-- **Cost**: $924K/month (vs $4.2M without adaptation)
-- **Savings**: **$3.28M/month** (78% reduction)
-- **P99 Latency**: <15ms (small graphs dominate)
-
-📄 **Detailed Documentation**: [`design/docs/ADAPTIVE_SSSP_GUIDE.md`](design/docs/ADAPTIVE_SSSP_GUIDE.md)
-
----
-
-## 🏗️ Architecture Overview
-
-### Hybrid GPU + Vector Database Design
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                       CLIENT APPLICATIONS                           │
-│  (Web, Mobile, AI Agents via MCP, Content Platforms)               │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                     REST API + MCP SERVER                           │
-│  • Agent-friendly JSON API                                          │
-│  • Model Context Protocol (MCP) support                            │
-│  • Rate limiting, authentication, caching                           │
-│  • Real-time query analytics                                        │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                  HYBRID QUERY ORCHESTRATOR                          │
-│  • Intelligent routing (GPU vs Vector DB)                           │
-│  • Sub-10ms queries → GPU path                                      │
-│  • Batch queries → Vector DB path                                   │
-│  • Query complexity analysis                                        │
-└──────────────┬──────────────────────────────────┬───────────────────┘
-               │                                  │
-       ┌───────▼──────────┐             ┌────────▼─────────┐
-       │   GPU ENGINE     │             │ VECTOR DATABASE  │
-       │   (CUDA Kernels) │             │  (Qdrant/Milvus) │
-       │                  │             │                  │
-       │ • Tensor Cores   │             │ • HNSW Index     │
-       │ • FP16 Precision │             │ • Quantization   │
-       │ • <10ms Latency  │             │ • Disk-backed    │
-       │ • 280 GB/s       │             │ • 100M+ vectors  │
-       └──────────────────┘             └──────────────────┘
-               │                                  │
-               └──────────┬───────────────────────┘
-                          ▼
-       ┌──────────────────────────────────────────┐
-       │     ONTOLOGY REASONING ENGINE            │
-       │  • GMC-O semantic enrichment             │
-       │  • Neo4j graph traversal                 │
-       │  • GPU-accelerated constraint validation │
-       │  • Transitive closure inference          │
-       └──────────────────┬───────────────────────┘
-                          ▼
-       ┌──────────────────────────────────────────┐
-       │  REINFORCEMENT LEARNING LAYER            │
-       │  • AgentDB state management              │
-       │  • Thompson Sampling (contextual bandits)│
-       │  • 5-10 interaction cold-start           │
-       │  • Experience replay & distillation      │
-       └──────────────────────────────────────────┘
-```
-
-### Key Design Decisions
-
-**1. Hybrid GPU + Vector Database**
-- **GPU**: Ultra-low latency (<10ms) for real-time queries
-- **Vector DB**: Massive scale (100M+ vectors) with disk backing
-- **Smart Routing**: Automatically selects optimal path
-
-> **Note for Collaborators**: Database consolidation analysis available in `design/DATABASE_UNIFICATION_ANALYSIS.md`. Option to deploy PostgreSQL with `pg_vector` extension for ruvector integration is feasible if team prefers unified relational + vector storage. Current recommendation: Neo4j + Milvus for optimal GPU acceleration.
-
-**2. Multi-Modal Architecture**
-- Unified 1024-dim embedding space
-- Text (Sentence Transformers)
-- Images (CLIP)
-- Audio (Wav2Vec2)
-- Video (TimeSformer)
-
-**3. Agent-Friendly Design**
-- RESTful JSON API
-- Model Context Protocol (MCP) server
-- Streaming results for long operations
-- Comprehensive error handling
+Join us to build agentic AI solutions that solve real problems using Google Cloud, Gemini, Claude, and open-source tools.
 
 ---
 
 ## 🚀 Quick Start
 
+```bash
+# Initialize your hackathon project
+npx agentics-hackathon init
+
+# Browse and install 17+ AI tools
+npx agentics-hackathon tools
+
+# Check project status
+npx agentics-hackathon status
+
+# Start MCP server for AI assistant integration
+npx agentics-hackathon mcp
+```
+
+---
+
+## 🏆 Hackathon Tracks
+
+| Track | Description |
+|-------|-------------|
+| **Entertainment Discovery** | Solve the 45-minute decision problem - help users find what to watch |
+| **Multi-Agent Systems** | Build collaborative AI agents with Google ADK and Vertex AI |
+| **Agentic Workflows** | Create autonomous workflows with Claude, Gemini, and orchestration |
+| **Open Innovation** | Bring your own idea - any agentic AI solution that makes an impact |
+
+---
+
+## ✨ Features
+
+### 🛠 CLI Tool (`npx agentics-hackathon`)
+
+- **`init`** - Interactive project setup with track selection and tool installation
+- **`tools`** - Browse and install 17+ AI development tools across 6 categories
+- **`status`** - View project configuration and installed tools
+- **`info`** - Hackathon information and resources
+- **`mcp`** - Start MCP server (stdio or SSE transport)
+- **`discord`** - Join the community
+- **`help`** - Detailed guides and examples
+
+### 🤖 MCP Server
+
+Full Model Context Protocol implementation with:
+- **Tools**: `get_hackathon_info`, `get_tracks`, `get_available_tools`, `get_project_status`, `check_tool_installed`, `get_resources`
+- **Resources**: Project configuration, track information
+- **Prompts**: `hackathon_starter`, `choose_track`
+
+### 📱 Demo Applications
+
+| App | Description |
+|-----|-------------|
+| **[Media Discovery](apps/media-discovery/)** | AI-powered movie/TV discovery with ARW implementation |
+| **[ARW Chrome Extension](apps/arw-chrome-extension/)** | Browser extension for inspecting ARW compliance |
+
+### 📐 ARW (Agent-Ready Web) Components
+
+This repository includes reference implementations of the ARW specification:
+
+- **Specification**: [ARW v0.1 Draft](spec/ARW-0.1-draft.md)
+- **Schemas**: JSON schemas for validation (`packages/schemas/`)
+- **Validators**: Python and Node.js validation tools (`packages/validators/`)
+- **Badges**: Compliance level badges (`packages/badges/`)
+
+---
+
+## 📦 Repository Structure
+
+```plaintext
+hackathon-tv5/
+├── src/                             # Hackathon CLI source
+│   ├── cli.ts                      # Main CLI entry point
+│   ├── commands/                   # CLI commands (init, tools, status, etc.)
+│   ├── mcp/                        # MCP server implementation
+│   │   ├── server.ts              # MCP tools, resources, prompts
+│   │   ├── stdio.ts               # STDIO transport
+│   │   └── sse.ts                 # SSE transport
+│   ├── constants.ts               # Tracks, tools, configuration
+│   └── utils/                     # Helpers and utilities
+│
+├── apps/                           # Demo Applications
+│   ├── media-discovery/           # AI Media Discovery (Next.js + ARW)
+│   │   ├── public/
+│   │   │   ├── .well-known/arw-manifest.json  # ARW manifest
+│   │   │   └── llms.txt                       # ARW discovery file
+│   │   └── src/                   # React components & API routes
+│   └── arw-chrome-extension/      # ARW Inspector Chrome Extension
+│       ├── manifest.json          # Chrome Manifest V3
+│       └── src/                   # Popup, content script, service worker
+│
+├── packages/                       # Shared Packages
+│   ├── @arw/schemas/              # TypeScript ARW schemas with Zod
+│   ├── schemas/                   # JSON schemas for ARW validation
+│   ├── validators/                # Python & Node.js validators
+│   ├── validator/                 # ARW validator CLI tool
+│   ├── badges/                    # ARW compliance badges (SVG)
+│   ├── cli/                       # Rust ARW CLI (advanced)
+│   ├── crawler-sdk/               # TypeScript SDK for ARW crawler service
+│   ├── crawler-service/           # High-performance crawler API service
+│   ├── nextjs-plugin/             # Next.js plugin for ARW integration
+│   └── benchmark/                 # ARW benchmark evaluation
+│
+├── spec/                           # ARW Specification
+│   └── ARW-0.1-draft.md           # Editor's draft specification
+│
+├── docs/                           # Documentation
+├── ai_docs/                        # AI-focused documentation
+├── scripts/                        # Build and utility scripts
+│
+├── .claude/                        # Claude Code configuration
+│   ├── commands/                  # Slash commands
+│   └── agents/                    # Sub-agent definitions
+│
+├── CLAUDE.md                       # Claude Code guidance
+└── README.md                       # This file
+```
+
+---
+
+## 🔧 Available Tools (17+)
+
+The CLI provides access to tools across 6 categories:
+
+### AI Assistants
+- **Claude Code CLI** - Anthropic's AI-powered coding assistant
+- **Gemini CLI** - Google's Gemini model interface
+
+### Orchestration & Agent Frameworks
+- **Claude Flow** - #1 agent orchestration platform with 101 MCP tools
+- **Agentic Flow** - Production AI orchestration with 66 agents
+- **Flow Nexus** - Competitive agentic platform on MCP
+- **Google ADK** - Build multi-agent systems with Google's Agent Development Kit
+
+### Cloud Platform
+- **Google Cloud CLI** - gcloud SDK for Vertex AI, Cloud Functions
+- **Vertex AI SDK** - Google Cloud's unified ML platform
+
+### Databases & Memory
+- **RuVector** - Vector database and embeddings toolkit
+- **AgentDB** - Database for agentic AI state management
+
+### Synthesis & Advanced Tools
+- **Agentic Synth** - Synthesis tools for agentic development
+- **Strange Loops** - Consciousness exploration SDK
+- **SPARC 2.0** - Autonomous vector coding agent
+
+### Python Frameworks
+- **LionPride** - Python agentic AI framework
+- **Agentic Framework** - AI agents with natural language
+- **OpenAI Agents SDK** - Multi-agent workflows from OpenAI
+
+---
+
+## 🌐 ARW (Agent-Ready Web)
+
+This repository demonstrates the ARW specification through the **Media Discovery** app.
+
+### What is ARW?
+
+ARW provides infrastructure for efficient agent-web interaction:
+
+- **85% token reduction** - Machine views vs HTML scraping
+- **10x faster discovery** - Structured manifests vs crawling
+- **OAuth-enforced actions** - Safe agent transactions
+- **AI-* headers** - Full observability of agent traffic
+
+### ARW in Media Discovery
+
+The media-discovery app implements ARW with:
+
+```json
+// /.well-known/arw-manifest.json
+{
+  "version": "0.1",
+  "profile": "ARW-1",
+  "site": {
+    "name": "AI Media Discovery",
+    "description": "Discover movies and TV shows through natural language"
+  },
+  "actions": [
+    {
+      "id": "semantic_search",
+      "endpoint": "/api/search",
+      "method": "POST"
+    }
+  ]
+}
+```
+
+See the [ARW Specification](spec/ARW-0.1-draft.md) for full details.
+
+---
+
+## 💻 Development
+
 ### Prerequisites
 
-```bash
-# Hardware
-• NVIDIA GPU: T4, RTX 2080+, A100, A10, L40
-• VRAM: 16GB recommended (4GB minimum)
-• Compute Capability: 7.5+ (Turing or newer)
+- Node.js 18+
+- npm or pnpm
 
-# Software
-• CUDA Toolkit 12.2+
-• Rust 1.75+
-• Docker & NVIDIA Container Toolkit (optional)
-```
-
-### Installation (3 Steps)
+### Build & Run
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/agenticsorg/hackathon-tv5.git
-cd hackathon-tv5
+# Install dependencies
+npm install
 
-# 2. Build CUDA kernels
-cd src/cuda/kernels
-make all
+# Build the CLI
+npm run build
 
-# 3. Build Rust application
-cd ../../..
-cargo build --release
-```
+# Run locally
+npm start
 
-### Run Your First Query (10 seconds)
+# Development mode (watch)
+npm run dev
 
-```bash
-# Start the API server
-cargo run --release --bin api-server
-
-# In another terminal, query via REST API
-curl -X POST http://localhost:8080/api/v1/search \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "French documentary about climate change",
-    "limit": 10,
-    "threshold": 0.85
-  }'
-```
-
-**Expected Response** (12ms):
-```json
-{
-  "results": [
-    {
-      "id": "doc_12345",
-      "title": "Climat: l'Urgence d'Agir",
-      "similarity": 0.94,
-      "metadata": {
-        "language": "fr",
-        "genre": "Documentary",
-        "topic": "Environment"
-      }
-    }
-  ],
-  "query_time_ms": 12,
-  "total_candidates": 100000000
-}
-```
-
----
-
-## 📊 Performance Benchmarks
-
-### Phase 1: Tensor Core Optimization (8-10× speedup)
-
-**The Bug We Fixed**: Original implementation defined tensor core operations but never called them!
-
-```cuda
-// BEFORE: Defined but UNUSED
-__device__ void wmma_similarity_batch(...) {
-    wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);  // Never called!
-}
-
-// AFTER: Properly integrated
-__global__ void compute_multimodal_similarity_tensor_cores(...) {
-    wmma::mma_sync(acc_frag, a_frag, b_frag, acc_frag);  // Actually used!
-}
-```
-
-**Results** (NVIDIA T4 GPU):
-| Metric | CPU Baseline | Tensor Cores | Improvement |
-|--------|-------------|--------------|-------------|
-| Time | 10,000ms | 1,000ms | **10× faster** |
-| TFLOPS | 2.5 | 25 | **10× throughput** |
-| GPU Utilization | 30% | 95% | **3.2× efficiency** |
-
-### Phase 2: Memory Optimization (4-5× speedup)
-
-**Key Innovation**: Coalesced memory access + shared memory caching
-
-```cuda
-// BEFORE: Random memory access (60 GB/s)
-for each pair:
-    load embedding[random_index]  // Cache miss!
-
-// AFTER: Sorted + coalesced access (280 GB/s)
-sort pairs by source_id
-for each batch of 32 consecutive sources:
-    load into shared memory (coalesced)  // Cache hit!
-    process all targets
-```
-
-**Results**:
-| Metric | Baseline | Optimized | Improvement |
-|--------|----------|-----------|-------------|
-| Memory Bandwidth | 60 GB/s | 280 GB/s | **4.67× faster** |
-| L2 Cache Hit Rate | 15% | 85% | **5.67× better** |
-| Latency (100K pairs) | 150ms | 30ms | **5× faster** |
-
-**Cumulative Impact**: 10× × 5× = **50× faster than baseline**
-
-### Phase 3: Hybrid Architecture (10-20× speedup)
-
-**Innovation**: Smart routing between GPU and Vector Database
-
-```rust
-// Intelligent query routing
-if query.complexity < 10_000 {
-    gpu_engine.search(query)  // <10ms path
-} else {
-    vector_db.search(query)   // Disk-backed path
-}
-```
-
-**Results** (100M vectors):
-| Query Type | GPU Only | Hybrid | Improvement |
-|------------|----------|--------|-------------|
-| Simple search (<10K) | 12ms | 12ms | Equal (GPU path) |
-| Complex search (>1M) | OOM ❌ | 45ms | **Enabled** ✅ |
-| Batch processing | 8s | 2s | **4× faster** |
-
-**Scalability**:
-```
-GPU Memory: 16GB → 1M vectors max
-Hybrid:     16GB GPU + 1TB disk → 100M vectors ✅
-```
-
-**Total Improvement**: 50× × 20× = **1000× faster than naive CPU baseline**
-
----
-
-## 🎨 Key Features
-
-### 1. **Multi-Modal Semantic Search**
-```rust
-// Unified search across text, image, audio, video
-let results = engine.search(MultiModalQuery {
-    text: Some("French documentary"),
-    image: Some(image_bytes),
-    audio: None,
-    weights: vec![0.7, 0.3, 0.0, 0.0],
-})?;
-```
-
-### 2. **Ontology-Aware Reasoning**
-```rust
-// GMC-O compliant semantic enrichment
-let enriched = reasoner.infer_relationships(&results)?;
-// Discovers: "Documentary" is subClassOf "NonFiction"
-//           "Climate Change" hasRelatedTopic "Environment"
-```
-
-### 3. **Agent-Friendly MCP API**
-```json
-{
-  "method": "tools/call",
-  "params": {
-    "name": "semantic_search",
-    "arguments": {
-      "query": "French documentary climate change",
-      "filters": { "language": "fr" }
-    }
-  }
-}
-```
-
-### 4. **Real-Time Learning**
-```rust
-// Thompson Sampling for exploration/exploitation
-let recommendation = rl_agent.recommend(
-    user_context,
-    available_items,
-    exploration_rate: 0.1
-)?;
-
-// Learns optimal policy in 5-10 interactions
-```
-
-### 5. **Production-Ready**
-- **Monitoring**: Prometheus metrics, Grafana dashboards
-- **Deployment**: Docker + Kubernetes, Terraform configs
-- **Testing**: 95%+ code coverage, property-based tests
-- **Documentation**: OpenAPI 3.0 spec, SDK examples
-
----
-
-## 📚 Documentation
-
-### Getting Started
-- [**Quick Start Guide**](docs/QUICK_START.md) - 5-minute setup
-- [**API Documentation**](docs/API_GUIDE.md) - Complete REST API reference
-
-### Architecture
-- [**System Architecture**](ARCHITECTURE.md) - High-level design
-- [**System Design**](design/architecture/system-architecture.md) - Technical architecture
-
-### Performance
-- [**Performance Analysis**](PERFORMANCE.md) - Complete benchmarks
-- [**Phase 1: Tensor Cores**](PHASE1_COMPLETE.md) - 10× speedup
-
-### Implementation
-- [**CUDA Kernels**](src/cuda/README.md) - GPU programming guide
-- [**Deployment Guide**](design/guides/deployment-guide.md) - Production setup
-
-### Research
-- [**GPU Semantic Processing**](design/research/gpu-semantic-processing.md) - GPU acceleration
-- [**Graph Algorithms**](design/research/graph-algorithms-recommendations.md) - Algorithm analysis
-- [**Neo4j Vector Search**](design/research/neo4j-vector-search-analysis.md) - Vector integration
-
----
-
-## 🔌 API Overview
-
-### REST API
-
-**Base URL**: `http://localhost:8080/api/v1`
-
-#### Search Endpoint
-```bash
-POST /search
-Content-Type: application/json
-
-{
-  "query": "French documentary about climate change",
-  "filters": {
-    "language": "fr",
-    "genre": "Documentary"
-  },
-  "limit": 10,
-  "threshold": 0.85
-}
-```
-
-**Response**:
-```json
-{
-  "results": [...],
-  "query_time_ms": 12,
-  "total_candidates": 100000000,
-  "metadata": {
-    "execution_path": "gpu",
-    "gpu_utilization": 0.92,
-    "cache_hit_rate": 0.85
-  }
-}
-```
-
-#### Batch Search
-```bash
-POST /batch-search
-Content-Type: application/json
-
-{
-  "queries": [
-    "French documentary climate change",
-    "Spanish thriller series",
-    "Japanese anime movies"
-  ],
-  "limit": 5
-}
+# Run linter
+npm run lint
 ```
 
 ### MCP Server
 
-**Start MCP Server**:
 ```bash
-cargo run --release --bin mcp-server
+# STDIO transport (for Claude Desktop, etc.)
+npm run mcp:stdio
+
+# SSE transport (for web integrations)
+npm run mcp:sse
 ```
 
-**Available Tools**:
-- `semantic_search` - Multi-modal search
-- `ontology_query` - Graph traversal
-- `recommend` - Personalized recommendations
-- `get_similar` - Find similar items
+### Media Discovery App
 
-**Example Usage** (Claude Code):
-```python
-# Configure in claude_desktop_config.json
+```bash
+cd apps/media-discovery
+npm install
+npm run dev
+```
+
+---
+
+## 🔌 MCP Integration
+
+Add to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
 {
   "mcpServers": {
-    "media-gateway": {
-      "command": "cargo",
-      "args": ["run", "--release", "--bin", "mcp-server"]
+    "agentics-hackathon": {
+      "command": "npx",
+      "args": ["agentics-hackathon", "mcp"]
     }
   }
 }
 ```
 
----
-
-## 🧪 Testing & Validation
-
-### Run All Tests
+Or use SSE transport:
 
 ```bash
-# Unit tests
-cargo test
-
-# Integration tests
-cargo test --test hybrid_integration_tests
-
-# Benchmarks
-cargo bench
-
-# CUDA kernel tests
-cd src/cuda/kernels && make test
-```
-
-### Performance Validation
-
-```bash
-# Validate Phase 1 (Tensor Cores)
-./scripts/run_phase1_benchmark.sh
-
-# Validate Phase 2 (Memory)
-cd src/cuda/kernels && make phase2-test
-
-# End-to-end benchmark
-cargo run --release --bin load-generator -- \
-  --queries 10000 \
-  --concurrency 100
-```
-
-**Expected Results**:
-```
-✅ Phase 1 Speedup: 8-10× (Target: 8×)
-✅ Phase 2 Speedup: 4-5× (Target: 4×)
-✅ E2E Latency: <15ms (Target: <20ms)
-✅ Throughput: 5000+ QPS (Target: 1000+)
-```
-
----
-
-## 🚢 Deployment
-
-### Docker Deployment
-
-```bash
-# Build GPU-enabled image
-docker build -t media-gateway:latest -f Dockerfile.gpu .
-
-# Run with GPU access
-docker run --gpus all -p 8080:8080 \
-  -e CUDA_VISIBLE_DEVICES=0 \
-  -e RUST_LOG=info \
-  media-gateway:latest
-```
-
-### Kubernetes Deployment
-
-```bash
-# Apply configurations
-kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/gpu-deployment.yaml
-kubectl apply -f k8s/service.yaml
-
-# Scale replicas
-kubectl scale deployment media-gateway --replicas=3
-```
-
-### Configuration
-
-**Environment Variables**:
-```bash
-# GPU Settings
-CUDA_VISIBLE_DEVICES=0,1        # GPU devices
-GPU_MEMORY_FRACTION=0.8         # Memory allocation
-
-# Vector Database
-QDRANT_URL=http://qdrant:6333
-QDRANT_COLLECTION=media_vectors
-
-# Neo4j
-NEO4J_URI=bolt://neo4j:7687
-NEO4J_DATABASE=media_graph
-
-# API Settings
-API_PORT=8080
-API_WORKERS=4
-RATE_LIMIT_RPS=1000
+npx agentics-hackathon mcp sse --port 3000
 ```
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! Areas of focus:
 
-### Development Setup
+1. **CLI Improvements** - New commands, better UX
+2. **Tool Integrations** - Add more AI tools
+3. **Demo Apps** - Build showcases for hackathon tracks
+4. **ARW Implementation** - Expand specification coverage
+5. **Documentation** - Guides and tutorials
 
-```bash
-# Install pre-commit hooks
-pip install pre-commit
-pre-commit install
+### Development Workflow
 
-# Run linters
-cargo clippy -- -D warnings
-cargo fmt --check
-
-# Run security audit
-cargo audit
-```
+See [CLAUDE.md](CLAUDE.md) for development guidelines including:
+- SPARC methodology for systematic development
+- Concurrent execution patterns
+- File organization rules
 
 ---
 
 ## 📜 License
 
-This project is licensed under the Apache License 2.0 - see [LICENSE](LICENSE) for details.
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
-## 🙏 Acknowledgments
+## 🔗 Links
 
-**Partners**:
-- **TV5 Monde USA** - Media content and domain expertise
-- **Google** - Cloud infrastructure and Gemini AI
-- **Kaltura** - Video platform technology
-- **Agentics Foundation** - Organization and community
-
-**Technologies**:
-- **NVIDIA** - CUDA toolkit and GPU expertise
-- **Neo4j** - Graph database platform
-- **Qdrant/Milvus** - Vector database systems
-- **Anthropic** - Claude AI and development tools
-
----
-
-## 📊 Project Statistics
-
-```
-Total Implementation:
-├── Design Documentation: 21,241 lines (876KB)
-├── CUDA Kernels: 4,200 lines (14 kernels)
-├── Rust Application: 8,500 lines (15 modules)
-├── Tests: 3,200 lines (95% coverage)
-├── Benchmarks: 1,800 lines
-└── Documentation: 12,000 lines (25 files)
-
-Total: ~51,000 lines of production-ready code
-
-Performance Achievements:
-├── Speedup: 500-1000× vs CPU baseline
-├── Latency: 12ms for 100M vectors (<10ms target)
-├── Throughput: 5,000+ queries/second
-├── Scalability: 100M+ entities supported
-└── Cost Reduction: 96% ($14,400 → $600/month)
-```
+- **🌐 Hackathon Website:** [agentics.org/hackathon](https://agentics.org/hackathon)
+- **💬 Discord:** [discord.agentics.org](https://discord.agentics.org)
+- **📦 GitHub:** [github.com/agenticsorg/hackathon-tv5](https://github.com/agenticsorg/hackathon-tv5)
+- **📖 ARW Spec:** [ARW v0.1 Draft](spec/ARW-0.1-draft.md)
 
 ---
 
 <div align="center">
 
-## 🌟 Built for the Media Gateway Hackathon
+**🚀 Agentics Foundation TV5 Hackathon**
 
-**Solving the content discovery problem with AI, GPU acceleration, and semantic understanding**
+*Building the Future of Agentic AI - Supported by Google Cloud*
 
-[Website](https://agentics.org/hackathon) · [Discord](https://discord.agentics.org) · [Documentation](#documentation) · [API](#api-overview)
-
-**Made with ❤️ by the Media Gateway Team**
+[Website](https://agentics.org/hackathon) | [Discord](https://discord.agentics.org) | [GitHub](https://github.com/agenticsorg/hackathon-tv5)
 
 </div>

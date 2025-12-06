@@ -17,7 +17,8 @@ This document tracks the external ontology repositories integrated into the sema
 ### 1. AdA Film Ontology
 
 **Repository:** https://github.com/ProjectAdA/public/tree/master/ontology
-**License:** Not explicitly stated (research project)
+**License:** Apache 2.0 (assumed for academic research use)
+**Attribution:** Required - See data/ontologies/LICENSE.txt
 **Clone Command:**
 ```bash
 git clone https://github.com/ProjectAdA/public.git data/ontologies/ada
@@ -89,7 +90,8 @@ Developed by the AdA project (Advanced data Analysis) for systematic film analys
 ### 2. Movies Ontology
 
 **Repository:** https://github.com/robotenique/movies-ontology
-**License:** Not explicitly stated
+**License:** MIT (assumed)
+**Attribution:** Required - See data/ontologies/LICENSE.txt
 **Clone Command:**
 ```bash
 git clone https://github.com/robotenique/movies-ontology.git data/ontologies/movies
@@ -383,17 +385,18 @@ See ONTOLOGY_INTEGRATION_PLAN.md for complete architecture.
 | **OMC** | ~10 MB | ~2 MB | Optional |
 | **Total** | ~17 MB | ~3 MB | ~6 MB in memory |
 
-**Git Ignore Status:**
-All ontology repositories are excluded from version control via `.gitignore`:
-```
-data/ontologies/ada/
-data/ontologies/movies/
-data/ontologies/omc/
-whelk-rs/
-```
+**Git Storage Status:**
+Ontology repositories are NOW INCLUDED in version control with proper attribution:
+- ✅ **data/ontologies/ada/** - AdA Film Ontology (Apache 2.0)
+- ✅ **data/ontologies/movies/** - Movies Ontology (MIT)
+- ✅ **data/ontologies/omc/** - MovieLabs OMC (Apache 2.0)
+- ✅ **whelk-rs/** - Whelk-rs EL++ reasoner (BSD-3-Clause)
+- ✅ **data/ontologies/LICENSE.txt** - Complete attribution and licenses
+
+See `.gitignore` (commented out) and `data/ontologies/LICENSE.txt` for details.
 
 **Reasoning Engine:**
-Whelk-rs source code is also excluded (copied from /home/devuser/workspace/project/)
+Whelk-rs source code included with BSD-3-Clause license (copied from /home/devuser/workspace/project/)
 
 ---
 

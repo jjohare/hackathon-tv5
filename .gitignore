@@ -107,6 +107,7 @@ dist
 
 # Docusaurus cache and generated files
 .docusaurus
+semantic-recommender/docs/.doc-alignment-reports 
 
 # Serverless directories
 .serverless/

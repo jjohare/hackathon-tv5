@@ -1,0 +1,32 @@
+{
+  "total_users": 92848,
+  "archetype_distribution": {
+    "cinephile": 13163,
+    "casual": 13219,
+    "family": 13357,
+    "young_adult": 13259,
+    "senior": 13310,
+    "international": 13228,
+    "genre_specialist": 13312
+  },
+  "age_distribution": {
+    "65+": 15257,
+    "45-54": 15522,
+    "25-34": 15583,
+    "55-64": 15663,
+    "18-24": 15486,
+    "35-44": 15337
+  },
+  "country_distribution": {
+    "NL": 9309,
+    "CA": 9340,
+    "ES": 9367,
+    "IT": 9175,
+    "UK": 9235,
+    "FR": 9412,
+    "BE": 9255,
+    "US": 9120,
+    "DE": 9367,
+    "AU": 9268
+  }
+}

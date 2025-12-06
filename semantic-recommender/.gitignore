@@ -92,14 +92,31 @@ Thumbs.db
 .env.*
 !.env.example
 
-# LLM-generated reports and summaries
-*SUMMARY*.md
-*COMPLETE*.md
+# LLM-generated reports and summaries (keep production docs)
+# *SUMMARY*.md
+# *COMPLETE*.md
 *DELIVERABLE*
 *EXECUTION*.md
-*STATUS*.md
-*INTEGRATION*.md
+# *STATUS*.md
+# *INTEGRATION*.md
 *VALIDATION*.md
-*_REPORT*.md
+# *_REPORT*.md
 .doc-alignment-reports/
 summaries/
+
+# Data files and datasets
+data/raw/ml-*/
+data/raw/*.zip
+data/raw/*.csv
+data/processed/
+data/embeddings/
+data/synthetic/*.parquet
+data/synthetic/*.json
+*.db
+*.sqlite
+*.duckdb
+
+# Compressed data files
+*.tar.gz
+*.tar
+*.zip

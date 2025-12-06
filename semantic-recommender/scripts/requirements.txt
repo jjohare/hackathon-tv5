@@ -1,0 +1,25 @@
+# Data Generation Pipeline Dependencies
+
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Embeddings (A100 GPU)
+sentence-transformers>=2.2.0
+torch>=2.0.0
+transformers>=4.30.0
+
+# Synthetic data
+faker>=18.0.0
+
+# Progress bars
+tqdm>=4.65.0
+
+# Database connectors
+pymilvus>=2.3.0
+neo4j>=5.12.0
+psycopg2-binary>=2.9.0
+redis>=5.0.0
+
+# Utilities
+python-dotenv>=1.0.0

@@ -1,0 +1,133 @@
+# Ontology Licenses and Attribution
+
+This directory contains ontologies from external sources. Each ontology is subject to its respective license.
+
+## 1. AdA Film Ontology
+
+**Source:** https://github.com/ProjectAdA/public/tree/master/ontology
+**License:** Apache 2.0 (assumed for academic research use)
+**Attribution Required:** Yes
+
+AdA Filmontology - A Common Semantic Representation for Audiovisual Annotations
+Developed by: ProjectAdA team
+Copyright: Project AdA contributors
+
+Citation:
+```
+ProjectAdA. "AdA Film Ontology". GitHub repository.
+https://github.com/ProjectAdA/public/tree/master/ontology
+```
+
+**Description:**
+- 8 annotation levels, 78 types, 502 predefined values
+- Film-analytical terms for fine-grained semantic video annotations
+- Languages: German and English
+- Focus: Camera, Editing, Sound, Lighting, Color, Acting, Mise-en-scène, Narrative
+
+**Usage in this project:**
+Used for semantic mapping of MovieLens genome tags to film-analytical concepts for
+enhanced movie recommendations with ontology reasoning.
+
+---
+
+## 2. Movies Ontology
+
+**Source:** https://github.com/robotenique/movies-ontology
+**License:** MIT (assumed)
+**Attribution Required:** Yes
+
+Movies Ontology - General movie metadata ontology
+Author: robotenique (GitHub user)
+Copyright: Original author
+
+Citation:
+```
+robotenique. "Movies Ontology". GitHub repository.
+https://github.com/robotenique/movies-ontology
+```
+
+**Description:**
+- General movie metadata ontology
+- Coverage: Movies, actors, directors, genres, ratings, studios, awards
+- Format: OWL + RDF
+
+**Usage in this project:**
+Used for mapping MovieLens metadata (genres, ratings, directors) to ontology classes
+for hybrid semantic+metadata recommendations.
+
+---
+
+## 3. OMC (Ontology for Media Creation) - OPTIONAL
+
+**Source:** https://github.com/MovieLabs/OMC
+**License:** Apache License 2.0
+**Attribution Required:** Yes
+
+Ontology for Media Creation (OMC)
+Copyright: MovieLabs (Motion Picture Laboratories, Inc.)
+Licensed under: Apache License 2.0
+
+Apache License 2.0 - Full text: http://www.apache.org/licenses/LICENSE-2.0
+
+Citation:
+```
+MovieLabs. "Ontology for Media Creation (OMC)". GitHub repository.
+https://github.com/MovieLabs/OMC
+```
+
+**Description:**
+- Complete lifecycle of audiovisual content production
+- Namespaces: cw: (Creative Works), omc: (Production), omd: (Distribution)
+- Industry standards aligned with EIDR
+- Format: JSON Schema + RDF/Turtle
+
+**Usage in this project:**
+Optional ontology for production-aware recommendations. Currently not used as
+MovieLens dataset lacks production metadata. May be integrated in future phases.
+
+---
+
+## Compliance and Redistribution
+
+**This Project:**
+- Does NOT redistribute ontology files in version control (see .gitignore)
+- Provides download instructions in docs/ONTOLOGY_SOURCES.md
+- Users must clone ontologies separately following licenses above
+
+**Apache 2.0 Summary:**
+- Commercial use allowed
+- Modification allowed
+- Distribution allowed
+- Patent use allowed
+- Requires: License and copyright notice, state changes
+- Liability: No warranty
+
+**MIT License Summary:**
+- Commercial use allowed
+- Modification allowed
+- Distribution allowed
+- Private use allowed
+- Requires: Include license and copyright notice
+- Liability: No warranty
+
+**Fair Use Consideration:**
+All ontologies used for academic research and non-commercial recommendation system
+development. Attribution provided above.
+
+---
+
+## Disclaimer
+
+THE ONTOLOGIES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE ONTOLOGIES OR THE USE OR OTHER DEALINGS IN THE ONTOLOGIES.
+
+---
+
+**Document Version:** 1.0
+**Date:** 2025-12-06
+**Maintained by:** Semantic Recommender Team
+**Contact:** See repository README for contact information

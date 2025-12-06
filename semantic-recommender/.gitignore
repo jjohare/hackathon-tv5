@@ -121,8 +121,9 @@ data/synthetic/*.json
 *.tar
 *.zip
 
-# Ontology repositories (cloned from external sources - see docs/ONTOLOGY_SOURCES.md)
-data/ontologies/ada/
-data/ontologies/movies/
-data/ontologies/omc/
-whelk-rs/
+# Ontology repositories - NOW INCLUDED in git with attribution
+# See docs/ONTOLOGY_SOURCES.md for licenses and sources
+# data/ontologies/ada/      - AdA Film Ontology (Apache 2.0)
+# data/ontologies/movies/   - Movies Ontology (MIT)
+# data/ontologies/omc/      - MovieLabs OMC (Apache 2.0)
+# whelk-rs/                 - Whelk-rs EL++ reasoner (BSD-3-Clause)

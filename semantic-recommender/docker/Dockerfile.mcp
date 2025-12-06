@@ -1,0 +1,32 @@
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy application files
+COPY scripts/mcp_server_http.py /app/scripts/
+COPY data/embeddings/media/ /app/data/embeddings/media/
+COPY requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    aiohttp \
+    torch \
+    sentence-transformers \
+    numpy \
+    tqdm
+
+# Expose MCP server port
+EXPOSE 8888
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8888/health')"
+
+# Run MCP server
+CMD ["python", "scripts/mcp_server_http.py", "--host", "0.0.0.0", "--port", "8888"]

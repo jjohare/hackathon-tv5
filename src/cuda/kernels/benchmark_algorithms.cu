@@ -41,6 +41,14 @@ struct BenchmarkResult {
     double speedup_vs_exact;
 };
 
+// Conversion kernel for float to half precision
+__global__ void float_to_half_kernel(float* src, __half* dst, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        dst[idx] = __float2half(src[idx]);
+    }
+}
+
 // Generate random embeddings
 void generate_random_embeddings(
     __half* embeddings,
@@ -62,14 +70,8 @@ void generate_random_embeddings(
     int threads = 256;
     int blocks = (total + threads - 1) / threads;
 
-    auto convert = [] __device__ (float* src, __half* dst, int n) {
-        int idx = blockIdx.x * blockDim.x + threadIdx.x;
-        if (idx < n) {
-            dst[idx] = __float2half(src[idx]);
-        }
-    };
-
-    convert<<<blocks, threads>>>(temp_float, embeddings, total);
+    // Use the standalone conversion kernel defined below
+    float_to_half_kernel<<<blocks, threads>>>(temp_float, embeddings, total);
     cudaDeviceSynchronize();
 
     cudaFree(temp_float);
@@ -311,6 +313,72 @@ BenchmarkResult benchmark_hnsw(
     return result;
 }
 
+// LSH reranking kernel - reranks candidate items by exact distance computation
+__global__ void lsh_rerank_kernel(
+    const __half* queries,
+    const __half* database,
+    int* candidates,
+    const int* candidate_counts,
+    int* results,
+    float* distances,
+    int num_queries,
+    int k,
+    int embedding_dim,
+    int max_candidates
+) {
+    int query_id = blockIdx.x;
+    if (query_id >= num_queries) return;
+
+    const __half* query = queries + query_id * embedding_dim;
+    int num_candidates = candidate_counts[query_id];
+
+    extern __shared__ float candidate_dists[];
+
+    // Compute distances to all candidates
+    for (int i = threadIdx.x; i < num_candidates; i += blockDim.x) {
+        int candidate_id = candidates[query_id * max_candidates + i];
+        if (candidate_id < 0) continue;
+
+        const __half* candidate = database + candidate_id * embedding_dim;
+
+        float dist = 0.0f;
+        for (int d = 0; d < embedding_dim; d++) {
+            float diff = __half2float(query[d]) - __half2float(candidate[d]);
+            dist += diff * diff;
+        }
+        candidate_dists[i] = sqrtf(dist);
+    }
+    __syncthreads();
+
+    // Find k smallest (partial sort)
+    if (threadIdx.x == 0) {
+        for (int i = 0; i < k && i < num_candidates; i++) {
+            int min_idx = i;
+            float min_dist = candidate_dists[i];
+
+            for (int j = i + 1; j < num_candidates; j++) {
+                if (candidate_dists[j] < min_dist) {
+                    min_dist = candidate_dists[j];
+                    min_idx = j;
+                }
+            }
+
+            if (min_idx != i) {
+                float tmp_dist = candidate_dists[i];
+                candidate_dists[i] = candidate_dists[min_idx];
+                candidate_dists[min_idx] = tmp_dist;
+
+                int tmp_id = candidates[query_id * max_candidates + i];
+                candidates[query_id * max_candidates + i] = candidates[query_id * max_candidates + min_idx];
+                candidates[query_id * max_candidates + min_idx] = tmp_id;
+            }
+
+            results[query_id * k + i] = candidates[query_id * max_candidates + i];
+            distances[query_id * k + i] = candidate_dists[i];
+        }
+    }
+}
+
 // Benchmark LSH
 BenchmarkResult benchmark_lsh(
     const BenchmarkConfig& config,
@@ -405,73 +473,8 @@ BenchmarkResult benchmark_lsh(
     cudaMalloc(&d_results, config.num_queries * config.k * sizeof(int));
     cudaMalloc(&d_distances, config.num_queries * config.k * sizeof(float));
 
-    // Launch reranking kernel
-    auto rerank_kernel = [] __global__ (
-        const __half* queries,
-        const __half* database,
-        const int* candidates,
-        const int* candidate_counts,
-        int* results,
-        float* distances,
-        int num_queries,
-        int k,
-        int embedding_dim,
-        int max_candidates
-    ) {
-        int query_id = blockIdx.x;
-        if (query_id >= num_queries) return;
-
-        const __half* query = queries + query_id * embedding_dim;
-        int num_candidates = candidate_counts[query_id];
-
-        extern __shared__ float candidate_dists[];
-
-        // Compute distances to all candidates
-        for (int i = threadIdx.x; i < num_candidates; i += blockDim.x) {
-            int candidate_id = candidates[query_id * max_candidates + i];
-            if (candidate_id < 0) continue;
-
-            const __half* candidate = database + candidate_id * embedding_dim;
-
-            float dist = 0.0f;
-            for (int d = 0; d < embedding_dim; d++) {
-                float diff = __half2float(query[d]) - __half2float(candidate[d]);
-                dist += diff * diff;
-            }
-            candidate_dists[i] = sqrtf(dist);
-        }
-        __syncthreads();
-
-        // Find k smallest (partial sort)
-        if (threadIdx.x == 0) {
-            for (int i = 0; i < k && i < num_candidates; i++) {
-                int min_idx = i;
-                float min_dist = candidate_dists[i];
-
-                for (int j = i + 1; j < num_candidates; j++) {
-                    if (candidate_dists[j] < min_dist) {
-                        min_dist = candidate_dists[j];
-                        min_idx = j;
-                    }
-                }
-
-                if (min_idx != i) {
-                    float tmp_dist = candidate_dists[i];
-                    candidate_dists[i] = candidate_dists[min_idx];
-                    candidate_dists[min_idx] = tmp_dist;
-
-                    int tmp_id = candidates[query_id * max_candidates + i];
-                    candidates[query_id * max_candidates + i] = candidates[query_id * max_candidates + min_idx];
-                    candidates[query_id * max_candidates + min_idx] = tmp_id;
-                }
-
-                results[query_id * k + i] = candidates[query_id * max_candidates + i];
-                distances[query_id * k + i] = candidate_dists[i];
-            }
-        }
-    };
-
-    rerank_kernel<<<config.num_queries, 256, max_candidates * sizeof(float)>>>(
+    // Launch reranking kernel (defined below)
+    lsh_rerank_kernel<<<config.num_queries, 256, max_candidates * sizeof(float)>>>(
         queries, database, d_candidates, d_candidate_counts,
         d_results, d_distances, config.num_queries, config.k,
         config.embedding_dim, max_candidates

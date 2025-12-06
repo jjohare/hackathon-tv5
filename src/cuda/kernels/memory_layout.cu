@@ -19,8 +19,6 @@
 #include <thrust/sort.h>
 #include <thrust/gather.h>
 
-extern "C" {
-
 // =============================================================================
 // Transpose Embeddings for Coalesced Access
 // =============================================================================
@@ -375,5 +373,3 @@ cudaError_t transpose_embeddings(
 
     return cudaGetLastError();
 }
-
-} // extern "C"

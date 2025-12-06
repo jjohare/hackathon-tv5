@@ -24,6 +24,7 @@
 #include <device_launch_parameters.h>
 #include <cfloat>
 #include <cmath>
+#include <cstdio>
 
 // T4 Architecture Constants
 #define T4_SM_COUNT 40
@@ -381,12 +382,13 @@ struct T4LaunchConfig {
                 shared_mem_bytes = 16384;  // 16KB shared memory
                 break;
 
-            case 2:  // 2D matrix operations
+            case 2: {  // 2D matrix operations
                 block_size = dim3(16, 16, 1);
                 int num_blocks_x = (num_elements + 15) / 16;
                 grid_size = dim3(num_blocks_x, num_blocks_x, 1);
                 shared_mem_bytes = 0;
                 break;
+            }
 
             default:
                 block_size = dim3(256, 1, 1);

@@ -246,20 +246,15 @@ __device__ int search_layer_parallel(
     return best_candidate;
 }
 
-// Batch HNSW search kernel
-__global__ void hnsw_search_batch(
+// Device function for HNSW search (can be called from other kernels)
+__device__ void hnsw_search_single(
     HNSW_GPU graph,
-    const __half* queries,       // [batch_size, embedding_dim]
-    int* results,                // [batch_size, k]
-    float* distances,            // [batch_size, k]
-    int batch_size,
+    const __half* query,
+    int* results,
+    float* distances,
     int k,
     int ef
 ) {
-    int query_id = blockIdx.x;
-    if (query_id >= batch_size) return;
-
-    const __half* query = queries + query_id * graph.embedding_dim;
 
     // Start from top layer
     int current_nearest = graph.entry_point;
@@ -308,10 +303,35 @@ __global__ void hnsw_search_batch(
     // Write results
     if (threadIdx.x == 0) {
         for (int i = 0; i < k && i < pq.size; i++) {
-            results[query_id * k + i] = pq.items[i];
-            distances[query_id * k + i] = pq.dists[i];
+            results[i] = pq.items[i];
+            distances[i] = pq.priorities[i];
         }
     }
+}
+
+// Batch HNSW search kernel (host-callable wrapper)
+__global__ void hnsw_search_batch(
+    HNSW_GPU graph,
+    const __half* queries,       // [batch_size, embedding_dim]
+    int* results,                // [batch_size, k]
+    float* distances,            // [batch_size, k]
+    int batch_size,
+    int k,
+    int ef
+) {
+    int query_id = blockIdx.x;
+    if (query_id >= batch_size) return;
+
+    const __half* query = queries + query_id * graph.embedding_dim;
+
+    hnsw_search_single(
+        graph,
+        query,
+        results + query_id * k,
+        distances + query_id * k,
+        k,
+        ef
+    );
 }
 
 // Build HNSW index on GPU

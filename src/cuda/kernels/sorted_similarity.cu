@@ -19,8 +19,6 @@
 #include <cfloat>
 #include <cmath>
 
-extern "C" {
-
 // =============================================================================
 // Optimized Cosine Similarity with Cached Norms
 // =============================================================================
@@ -68,7 +66,7 @@ __device__ __forceinline__ float compute_cosine_similarity_optimized(
 // =============================================================================
 
 template<int CACHE_SIZE = 32, int EMBEDDING_DIM = 1024>
-__global__ void compute_similarity_sorted_coalesced(
+__device__ void compute_similarity_sorted_coalesced_impl(
     const __half* __restrict__ embeddings,
     const SortedPairBatch* __restrict__ batches,
     float* __restrict__ similarities,
@@ -320,7 +318,7 @@ __global__ void compute_similarity_sorted_768(
     int num_batches,
     int num_items
 ) {
-    compute_similarity_sorted_coalesced<32, 768>(
+    compute_similarity_sorted_coalesced_impl<32, 768>(
         embeddings, batches, similarities, num_batches, num_items
     );
 }
@@ -332,7 +330,7 @@ __global__ void compute_similarity_sorted_1024(
     int num_batches,
     int num_items
 ) {
-    compute_similarity_sorted_coalesced<32, 1024>(
+    compute_similarity_sorted_coalesced_impl<32, 1024>(
         embeddings, batches, similarities, num_batches, num_items
     );
 }
@@ -344,7 +342,7 @@ __global__ void compute_similarity_sorted_2048(
     int num_batches,
     int num_items
 ) {
-    compute_similarity_sorted_coalesced<32, 2048>(
+    compute_similarity_sorted_coalesced_impl<32, 2048>(
         embeddings, batches, similarities, num_batches, num_items
     );
 }
@@ -386,5 +384,3 @@ cudaError_t launch_sorted_similarity_kernel(
 
     return cudaGetLastError();
 }
-
-} // extern "C"

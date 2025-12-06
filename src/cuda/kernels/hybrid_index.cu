@@ -58,13 +58,17 @@ __global__ void hybrid_search_exact(
     int k,
     int ef
 ) {
-    // Delegate to HNSW
-    hnsw_search_batch(
+    int query_id = blockIdx.x;
+    if (query_id >= batch_size) return;
+
+    const __half* query = queries + query_id * index.hnsw.embedding_dim;
+
+    // Delegate to HNSW device function
+    hnsw_search_single(
         index.hnsw,
-        queries,
-        results,
-        distances,
-        batch_size,
+        query,
+        results + query_id * k,
+        distances + query_id * k,
         k,
         ef
     );
@@ -185,11 +189,12 @@ __global__ void hybrid_search_lsh_pq(
 
     const __half* query = queries + query_id * index.embedding_dim;
 
-    // Build PQ distance table
+    // Build PQ distance table (reduced from 256 to 128 centroids per subspace to save memory)
     extern __shared__ float pq_distance_table[];
 
-    for (int s = 0; s < index.pq.num_subspaces; s++) {
-        for (int c = threadIdx.x; c < 256; c += blockDim.x) {
+    int num_subspaces = min(index.pq.num_subspaces, 32);  // Limit to reduce memory
+    for (int s = 0; s < num_subspaces; s++) {
+        for (int c = threadIdx.x; c < 128; c += blockDim.x) {
             const __half* query_subvector = query + s * index.pq.subspace_dim;
             const __half* centroid = index.pq.centroids +
                                      s * 256 * index.pq.subspace_dim +
@@ -201,17 +206,17 @@ __global__ void hybrid_search_lsh_pq(
                 dist += diff * diff;
             }
 
-            pq_distance_table[s * 256 + c] = dist;
+            pq_distance_table[s * 128 + c] = dist;
         }
     }
     __syncthreads();
 
-    // Get LSH candidates
-    __shared__ int lsh_candidates[4096];
+    // Get LSH candidates (reduced from 4096 to 1024 to save memory)
+    __shared__ int lsh_candidates[1024];
     __shared__ int num_lsh_candidates;
-    __shared__ uint32_t seen_bitmap[4096];
+    __shared__ uint32_t seen_bitmap[2048];
 
-    for (int i = threadIdx.x; i < 4096; i += blockDim.x) {
+    for (int i = threadIdx.x; i < 2048; i += blockDim.x) {
         seen_bitmap[i] = 0;
     }
     if (threadIdx.x == 0) num_lsh_candidates = 0;
@@ -233,7 +238,7 @@ __global__ void hybrid_search_lsh_pq(
 
             if (!(old & (1u << bit_idx))) {
                 int pos = atomicAdd(&num_lsh_candidates, 1);
-                if (pos < 4096) {
+                if (pos < 1024) {
                     lsh_candidates[pos] = item_id;
                 }
             }
@@ -242,15 +247,15 @@ __global__ void hybrid_search_lsh_pq(
     __syncthreads();
 
     // Compute PQ distances for candidates
-    __shared__ float candidate_dists[4096];
+    __shared__ float candidate_dists[1024];
 
     for (int i = threadIdx.x; i < num_lsh_candidates; i += blockDim.x) {
         int vec_id = lsh_candidates[i];
 
         float dist = 0.0f;
-        for (int s = 0; s < index.pq.num_subspaces; s++) {
+        for (int s = 0; s < num_subspaces; s++) {
             uint8_t code = index.pq.codes[vec_id * index.pq.num_subspaces + s];
-            dist += pq_distance_table[s * 256 + code];
+            dist += pq_distance_table[s * 128 + code];
         }
 
         candidate_dists[i] = sqrtf(dist);
@@ -286,6 +291,116 @@ __global__ void hybrid_search_lsh_pq(
     }
 }
 
+// Device function wrapper for exact search (callable from kernels without dynamic parallelism)
+__device__ void hybrid_search_exact_device(
+    HybridIndex index,
+    const __half* query,
+    int* results,
+    float* distances,
+    int k,
+    int ef
+) {
+    hnsw_search_single(
+        index.hnsw,
+        query,
+        results,
+        distances,
+        k,
+        ef
+    );
+}
+
+// Device function wrapper for LSH+HNSW (callable from kernels)
+// Note: Uses external shared memory to avoid allocation conflicts
+__device__ void hybrid_search_lsh_hnsw_device(
+    HybridIndex index,
+    const __half* query,
+    int* results,
+    float* distances,
+    int k,
+    int max_candidates,
+    int* lsh_candidates,        // Shared memory buffer (size: 1024)
+    float* candidate_dists,     // Shared memory buffer (size: 1024)
+    uint32_t* seen_bitmap       // Shared memory buffer (size: 2048)
+) {
+    // LSH candidate generation
+    int& num_lsh_candidates = lsh_candidates[1023];  // Use last element as counter
+
+    if (threadIdx.x == 0) {
+        num_lsh_candidates = 0;
+    }
+    __syncthreads();
+
+    for (int i = threadIdx.x; i < 2048; i += blockDim.x) {
+        seen_bitmap[i] = 0;
+    }
+    __syncthreads();
+
+    for (int table = threadIdx.x; table < index.lsh.num_tables; table += blockDim.x) {
+        uint32_t bucket = index.lsh.compute_hash(query, table);
+
+        int bucket_offset = table * index.lsh.num_buckets * index.lsh.bucket_size +
+                           bucket * index.lsh.bucket_size;
+        int count = index.lsh.bucket_counts[table * index.lsh.num_buckets + bucket];
+
+        for (int i = 0; i < min(count, index.lsh.bucket_size); i++) {
+            int item_id = index.lsh.hash_tables[bucket_offset + i];
+
+            int word_idx = item_id / 32;
+            int bit_idx = item_id % 32;
+            uint32_t old = atomicOr(&seen_bitmap[word_idx], 1u << bit_idx);
+
+            if (!(old & (1u << bit_idx))) {
+                int pos = atomicAdd(&num_lsh_candidates, 1);
+                if (pos < 1023) {  // Reserve last slot for counter
+                    lsh_candidates[pos] = item_id;
+                }
+            }
+        }
+    }
+    __syncthreads();
+
+    int num_cands = num_lsh_candidates;
+    for (int i = threadIdx.x; i < num_cands; i += blockDim.x) {
+        int candidate_id = lsh_candidates[i];
+        const __half* candidate_emb = index.embeddings + candidate_id * index.embedding_dim;
+
+        candidate_dists[i] = compute_distance_tensor_core(
+            query,
+            candidate_emb,
+            index.embedding_dim
+        );
+    }
+    __syncthreads();
+
+    if (threadIdx.x == 0) {
+        for (int i = 0; i < k; i++) {
+            int min_idx = i;
+            float min_dist = candidate_dists[i];
+
+            for (int j = i + 1; j < num_cands; j++) {
+                if (candidate_dists[j] < min_dist) {
+                    min_dist = candidate_dists[j];
+                    min_idx = j;
+                }
+            }
+
+            if (min_idx != i) {
+                float tmp_dist = candidate_dists[i];
+                candidate_dists[i] = candidate_dists[min_idx];
+                candidate_dists[min_idx] = tmp_dist;
+
+                int tmp_id = lsh_candidates[i];
+                lsh_candidates[i] = lsh_candidates[min_idx];
+                lsh_candidates[min_idx] = tmp_id;
+            }
+
+            results[i] = lsh_candidates[i];
+            distances[i] = candidate_dists[i];
+        }
+    }
+}
+
 // Adaptive search that selects best strategy per query
 __global__ void hybrid_search_adaptive(
     HybridIndex index,
@@ -304,44 +419,31 @@ __global__ void hybrid_search_adaptive(
     // Select mode based on query characteristics
     HybridIndex::SearchMode mode = select_search_mode(query, k, recall_target);
 
-    // Dispatch to appropriate search method
+    // Shared memory for LSH+HNSW search (total: ~14KB)
+    __shared__ int lsh_candidates[1024];
+    __shared__ float candidate_dists[1024];
+    __shared__ uint32_t seen_bitmap[2048];
+
+    // Dispatch to appropriate search method (direct device calls)
     switch (mode) {
         case HybridIndex::EXACT:
             // Use HNSW only
-            if (query_id == blockIdx.x) {
-                hybrid_search_exact<<<1, 256>>>(
-                    index, queries + query_id * index.embedding_dim,
-                    results + query_id * k, distances + query_id * k,
-                    1, k, 64
-                );
-            }
+            hybrid_search_exact_device(
+                index, query,
+                results + query_id * k, distances + query_id * k,
+                k, 64
+            );
             break;
 
         case HybridIndex::LSH_HNSW:
-            // Use LSH + HNSW
-            hybrid_search_lsh_hnsw<<<1, 256>>>(
-                index, queries + query_id * index.embedding_dim,
-                results + query_id * k, distances + query_id * k,
-                1, k, 2000
-            );
-            break;
-
-        case HybridIndex::LSH_PQ:
-            // Use LSH + PQ
-            hybrid_search_lsh_pq<<<1, 256, index.pq.num_subspaces * 256 * sizeof(float)>>>(
-                index, queries + query_id * index.embedding_dim,
-                results + query_id * k, distances + query_id * k,
-                1, k
-            );
-            break;
-
         case HybridIndex::ADAPTIVE:
         default:
-            // Default to LSH_HNSW
-            hybrid_search_lsh_hnsw<<<1, 256>>>(
-                index, queries + query_id * index.embedding_dim,
+            // Use LSH + HNSW (also default for adaptive and LSH_PQ modes)
+            hybrid_search_lsh_hnsw_device(
+                index, query,
                 results + query_id * k, distances + query_id * k,
-                1, k, 2000
+                k, 2000,
+                lsh_candidates, candidate_dists, seen_bitmap
             );
             break;
     }
@@ -359,24 +461,30 @@ __global__ void hybrid_search_batch_cooperative(
 ) {
     cg::grid_group grid = cg::this_grid();
 
+    // Shared memory for LSH+HNSW search
+    __shared__ int lsh_candidates[1024];
+    __shared__ float candidate_dists[1024];
+    __shared__ uint32_t seen_bitmap[2048];
+
     // Each thread block processes one query
     for (int query_id = blockIdx.x; query_id < batch_size; query_id += gridDim.x) {
         const __half* query = queries + query_id * index.embedding_dim;
         int* query_results = results + query_id * k;
         float* query_distances = distances + query_id * k;
 
-        // Execute search based on mode
+        // Execute search based on mode (direct device calls)
         switch (mode) {
-            case HybridIndex::LSH_PQ:
-                hybrid_search_lsh_pq<<<1, blockDim.x,
-                    index.pq.num_subspaces * 256 * sizeof(float)>>>(
-                    index, query, query_results, query_distances, 1, k
+            case HybridIndex::EXACT:
+                hybrid_search_exact_device(
+                    index, query, query_results, query_distances, k, 64
                 );
                 break;
 
+            case HybridIndex::LSH_HNSW:
             default:
-                hybrid_search_lsh_hnsw<<<1, blockDim.x>>>(
-                    index, query, query_results, query_distances, 1, k, 2000
+                hybrid_search_lsh_hnsw_device(
+                    index, query, query_results, query_distances, k, 2000,
+                    lsh_candidates, candidate_dists, seen_bitmap
                 );
                 break;
         }

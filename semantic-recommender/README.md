@@ -6,10 +6,24 @@
 [![Neo4j](https://img.shields.io/badge/Neo4j-5.0+-008CC1.svg)](https://neo4j.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**GPU-accelerated semantic search combined with graph-based ontology reasoning for intelligent, explainable movie recommendations**
+**GPU-accelerated semantic search at scale with production-ready infrastructure**
 
-**Performance**: 270 QPS single GPU • 14.4x TensorRT speedup • Path to 1000+ QPS
-**Architecture**: Neural embeddings + Graph distance reasoning + Adaptive fusion
+**Dataset**: 1,334,069 TMDB movies • 2.05 GB embeddings • Title-only matching
+**Performance**: 987ms complex queries • TensorRT FP16 acceleration • Production infrastructure
+**Architecture**: TensorRT-accelerated embeddings + GPU search + Scalable deployment
+
+---
+
+## ⚠️ Data Quality Disclaimer
+
+**IMPORTANT**: Current embeddings are generated from **movie titles only**. The TMDB metadata does not contain plot summaries, overviews, or descriptions (see [DATA_QUALITY_REPORT.md](docs/DATA_QUALITY_REPORT.md)).
+
+**What This Means**:
+- Similarity scores (0.26-0.31 range) reflect title-only semantic matching
+- Complex thematic queries work at keyword level, not deep semantic understanding
+- Infrastructure is production-ready; data quality depends on source enrichment
+
+**To Get Full Semantic Search**: Enrich with TMDB API data (overviews, cast, crew, tags) - see Future Improvements below.
 
 ---
 
@@ -222,22 +236,77 @@ curl -X POST http://localhost:5000/api/query \
 
 ## Dataset
 
-**MovieLens 25M** with embeddings:
-- **Movies**: 62,423
+### TMDB 1.3M Movies (Production Dataset)
+
+**Scale**: 21x larger than MovieLens baseline
+- **Movies**: 1,334,069 (verified count from TMDB dataset)
 - **Embeddings**: 384-dimensional (MiniLM-L12-v2)
-- **Ontology Mapped**: 13,816 (22%)
-- **Genome Tags**: 1,128 tags mapped to 65 ontology concepts
+- **Dataset Size**: 2.05 GB embeddings + 155 MB metadata
+- **Processing Time**: GPU-accelerated pipeline
+
+**Verified Data Content** (as of 2025-12-07):
+```json
+{
+  "tmdb_id": "27205",
+  "imdb_id": "tt1375666",
+  "ml_id": "ml_79132",
+  "title": "Inception",
+  "year": 2010,
+  "genres": []  // Empty - no genre data in current dataset
+}
+```
+
+**⚠️ Known Data Limitation**:
+- Metadata contains: `tmdb_id`, `imdb_id`, `ml_id`, `title`, `year`, `genres` (empty array)
+- **NO overviews, NO descriptions, NO plot summaries in current dataset**
+- Embeddings generated from **titles only** (e.g., "Inception", "The Matrix")
+- This limits semantic depth but proves infrastructure at scale
+
+**Search Performance on 1.3M Dataset**:
+- **Complex Query Latency**: 987ms average (measured across 12 diverse queries)
+- **Similarity Score Range**: 0.26-0.31 (expected for title-only matching)
+- **Infrastructure**: Production-ready, GPU-accelerated, scalable
 
 **Data Pipeline**:
 ```bash
-# Already processed - data files included
-semantic-recommender/data/
-├── processed/
-│   ├── movies_with_embeddings.json    # 62K movies + embeddings
-│   └── genome_scores.csv              # Ontology mappings
-└── models/
-    └── minilm_l12_v2_fp16.plan        # TensorRT engine
+# TMDB dataset - processed and verified
+semantic-recommender/data/embeddings/tmdb/
+├── content_vectors.npy       # 2.05 GB (1,334,069 × 384)
+└── metadata.jsonl            # 155 MB (1,334,069 records)
+
+semantic-recommender/data/models/
+└── minilm_l12_v2_fp16.plan  # TensorRT engine (TRT FP16)
 ```
+
+### Complex Query Demonstration
+
+The system handles diverse natural language queries across 1.3M movies:
+
+```bash
+# Run demonstration
+python scripts/demo_complex_queries.py
+```
+
+**Tested Query Categories** (12 diverse tests):
+- Multi-genre complex: "mind-bending psychological thriller with time travel"
+- Emotional tone: "heartwarming story about found family in coastal town"
+- Visual style: "visually stunning cyberpunk noir with neon-lit streets"
+- Character-driven: "complex anti-hero struggling with moral ambiguity"
+- Reference-based: "like Inception meets The Matrix but with more depth"
+- Mood + pacing: "slow-burn atmospheric horror without jump scares"
+- Social commentary: "satirical science fiction exploring class inequality"
+- Era-specific: "1980s coming-of-age with Spielberg-style wonder"
+- Narrative structure: "non-linear storytelling with unreliable narrator"
+- Cultural specific: "Japanese animation exploring existential themes"
+- Intensity + scale: "epic space opera with massive battles"
+
+**Performance**: 987ms average latency per complex query across 1.3M movies
+
+**Understanding Results**:
+- Matching is based on **title keywords only** (e.g., "Inception" matches "time travel" in query)
+- Similarity scores 0.26-0.31 are expected for title-only embeddings
+- Infrastructure successfully scales to 1.3M items with sub-second search
+- For deeper semantic understanding, enrich metadata with plot summaries/tags
 
 ---
 
@@ -295,11 +364,13 @@ server {
 
 | Document | Description |
 |----------|-------------|
-| [FINAL_IMPLEMENTATION_REPORT.md](docs/FINAL_IMPLEMENTATION_REPORT.md) | Complete implementation details, benchmarks, validation |
+| [DATA_QUALITY_REPORT.md](docs/DATA_QUALITY_REPORT.md) | **⚠️ Title-only embeddings limitation explained** |
+| [ACTUAL_PERFORMANCE_RESULTS.md](docs/ACTUAL_PERFORMANCE_RESULTS.md) | **Verified metrics on 1.3M dataset (987ms queries)** |
+| [COMPLEX_QUERY_SHOWCASE.md](docs/COMPLEX_QUERY_SHOWCASE.md) | 12 complex query demonstrations with result interpretation |
+| [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md) | TMDB migration reality: what data actually exists |
+| [MODEL_SETUP_GUIDE.md](docs/MODEL_SETUP_GUIDE.md) | TensorRT engine build instructions |
 | [NEURO_SYMBOLIC_ARCHITECTURE.md](docs/NEURO_SYMBOLIC_ARCHITECTURE.md) | Architecture design, data flow, component specs |
-| [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md) | TensorRT engine build process and optimization |
-| [GRAPH_REASONING_V2.md](docs/GRAPH_REASONING_V2.md) | Graph distance reasoning algorithm |
-| [TENSORRT_RESULTS.md](docs/TENSORRT_RESULTS.md) | Performance benchmarks |
+| [TENSORRT_RESULTS.md](docs/TENSORRT_RESULTS.md) | TensorRT acceleration benchmarks |
 
 ---
 
@@ -382,23 +453,42 @@ semantic-recommender/
 
 ### Current Limitations
 
-1. **Ontology Coverage**: Only 22% of movies mapped (13,816/62,423)
-   - **Fix**: Enrich metadata from TMDb/IMDb APIs
+1. **Title-Only Embeddings** (CRITICAL)
+   - Embeddings generated from movie titles only (no plot summaries)
+   - Limits semantic matching depth to keyword-level similarity
+   - Similarity scores 0.26-0.31 reflect title matching, not deep semantics
+   - **Fix**: Enrich with TMDB API full metadata (overviews, cast, crew, tags)
 
-2. **Sequential Batch Processing**: Limits to ~270 QPS single GPU
-   - **Fix**: Parallel execution with multiple TensorRT contexts
+2. **Empty Genre Data**
+   - Current metadata has empty `genres` arrays
+   - Limits genre-based filtering and boost
+   - **Fix**: Pull genre mappings from TMDB API v3
 
-3. **Graph Distance on CPU**: Dijkstra runs in Python (~5ms per candidate)
-   - **Fix**: CUDA SSSP kernel (10-100x faster)
+3. **Complex Query Latency**
+   - 987ms average for complex queries on 1.3M dataset
+   - Acceptable for current scale, needs optimization for real-time
+   - **Fix**: Redis caching, query result pre-computation
 
 ### Future Enhancements
 
-1. **Query Expansion**: Ontology-guided query enrichment (designed but not activated)
-2. **Explainability API**: Expose graph path explanations
-3. **CUDA SSSP**: GPU-accelerated graph distance
-4. **INT8 Quantization**: 2x speedup, 4x memory reduction
-5. **Multi-GPU Support**: Linear scaling to 4x throughput
-6. **Redis Caching**: 80% hit rate → 2ms latency
+1. **Data Enrichment** (HIGHEST PRIORITY)
+   - TMDB API integration for overviews, cast, crew, keywords
+   - Regenerate embeddings from enriched descriptions
+   - Expected similarity scores: 0.7-0.9 range (vs current 0.26-0.31)
+
+2. **Ontology Integration**
+   - Map enriched keywords to AdA film ontology
+   - Graph-based reasoning for explainability
+   - Hybrid neural + symbolic scoring
+
+3. **Performance Optimization**
+   - INT8 quantization: 2x speedup, 4x memory reduction
+   - Multi-GPU support: Linear scaling to 4x throughput
+   - Redis caching: 80% hit rate → <50ms latency
+
+4. **Query Expansion**: Ontology-guided query enrichment
+5. **Explainability API**: Expose reasoning paths
+6. **CUDA SSSP**: GPU-accelerated graph distance (10-100x faster)
 
 ---
 

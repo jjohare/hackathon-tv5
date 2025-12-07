@@ -16,10 +16,18 @@ import os
 from tqdm import tqdm
 
 class TMDBEnricher:
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, use_bearer_token: bool = False):
         self.api_key = api_key
+        self.use_bearer_token = use_bearer_token
         self.base_url = "https://api.themoviedb.org/3"
         self.session = requests.Session()
+
+        # Set authentication header for Bearer token (v4 API)
+        if use_bearer_token:
+            self.session.headers.update({
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json;charset=utf-8'
+            })
 
         # Rate limiting: 50 req/sec = 20ms per request
         self.min_request_interval = 0.021  # 21ms to be safe
@@ -47,10 +55,15 @@ class TMDBEnricher:
         try:
             # Fetch movie details
             url = f"{self.base_url}/movie/{tmdb_id}"
-            params = {
-                'api_key': self.api_key,
-                'append_to_response': 'credits,keywords'
-            }
+
+            # Use Bearer token or API key
+            if self.use_bearer_token:
+                params = {'append_to_response': 'credits,keywords'}
+            else:
+                params = {
+                    'api_key': self.api_key,
+                    'append_to_response': 'credits,keywords'
+                }
 
             response = self.session.get(url, params=params, timeout=10)
 
@@ -186,17 +199,27 @@ class TMDBEnricher:
             }, f)
 
 def main():
-    # Get API key from environment
-    api_key = os.getenv('TMDB_API_KEY')
+    # Get API key/token from environment
+    api_key = os.getenv('TMDB_API_KEY') or os.getenv('TMDB_BEARER_TOKEN')
 
     if not api_key:
-        print("❌ Error: TMDB_API_KEY environment variable not set")
-        print("\nTo set your API key:")
+        print("❌ Error: TMDB_API_KEY or TMDB_BEARER_TOKEN environment variable not set")
+        print("\nTo set your API key (v3):")
         print("   export TMDB_API_KEY='your_api_key_here'")
-        print("\nGet a free API key at: https://www.themoviedb.org/settings/api")
+        print("\nOr Bearer token (v4):")
+        print("   export TMDB_BEARER_TOKEN='your_bearer_token_here'")
+        print("\nGet credentials at: https://www.themoviedb.org/settings/api")
         return
 
-    enricher = TMDBEnricher(api_key)
+    # Detect if using Bearer token (starts with 'eyJ' which is JWT)
+    use_bearer = api_key.startswith('eyJ')
+
+    if use_bearer:
+        print("Detected Bearer Token (v4 API)")
+    else:
+        print("Detected API Key (v3 API)")
+
+    enricher = TMDBEnricher(api_key, use_bearer_token=use_bearer)
 
     enricher.enrich_dataset(
         input_file="../../data/processed/demo_subset_50k.jsonl",

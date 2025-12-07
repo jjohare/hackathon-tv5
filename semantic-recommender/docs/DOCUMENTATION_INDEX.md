@@ -32,7 +32,7 @@
 | [NEURO_SYMBOLIC_ARCHITECTURE.md](NEURO_SYMBOLIC_ARCHITECTURE.md) | ✅ Accurate | System architecture, data flow, component design |
 | [GRAPH_REASONING_V2.md](GRAPH_REASONING_V2.md) | ✅ Accurate | Graph distance reasoning algorithm |
 
-### Performance & Optimization
+### Performance & optimisation
 
 | Document | Status | Purpose |
 |----------|--------|---------|
@@ -155,6 +155,38 @@ bash docs/VERIFY_DOCUMENTATION.sh
 - Graph-based reasoning for explainability
 
 **Total Timeline**: ~10-15 days for full capabilities
+
+---
+
+## Archived Documentation
+
+Legacy documentation from the MovieLens-based system and A100 testing phase has been archived:
+
+### A100 Testing (December 2025)
+**Location:** `docs/archive/a100-testing/`
+
+Archived files:
+- `A100_DEPLOYMENT_GUIDE.md` - GCP A100 deployment instructions
+- `A100_GPU_BENCHMARK_REPORT.md` - Embedding generation benchmarks (62K movies)
+- `A100_HYPER_PERSONALIZATION_FINAL_BENCHMARK.md` - V1 vs V2 comparison
+- `A100_TEST_RESULTS.md` - Comprehensive A100 test results
+- `EXPECTED_A100_RESULTS.md` - Performance predictions
+- `GCP_A100_BUILD.md` - GCP instance setup
+
+**Why Archived:** These documents reference the MovieLens 25M dataset (62,423 movies) and GCP A100 testing infrastructure that was superseded by the current TMDB-based system (1.3M movies) with TensorRT acceleration on different hardware.
+
+### MovieLens Era (Pre-December 2025)
+**Location:** `docs/archive/movielens-era/`
+
+Archived files:
+- `DATA_INFRASTRUCTURE_COMPLETE.md` - MovieLens infrastructure status
+- `DATA_PIPELINE_COMPLETE.md` - 5-phase MovieLens pipeline
+- `RECOMMENDATION_ENGINE_RESULTS.md` - CPU baseline results
+- `SYSTEM_STATUS.md` - Production readiness for old system
+
+**Why Archived:** Complete system reorganization (commit cd42c34) migrated from MovieLens to TMDB dataset. These documents describe the obsolete architecture and deleted scripts (`parse_movielens.py`, `populate_milvus.py`, etc.).
+
+**Note:** These documents are preserved for historical reference but represent superseded implementations. All claims and performance metrics apply only to the archived system versions.
 
 ---
 

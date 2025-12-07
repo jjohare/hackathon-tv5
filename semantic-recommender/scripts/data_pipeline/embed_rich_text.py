@@ -60,7 +60,7 @@ def embed_rich_text(
 
     for i in tqdm(range(0, len(texts), batch_size), desc="Encoding", total=num_batches):
         batch_texts = texts[i:i + batch_size]
-        batch_embeddings = encoder.encode_batch(batch_texts)
+        batch_embeddings = encoder.encode(batch_texts)
 
         # Convert to numpy
         if hasattr(batch_embeddings, 'cpu'):

@@ -1,0 +1,220 @@
+================================================================================
+SEMANTIC RECOMMENDER - RUST CRATE ARCHITECTURE
+================================================================================
+
+PROJECT STRUCTURE
+-----------------
+semantic-recommender-rs/
+├── Cargo.toml                          # Workspace manifest
+├── .cargo/config.toml                  # Build configuration
+├── README.md                           # Project documentation
+└── crates/
+    ├── gpu-embeddings/                 # Core: User embeddings (15.36 GB GPU)
+    │   ├── Cargo.toml
+    │   ├── src/
+    │   │   ├── lib.rs
+    │   │   ├── user_embeddings.rs
+    │   │   ├── hybrid_query.rs
+    │   │   └── memory.rs
+    │   └── benches/embedding_bench.rs
+    │
+    ├── temporal-cache/                 # Cache: Similarity matrix (2.48 GB GPU)
+    │   ├── Cargo.toml
+    │   ├── src/
+    │   │   ├── lib.rs
+    │   │   ├── cache.rs
+    │   │   ├── temporal_decay.rs
+    │   │   └── popularity.rs
+    │   └── benches/cache_bench.rs
+    │
+    ├── attention/                      # Attention: Multi-head reranking (<1 MB)
+    │   ├── Cargo.toml
+    │   ├── src/
+    │   │   ├── lib.rs
+    │   │   ├── reranker.rs
+    │   │   ├── context.rs
+    │   │   └── projection.rs
+    │   └── benches/attention_bench.rs
+    │
+    ├── semantic-model/                 # Model: ONNX encoder
+    │   ├── Cargo.toml
+    │   ├── src/
+    │   │   ├── lib.rs
+    │   │   ├── encoder.rs
+    │   │   └── onnx_runtime.rs
+    │   └── benches/encoder_bench.rs
+    │
+    ├── hyper-personalization/          # Integration: Main API
+    │   ├── Cargo.toml
+    │   ├── src/
+    │   │   ├── lib.rs
+    │   │   ├── system.rs
+    │   │   ├── search.rs
+    │   │   └── preferences.rs
+    │   └── examples/
+    │       ├── demo.rs
+    │       └── benchmark.rs
+    │
+    ├── benchmarks/                     # Benchmarks: Criterion suite
+    │   ├── Cargo.toml
+    │   └── benches/
+    │       ├── latency.rs
+    │       ├── throughput.rs
+    │       ├── memory.rs
+    │       └── quality.rs
+    │
+    └── cli/                            # CLI: Command-line tool
+        ├── Cargo.toml
+        └── src/
+            ├── main.rs
+            └── lib.rs
+
+TECHNOLOGY STACK
+----------------
+Core Framework:     cudarc 0.11        (Direct CUDA, cuBLAS, cuDNN)
+Async Runtime:      tokio 1.35         (Full-featured async)
+ML Inference:       ort 2.0            (ONNX Runtime with CUDA)
+Serialization:      serde 1.0          (Universal standard)
+Concurrency:        dashmap 5.5        (Lock-free hashmap)
+CLI Framework:      clap 4.5           (Derive-based CLI)
+Benchmarking:       criterion 0.5      (Statistical benchmarks)
+
+KEY DEPENDENCIES MATRIX
+-----------------------
+Crate                   | cudarc | tokio | ort | serde | dashmap |
+------------------------|--------|-------|-----|-------|---------|
+gpu-embeddings          |   ✓    |   ✓   |     |   ✓   |    ✓    |
+temporal-cache          |   ✓    |   ✓   |     |   ✓   |         |
+attention               |   ✓    |   ✓   |     |   ✓   |         |
+semantic-model          |        |   ✓   |  ✓  |   ✓   |         |
+hyper-personalization   |        |   ✓   |     |   ✓   |    ✓    |
+
+MEMORY SAFETY STRATEGY
+----------------------
+1. RAII Wrappers:       GpuTensor<T> with automatic Drop cleanup
+2. Shared State:        Arc<RwLock<T>> for GPU tensors
+3. Lock-Free:           DashMap for user ID → index mapping
+4. Zero Unsafe:         Business logic only uses safe Rust
+5. Thread Safety:       Send + Sync for CUDA contexts
+
+GPU MEMORY LAYOUT (A100 48GB)
+-----------------------------
+Component               | Size      | % Total | Implementation
+------------------------|-----------|---------|------------------
+User Embeddings         | 15.36 GB  | 37%     | CudaSlice<f32>
+Temporal Cache          |  2.48 GB  |  6%     | CudaSlice<f32>
+Item Embeddings         |  0.29 GB  |  1%     | CudaSlice<f32>
+Model Parameters        |  0.50 GB  |  1%     | ONNX Runtime
+Workspace Buffers       |  1.00 GB  |  2%     | cuBLAS/cuDNN
+------------------------|-----------|---------|------------------
+Total Used              | 19.63 GB  | 47%     |
+Total Free              | 22.37 GB  | 53%     |
+
+PERFORMANCE TARGETS
+-------------------
+Metric                  | Python Baseline | Rust Target | Speedup
+------------------------|-----------------|-------------|----------
+Latency (P95)           | ~10ms (CPU)     | <0.5ms      | 20x
+                        | ~2ms (PyTorch)  |             | 4x
+Throughput              | ~50K QPS        | 500K+ QPS   | 10x
+Cold Start              | 5-10s           | <100ms      | 50-100x
+Binary Size             | 500 MB          | 22 MB       | 23x smaller
+GPU Memory              | ~20 GB          | ~18 GB      | 10% reduction
+
+BUILD PROFILES
+--------------
+Profile              | Opt Level | LTO   | Codegen Units | Use Case
+---------------------|-----------|-------|---------------|------------------
+dev                  | 1         | -     | default       | Development
+release              | 3         | thin  | 1             | Production
+release-lto          | 3         | fat   | 1             | Maximum perf
+bench                | 3         | thin  | 1             | Benchmarking
+release-with-debug   | 3         | thin  | 1             | Profiling
+
+FEATURE FLAGS
+-------------
+Feature         | Default | Description
+----------------|---------|-----------------------------------------------
+cuda            | ✓       | Enable GPU acceleration (CUDA 11.7+)
+cpu-only        |         | CPU fallback mode (no GPU required)
+onnx            | ✓       | ONNX Runtime for semantic model
+distributed     |         | Multi-GPU support (future)
+metrics         |         | Prometheus metrics export
+simd            |         | CPU SIMD optimizations
+
+PYTHON → RUST MAPPING
+---------------------
+Python Component              | Rust Equivalent
+------------------------------|----------------------------------------
+GPUUserEmbeddings             | gpu_embeddings::UserEmbeddings
+TemporalGPUCache              | temporal_cache::TemporalCache
+MultiHeadAttentionReranker    | attention::MultiHeadAttention
+SentenceTransformer           | semantic_model::SemanticEncoder
+GPUHyperPersonalization       | hyper_personalization::HyperPersonalization
+
+torch.Tensor                  | GpuTensor<f32> (custom RAII wrapper)
+torch.matmul                  | cublas.gemm (native cuBLAS)
+torch.nn.Linear               | GpuLinear (cuBLAS wrapper)
+F.softmax                     | Custom CUDA kernel (fused)
+dict[str, int]                | DashMap<String, usize> (lock-free)
+
+API DESIGN
+----------
+// High-level usage
+let system = HyperPersonalization::builder()
+    .device(0)
+    .num_users(10_000_000)
+    .load_embeddings("data/embeddings/media")?
+    .build()
+    .await?;
+
+let request = SearchRequest::new("sci-fi time travel")
+    .user_id("user_001")
+    .top_k(10)
+    .context(Context { /* ... */ });
+
+let results = system.search(request).await?;
+
+TESTING STRATEGY
+----------------
+Level           | Coverage Target | Tools
+----------------|-----------------|----------------------------------------
+Unit Tests      | >80%            | Built-in test framework, tokio-test
+Integration     | >70%            | tokio-test, testcontainers
+Property-Based  | Key invariants  | proptest, quickcheck
+Benchmarks      | All hot paths   | criterion, pprof
+End-to-End      | Critical flows  | Integration tests with real GPU
+
+MIGRATION ROADMAP
+-----------------
+Phase 1 (Week 1-2):   Baseline implementation
+Phase 2 (Week 3-4):   GPU optimizations (cuBLAS tuning, fused kernels)
+Phase 3 (Week 5-6):   System optimizations (lock-free, zero-copy)
+Phase 4 (Week 7-8):   Advanced features (multi-GPU, quantization)
+
+SUCCESS CRITERIA
+----------------
+✅ Functional parity with Python
+✅ Latency <0.5ms (P95)
+✅ Throughput >500K QPS
+✅ GPU memory <20 GB
+✅ 80%+ code coverage
+✅ Zero unsafe in business logic
+✅ All public APIs documented
+
+DOCUMENTATION CREATED
+---------------------
+1. docs/rust-architecture.md          - Complete ADR (536 lines)
+2. docs/rust-crate-diagram.md         - Architecture diagrams (314 lines)
+3. docs/RUST_CONVERSION_SUMMARY.md    - Migration guide (506 lines)
+4. semantic-recommender-rs/Cargo.toml - Workspace config
+5. semantic-recommender-rs/README.md  - Project docs
+6. .cargo/config.toml                 - Build config
+7. crates/*/Cargo.toml                - 7 crate manifests
+
+Total: 13 files, 1995+ lines of documentation
+
+================================================================================
+STATUS: Architecture complete - Ready for implementation
+NEXT: Implement gpu-embeddings crate (Week 1)
+================================================================================

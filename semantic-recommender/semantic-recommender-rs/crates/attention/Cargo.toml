@@ -1,0 +1,48 @@
+[package]
+name = "attention"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+description = "Multi-head attention mechanism for context-aware reranking"
+keywords = ["attention", "transformer", "cuda", "neural-network", "reranking"]
+categories = ["algorithms", "science"]
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+cudarc = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+num-traits = { workspace = true }
+
+# Crate-specific
+bytemuck = "1.14"
+
+# Local dependencies
+gpu-embeddings = { path = "../gpu-embeddings" }
+
+[dev-dependencies]
+criterion = { workspace = true }
+proptest = { workspace = true }
+tokio-test = "0.4"
+approx = "0.5"
+
+[features]
+default = ["cuda"]
+cuda = ["cudarc/cuda-11070", "cudarc/cublas"]
+cpu-fallback = []
+
+[[bench]]
+name = "attention_bench"
+harness = false
+path = "benches/attention_bench.rs"
+
+[lib]
+bench = false

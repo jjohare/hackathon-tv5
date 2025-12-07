@@ -184,3 +184,6 @@ mod tests {
 // AgentDB modules
 pub mod storage;
 pub mod agentdb;
+
+/// Attention-based reranking for hyper-personalization
+pub mod attention_reranker;

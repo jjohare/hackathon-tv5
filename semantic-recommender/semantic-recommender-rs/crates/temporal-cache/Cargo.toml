@@ -1,0 +1,49 @@
+[package]
+name = "temporal-cache"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+description = "GPU-accelerated temporal similarity cache with exponential decay"
+keywords = ["gpu", "cache", "cuda", "similarity", "temporal"]
+categories = ["algorithms", "caching"]
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+cudarc = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+parking_lot = { workspace = true }
+num-traits = { workspace = true }
+bincode = { workspace = true }
+
+# Crate-specific
+bytemuck = "1.14"
+
+# Local dependencies
+gpu-embeddings = { path = "../gpu-embeddings" }
+
+[dev-dependencies]
+criterion = { workspace = true }
+proptest = { workspace = true }
+tokio-test = "0.4"
+
+[features]
+default = ["cuda"]
+cuda = ["cudarc/cuda-11070", "cudarc/cublas"]
+cpu-fallback = []
+
+[[bench]]
+name = "cache_bench"
+harness = false
+path = "benches/cache_bench.rs"
+
+[lib]
+bench = false

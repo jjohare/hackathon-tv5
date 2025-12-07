@@ -1,0 +1,54 @@
+[package]
+name = "semantic-model"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+description = "Sentence transformer model with ONNX Runtime backend"
+keywords = ["onnx", "transformers", "embeddings", "nlp", "sentence-transformers"]
+categories = ["algorithms", "science"]
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+parking_lot = { workspace = true }
+
+# ONNX Runtime
+ort = { workspace = true }
+
+# Tokenization
+tokenizers = "0.15"
+
+# Crate-specific
+bytemuck = "1.14"
+once_cell = "1.19"
+
+# Local dependencies
+gpu-embeddings = { path = "../gpu-embeddings" }
+
+[dev-dependencies]
+criterion = { workspace = true }
+tokio-test = "0.4"
+
+[features]
+default = ["onnx", "cuda"]
+onnx = ["ort"]
+cuda = ["ort/cuda"]
+cpu-only = []
+download-models = []
+
+[[bench]]
+name = "encoder_bench"
+harness = false
+path = "benches/encoder_bench.rs"
+
+[lib]
+bench = false

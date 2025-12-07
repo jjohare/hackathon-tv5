@@ -1,0 +1,26 @@
+[package]
+name = "temporal-cache"
+version = "0.1.0"
+edition = "2021"
+authors = ["Media Gateway Team"]
+license = "MIT"
+
+[dependencies]
+tch = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+tokio-test = "0.4"
+
+[[bench]]
+name = "cache_benchmarks"
+harness = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

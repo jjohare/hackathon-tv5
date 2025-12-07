@@ -1,0 +1,62 @@
+[package]
+name = "hyper-personalization"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+description = "GPU-accelerated hyper-personalization system for semantic search"
+keywords = ["personalization", "recommendation", "gpu", "semantic-search", "ml"]
+categories = ["algorithms", "web-programming"]
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+cudarc = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+metrics = { workspace = true }
+
+# Local dependencies
+gpu-embeddings = { path = "../gpu-embeddings" }
+temporal-cache = { path = "../temporal-cache" }
+attention = { path = "../attention" }
+semantic-model = { path = "../semantic-model" }
+
+# Crate-specific
+serde_with = "3.4"
+
+[dev-dependencies]
+criterion = { workspace = true }
+tokio-test = "0.4"
+fake = { workspace = true }
+
+[features]
+default = ["cuda", "onnx"]
+cuda = ["cudarc/cuda-11070", "gpu-embeddings/cuda", "temporal-cache/cuda", "attention/cuda"]
+cpu-only = ["gpu-embeddings/cpu-fallback", "temporal-cache/cpu-fallback", "attention/cpu-fallback", "semantic-model/cpu-only"]
+onnx = ["semantic-model/onnx"]
+distributed = []
+metrics-export = ["prometheus"]
+
+[[example]]
+name = "demo"
+path = "examples/demo.rs"
+
+[[example]]
+name = "benchmark"
+path = "examples/benchmark.rs"
+
+[lib]
+name = "hyper_personalization"
+path = "src/lib.rs"

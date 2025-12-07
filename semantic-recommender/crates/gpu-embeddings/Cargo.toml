@@ -1,0 +1,12 @@
+[package]
+name = "gpu-embeddings"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tch = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }

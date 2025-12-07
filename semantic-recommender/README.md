@@ -8,7 +8,8 @@
 
 **GPU-accelerated semantic search combined with graph-based ontology reasoning for intelligent, explainable movie recommendations**
 
-**Performance**: 270 QPS single GPU • 14.4x TensorRT speedup • Path to 1000+ QPS
+**Dataset**: 1.3M TMDB movies • 1.91 GB embeddings • 21x scale increase
+**Performance**: 270 QPS single GPU • 14.4x TensorRT speedup • 8.63ms search latency
 **Architecture**: Neural embeddings + Graph distance reasoning + Adaptive fusion
 
 ---
@@ -222,22 +223,58 @@ curl -X POST http://localhost:5000/api/query \
 
 ## Dataset
 
-**MovieLens 25M** with embeddings:
-- **Movies**: 62,423
+### TMDB 1.3M Movies (Production Dataset)
+
+**Scale**: 21x larger than MovieLens baseline
+- **Movies**: 1,334,069 (from TMDB dataset)
 - **Embeddings**: 384-dimensional (MiniLM-L12-v2)
-- **Ontology Mapped**: 13,816 (22%)
-- **Genome Tags**: 1,128 tags mapped to 65 ontology concepts
+- **Dataset Size**: 1.91 GB embeddings + 155 MB metadata
+- **Processing Time**: 12.8 minutes on RTX A6000
+
+**Migration Performance**:
+- **Stage 1** (Ingestion): 60s @ 2,000 movies/sec
+- **Stage 2** (Ontology): 120s @ 7,750 movies/sec
+- **Stage 3** (TensorRT Embeddings): 768s @ 1,735 movies/sec
+
+**Search Performance on 1.3M Dataset**:
+- **Latency**: 8.63ms mean, 7.71ms median
+- **Throughput**: 62.38 QPS (single query)
+- **Embedding Quality**: Mean norm 4.019
 
 **Data Pipeline**:
 ```bash
-# Already processed - data files included
-semantic-recommender/data/
-├── processed/
-│   ├── movies_with_embeddings.json    # 62K movies + embeddings
-│   └── genome_scores.csv              # Ontology mappings
-└── models/
-    └── minilm_l12_v2_fp16.plan        # TensorRT engine
+# TMDB dataset - processed and ready
+semantic-recommender/data/embeddings/tmdb/
+├── content_vectors.npy       # 1.91 GB (1.3M × 384)
+└── metadata.jsonl            # 155 MB (1.3M records)
+
+semantic-recommender/data/models/
+└── minilm_l12_v2_fp16.plan  # TensorRT engine (226 MB)
 ```
+
+### Complex Query Demonstration
+
+The system handles diverse natural language queries across 1.3M movies:
+
+```bash
+# Run demonstration
+python scripts/demo_complex_queries.py
+```
+
+**Tested Query Categories** (12 diverse tests):
+- Multi-genre complex: "mind-bending psychological thriller with time travel"
+- Emotional tone: "heartwarming story about found family in coastal town"
+- Visual style: "visually stunning cyberpunk noir with neon-lit streets"
+- Character-driven: "complex anti-hero struggling with moral ambiguity"
+- Reference-based: "like Inception meets The Matrix but with more depth"
+- Mood + pacing: "slow-burn atmospheric horror without jump scares"
+- Social commentary: "satirical science fiction exploring class inequality"
+- Era-specific: "1980s coming-of-age with Spielberg-style wonder"
+- Narrative structure: "non-linear storytelling with unreliable narrator"
+- Cultural specific: "Japanese animation exploring existential themes"
+- Intensity + scale: "epic space opera with massive battles"
+
+**Performance**: 964ms average latency per complex query across 1.3M movies
 
 ---
 
@@ -295,9 +332,11 @@ server {
 
 | Document | Description |
 |----------|-------------|
+| [COMPLEX_QUERY_SHOWCASE.md](docs/COMPLEX_QUERY_SHOWCASE.md) | **12 complex query demonstrations on 1.3M dataset** |
+| [MODEL_SETUP_GUIDE.md](docs/MODEL_SETUP_GUIDE.md) | TensorRT engine build instructions (~5 min setup) |
 | [FINAL_IMPLEMENTATION_REPORT.md](docs/FINAL_IMPLEMENTATION_REPORT.md) | Complete implementation details, benchmarks, validation |
 | [NEURO_SYMBOLIC_ARCHITECTURE.md](docs/NEURO_SYMBOLIC_ARCHITECTURE.md) | Architecture design, data flow, component specs |
-| [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md) | TensorRT engine build process and optimization |
+| [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md) | TMDB dataset migration and system integration |
 | [GRAPH_REASONING_V2.md](docs/GRAPH_REASONING_V2.md) | Graph distance reasoning algorithm |
 | [TENSORRT_RESULTS.md](docs/TENSORRT_RESULTS.md) | Performance benchmarks |
 

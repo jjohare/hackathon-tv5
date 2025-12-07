@@ -23,6 +23,7 @@ redis>=5.0.0
 
 # Utilities
 python-dotenv>=1.0.0
+kaggle>=1.5.16  # Kaggle API for dataset downloads
 
 # TensorRT (A100 GPU optimization)
 # Note: Install from NVIDIA or use NVIDIA containers

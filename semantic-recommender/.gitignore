@@ -106,6 +106,7 @@ summaries/
 
 # Data files and datasets
 data/raw/ml-*/
+data/raw/tmdb/
 data/raw/*.zip
 data/raw/*.csv
 data/processed/

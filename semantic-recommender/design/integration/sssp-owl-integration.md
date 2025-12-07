@@ -868,14 +868,14 @@ Throughput (NVIDIA RTX 4090):
 - Force iterations/second: ~400
 ```
 
-### 4.3 Optimization Strategies
+### 4.3 optimisation Strategies
 
-**Memory Optimization:**
+**Memory optimisation:**
 - Use sparse CSR format for distance matrix (reduces to ~40MB for 10K nodes)
 - Stream landmark SSSP computations to overlap CPU-GPU transfers
 - Cache frequently accessed subgraph distances
 
-**Computation Optimization:**
+**Computation optimisation:**
 - Batch multiple path queries for GPU parallelism
 - Use CUDA streams for concurrent kernel execution
 - Implement early termination in A* search
@@ -1615,7 +1615,7 @@ lazy_static! {
 
 ### 8.1 Dynamic Ontology Learning
 
-Automatically infer new ontology axioms from user behavior patterns.
+Automatically infer new ontology axioms from user behaviour patterns.
 
 ### 8.2 Multi-Modal Paths
 

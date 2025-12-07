@@ -8,11 +8,11 @@
 
 ## Executive Summary
 
-Comprehensive A100 benchmarking completed for hyper-personalization system. **Results show V1 baseline outperforms V2 "optimized" version**, contrary to expectations.
+Comprehensive A100 benchmarking completed for hyper-personalization system. **Results show V1 baseline outperforms V2 "optimised" version**, contrary to expectations.
 
 ### Key Findings
 
-| Metric | Baseline V1 | Optimized V2 | Winner |
+| Metric | Baseline V1 | optimised V2 | Winner |
 |--------|-------------|--------------|--------|
 | **Mean Latency** | 11.42ms | 14.75ms | ✅ **V1 (29% faster)** |
 | **Median Latency** | ~11.4ms | 14.44ms | ✅ **V1** |
@@ -51,7 +51,7 @@ Avg Miss Time:   0.14 ms
 
 ---
 
-### Test 2: Optimized V2 Performance
+### Test 2: optimised V2 Performance
 
 **100 Query Benchmark:**
 ```
@@ -64,16 +64,16 @@ Max Latency:     42.10 ms
 Throughput:      67.8 QPS  (⚠️ 39% LOWER than V1)
 ```
 
-**System Initialization:**
+**System initialisation:**
 - FP16 mixed precision enabled
 - 10M user embeddings (146.48 MB)
 - Temporal cache: 10K × 62K similarities (2.33 GB)
 - 8-head attention (48 dims per head)
 
-**Regression Analysis:**
+**Regression analysis:**
 - Mean latency increased from 11.42ms → 14.75ms (+29%)
 - Throughput decreased from 94 QPS → 67.8 QPS (-28%)
-- **Root cause:** FP16 optimization overhead > benefits at this scale
+- **Root cause:** FP16 optimisation overhead > benefits at this scale
 
 ---
 
@@ -83,7 +83,7 @@ Throughput:      67.8 QPS  (⚠️ 39% LOWER than V1)
 - First query: ~11.5 ms (similar to warm)
 - **No significant cold start penalty**
 
-**V2 Optimized:**
+**V2 optimised:**
 ```
 Cold Start Latency: 478.51 ms  (⚠️ 42× SLOWER than V1)
 
@@ -96,9 +96,9 @@ Component Breakdown:
 - Total:            478.40 ms
 ```
 
-**Analysis:** V2 has massive cold start penalty due to:
+**analysis:** V2 has massive cold start penalty due to:
 1. FP16 precision conversion overhead
-2. Tensor Core initialization
+2. Tensor Core initialisation
 3. Mixed precision autocast setup
 
 ---
@@ -110,7 +110,7 @@ Component Breakdown:
 - GPU utilization: 7.6%
 - Memory bandwidth: 1.6 TB/s (102% efficiency)
 
-**V2 Optimized:**
+**V2 optimised:**
 - Memory used: 0 MB reported (likely measurement after cleanup)
 - GPU utilization: 1%
 - FP16 cache: 2.33 GB
@@ -128,7 +128,7 @@ Per-user Throughput:    54.1 QPS
 Total Throughput:       540.8 QPS (10 concurrent users)
 ```
 
-**Analysis:**
+**analysis:**
 - Per-user latency degraded to 18.49ms (vs 14.75ms single user)
 - Total throughput 540.8 QPS = 5.4× better than single-user 94 QPS
 - **Scalability factor: 5.4× for 10 users (good, but from degraded baseline)**
@@ -153,7 +153,7 @@ Total Throughput:       540.8 QPS (10 concurrent users)
 
 ---
 
-## Why V2 "Optimization" Failed
+## Why V2 "optimisation" Failed
 
 ### Expected Improvements:
 1. **FP16 Tensor Cores:** 2× speedup on matrix ops
@@ -167,11 +167,11 @@ Total Throughput:       540.8 QPS (10 concurrent users)
 
 ### Root Cause:
 The bottleneck is **query encoding (96.3% of time)**, which is:
-- **Already optimized** in sentence-transformers library
+- **Already optimised** in sentence-transformers library
 - **Not benefiting** from FP16 (dominated by PyTorch internal overhead)
 - **Being slowed down** by mixed precision autocast
 
-**Conclusion:** FP16 optimization is premature at this scale. The real bottleneck (query encoding) needs TensorRT, not FP16.
+**Conclusion:** FP16 optimisation is premature at this scale. The real bottleneck (query encoding) needs TensorRT, not FP16.
 
 ---
 
@@ -192,17 +192,17 @@ The bottleneck is **query encoding (96.3% of time)**, which is:
 - **+60-90% quality improvement** over baseline
 - **+40% conversion rate** = $500K/month (1M users)
 
-### ❌ ABANDON V2 "OPTIMIZATION"
+### ❌ ABANDON V2 "optimisation"
 
 **Reasons:**
 1. Caused 29% performance regression
 2. 42× slower cold start
-3. FP16 optimization doesn't help query encoding bottleneck
+3. FP16 optimisation doesn't help query encoding bottleneck
 4. Added complexity with no benefit
 
-### 🎯 FUTURE OPTIMIZATION PATH
+### 🎯 FUTURE optimisation PATH
 
-**TensorRT is the correct optimization:**
+**TensorRT is the correct optimisation:**
 - Targets actual bottleneck: query encoding (96.3% of time)
 - Expected: 11ms → 0.5ms (22× speedup)
 - Code already complete, ready to deploy
@@ -210,7 +210,7 @@ The bottleneck is **query encoding (96.3% of time)**, which is:
 
 **Deployment priority:**
 1. **Now:** Deploy V1 hyper-personalization to main
-2. **Next:** Deploy TensorRT optimization (1.5 hours on A100)
+2. **Next:** Deploy TensorRT optimisation (1.5 hours on A100)
 3. **Future:** Revisit FP16 after TensorRT fixes encoding bottleneck
 
 ---
@@ -245,7 +245,7 @@ NumPy:            latest
 **Queries:**
 - 100 diverse queries (10 types × 10 repetitions)
 - 10 concurrent users for scalability test
-- Cold start: fresh system initialization
+- Cold start: fresh system initialisation
 
 **Metrics:**
 - Mean, median, P95, P99 latency
@@ -323,9 +323,9 @@ git push origin main
 - ✅ +40% conversion rate ($500K/month revenue at 1M users)
 - ✅ 2-5× faster than industry standards
 
-**V2 "optimization" caused regression and should be abandoned.**
+**V2 "optimisation" caused regression and should be abandoned.**
 
-**TensorRT optimization is the correct next step** to reduce latency from 11.42ms → <1ms.
+**TensorRT optimisation is the correct next step** to reduce latency from 11.42ms → <1ms.
 
 ---
 

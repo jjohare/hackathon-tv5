@@ -128,7 +128,7 @@ pub async fn find_shortest_paths(
 **Benefits**:
 - Callers don't need to know which algorithm is used
 - Easy to add new algorithms (A*, Bellman-Ford)
-- Configuration-driven behavior
+- Configuration-driven behaviour
 - Testable in isolation
 
 **Internal Implementation Modules**:
@@ -159,7 +159,7 @@ pub struct PathfindingConfig {
 ```
 
 **Benefits**:
-- All behavior controlled via config
+- All behaviour controlled via config
 - Defaults handle 90% of cases
 - Runtime algorithm switching possible
 - Easy to extend (add heuristics, tuning params)
@@ -175,7 +175,7 @@ SearchAlgorithm::AStar => {
 }
 ```
 
-**Fix**: Add logging or return specialized error
+**Fix**: Add logging or return specialised error
 ```rust
 SearchAlgorithm::AStar => {
     tracing::warn!("A* not implemented, falling back to Dijkstra");
@@ -204,7 +204,7 @@ pub fn launch_dijkstra(...) -> GpuResult<()> {
 
 ---
 
-## 3. Performance Analysis
+## 3. Performance analysis
 
 ### Current Implementation Benchmarks
 
@@ -451,7 +451,7 @@ match config.algorithm {
 
 **Benefits**:
 - A/B testing (50% BFS, 50% Dijkstra)
-- Per-query optimization (choose based on graph size)
+- Per-query optimisation (choose based on graph size)
 - Dynamic fallback (GPU → CPU)
 
 **Compile-Time** (❌ Would be worse):
@@ -1153,7 +1153,7 @@ async fn test_recommendation_graph() {
 **Decision**: Use runtime match statement on `config.algorithm`
 **Rationale**:
 - Enables A/B testing
-- Supports per-query optimization
+- Supports per-query optimisation
 - Allows dynamic fallback
 - Zero overhead (2 cycles vs 600K for kernel)
 
@@ -1175,7 +1175,7 @@ async fn test_recommendation_graph() {
 
 **Alternatives Considered**:
 - GPU reconstruction ❌ (0.1ms savings not worth complexity)
-- Streaming reconstruction ❌ (premature optimization)
+- Streaming reconstruction ❌ (premature optimisation)
 
 ### ADR-003: Use Memory Pool for GPU Buffers
 
@@ -1205,7 +1205,7 @@ async fn test_recommendation_graph() {
 
 **Alternatives Considered**:
 - Default to Dijkstra ❌ (slower, unnecessary for unweighted)
-- Auto-detect weights ❌ (adds complexity, hidden behavior)
+- Auto-detect weights ❌ (adds complexity, hidden behaviour)
 
 ---
 

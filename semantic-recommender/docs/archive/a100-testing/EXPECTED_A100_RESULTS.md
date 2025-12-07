@@ -71,7 +71,7 @@ Top 10 Similar Movies:
 - **Speedup:** 40-90x vs CPU
 - **Accuracy:** Perfect franchise detection
 
-**Analysis:**
+**analysis:**
 - ✅ All Toy Story films in top-4
 - ✅ Pixar/DreamWorks animation theme maintained
 - ✅ Chronological ordering preserved
@@ -97,7 +97,7 @@ Top 5 Recommendations:
 - **Avg Time (5 users):** 0.7 ms
 - **Speedup:** 115x vs CPU (81ms → 0.7ms)
 
-**Analysis:**
+**analysis:**
 - ✅ International cinema focus
 - ✅ Arthouse/auteur directors
 - ✅ Diverse time periods (1983-2011)
@@ -123,7 +123,7 @@ Top 5 Recommendations:
 
 **Speedup:** 78-109x vs CPU (2,730ms → 30ms)
 
-**Analysis:**
+**analysis:**
 - GPU batch matrix multiplication highly efficient
 - Tensor cores utilized for FP16 operations
 - Parallelism scales linearly up to 100 queries
@@ -137,9 +137,9 @@ Top 5 Recommendations:
 
 **Speedup:** 109-182x vs CPU
 
-**Analysis:**
+**analysis:**
 - Peak throughput achieved
-- Memory coalescing optimized
+- Memory coalescing optimised
 - Approaching hardware limits
 
 ### Test 4: Genre Filtering
@@ -168,13 +168,13 @@ Top 10 Sci-Fi Movies:
 - **Total:** 2.5-5.5 ms
 - **Speedup:** ~15x (filtering is CPU-bound)
 
-**Analysis:**
+**analysis:**
 - ✅ 100% Sci-Fi genre constraint
 - ✅ Franchise coherence (Star Wars/Star Trek)
 - ✅ Temporal clustering (late 70s/early 80s)
 - ✅ Theme alignment (space, future)
 
-### Test 5: Memory Analysis
+### Test 5: Memory analysis
 
 **Base Usage (Embeddings Loaded):**
 ```
@@ -201,7 +201,7 @@ Used:      ~2.0 GB (4.8%)
 Free:      ~40.0 GB (95.2%)
 ```
 
-**Analysis:**
+**analysis:**
 - ✅ Excellent memory efficiency
 - ✅ 95% headroom for scaling
 - ✅ Can handle 10x larger dataset
@@ -232,7 +232,7 @@ Free:      ~40.0 GB (95.2%)
 | 1000 | 14 | 5,000 | 357x |
 | 10000 | 4 | 10,000 | 2,500x |
 
-**Analysis:**
+**analysis:**
 - Linear scaling up to 100 concurrent queries
 - Super-linear scaling beyond 1000 (batch efficiency)
 - Peak throughput: 10,000 QPS sustained
@@ -253,7 +253,7 @@ Free:      ~40.0 GB (95.2%)
 
 ### Edge Cases
 
-| Test | Query | Challenge | Expected Behavior |
+| Test | Query | Challenge | Expected behaviour |
 |------|-------|-----------|-------------------|
 | **Obscure Film** | Small indie film | Limited metadata | Falls back to genre |
 | **Multi-Genre** | Blade Runner | Sci-Fi + Noir | Balances both genres |
@@ -263,13 +263,13 @@ Free:      ~40.0 GB (95.2%)
 
 ---
 
-## Error Analysis
+## Error analysis
 
 ### Potential Issues and Mitigation
 
 #### Issue 1: Cold Start Latency
 
-**Problem:** First query slower due to GPU initialization
+**Problem:** First query slower due to GPU initialisation
 
 **Expected:**
 - First query: 5-10 ms (warm-up)
@@ -378,7 +378,7 @@ Compare actual vs. predicted:
 - Throughput within ±30%
 - Quality metrics exact match
 
-### 2. Optimize Further
+### 2. optimise Further
 
 If predictions met:
 - Integrate custom CUDA kernels (6x improvement target)

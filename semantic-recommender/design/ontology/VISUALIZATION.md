@@ -1,8 +1,8 @@
-# GMC-O Ontology Visualization Guide
+# GMC-O Ontology visualisation Guide
 
 ## Overview
 
-The Global Media & Context Ontology (GMC-O) visualization pipeline automatically generates multiple visual representations to help understand the ontology structure. This guide is designed for frontend developers who need to work with the ontology but aren't ontology experts.
+The Global Media & Context Ontology (GMC-O) visualisation pipeline automatically generates multiple visual representations to help understand the ontology structure. This guide is designed for frontend developers who need to work with the ontology but aren't ontology experts.
 
 ## Quick Start
 
@@ -65,9 +65,9 @@ user:completionPercentage: float  // 0.0-1.0
 ```
 
 #### 3. **Namespaces** = Domain Modules
-The ontology is organized into color-coded modules:
+The ontology is organized into colour-coded modules:
 
-| Namespace | Color | Purpose | Example Classes |
+| Namespace | colour | Purpose | Example Classes |
 |-----------|-------|---------|----------------|
 | `media:` | 🔴 Red | Content & metadata | Film, Genre, NarrativeStructure |
 | `user:` | 🩵 Teal | User profiles | ViewerProfile, TasteCluster, ToleranceLevel |
@@ -157,76 +157,15 @@ graph TD
 
 ### Media Domain
 
-```mermaid
-graph TD
-    CreativeWork[Creative Work]
-    CreativeWork --> Film
-    CreativeWork --> TVSeries[TV Series]
-    CreativeWork --> TVEpisode[TV Episode]
-
-    Genre --> Action
-    Genre --> Drama
-    Genre --> Comedy
-    Genre --> SciFi[Sci-Fi]
-    Genre --> Horror
-    Genre --> Romance
-    Genre --> Documentary
-
-    VisualAesthetic[Visual Aesthetic]
-    VisualAesthetic --> NoirAesthetic[Film Noir]
-    VisualAesthetic --> NeonAesthetic[Neon/Cyberpunk]
-    VisualAesthetic --> PastelAesthetic[Pastel]
-    VisualAesthetic --> NaturalisticAesthetic[Naturalistic]
-```
+<<<CODEBLOCK_7>>>
 
 ### User Domain
 
-```mermaid
-graph TD
-    ViewerProfile[Viewer Profile]
-
-    PsychographicState[Psychographic State]
-    PsychographicState --> SeekingComfort[Seeking Comfort]
-    PsychographicState --> SeekingChallenge[Seeking Challenge]
-    PsychographicState --> Nostalgic
-    PsychographicState --> Adventurous
-
-    TasteCluster[Taste Cluster]
-    TasteCluster --> MainstreamCluster[Mainstream]
-    TasteCluster --> ArtHouseCluster[Art House]
-    TasteCluster --> GenreSpecialistCluster[Genre Specialist]
-```
+<<<CODEBLOCK_8>>>
 
 ### Context Domain
 
-```mermaid
-graph LR
-    subgraph Cultural
-        Holiday
-        Halloween["Halloween"]
-        Christmas["Christmas"]
-        Valentines["Valentine Day"]
-    end
-
-    subgraph Social
-        SocialSetting[Social Setting]
-        DateNight[Date Night]
-        Family[Family Gathering]
-        Solo[Solo Viewing]
-    end
-
-    subgraph Environmental
-        TimeOfDay[Time of Day]
-        Device[Device Type]
-    end
-
-    Holiday --> Halloween
-    Holiday --> Christmas
-    Holiday --> Valentines
-    SocialSetting --> DateNight
-    SocialSetting --> Family
-    SocialSetting --> Solo
-```
+<<<CODEBLOCK_9>>>
 
 ## Common Use Cases
 
@@ -234,17 +173,10 @@ graph LR
 
 **Example**: Add a new visual aesthetic
 
-```turtle
-media:VintageAesthetic a owl:Class ;
-    rdfs:label "Vintage Aesthetic"@en ;
-    rdfs:subClassOf media:VisualAesthetic ;
-    rdfs:comment "Sepia tones, grain, period-appropriate color grading"@en .
-```
+<<<CODEBLOCK_10>>>
 
 **Then regenerate visualizations**:
-```bash
-python3 scripts/visualize_ontology.py --format all
-```
+<<<CODEBLOCK_11>>>
 
 ### 2. Understanding Relationships
 
@@ -255,32 +187,13 @@ python3 scripts/visualize_ontology.py --format all
 3. Filter by domain/range
 
 **Or check the JSON**:
-```bash
-cat design/ontology/visualizations/ontology.json | \
-  jq '.property[] | select(.domain == "media:CreativeWork")'
-```
+<<<CODEBLOCK_12>>>
 
 ### 3. Frontend Integration
 
 **Example**: Fetch genre tree for dropdown
 
-```typescript
-// Load the ontology JSON
-import ontology from './ontology.json';
-
-// Extract genre hierarchy
-const genres = ontology.class
-  .filter(cls => cls.iri.startsWith('media:') &&
-                 cls.subClassOf === 'media:Genre')
-  .map(cls => ({
-    id: cls.iri,
-    label: cls.label,
-    description: cls.comment
-  }));
-
-// Use in React component
-<GenreFilter genres={genres} />
-```
+<<<CODEBLOCK_13>>>
 
 ## Automated Updates
 
@@ -288,37 +201,16 @@ const genres = ontology.class
 
 Create `.git/hooks/pre-commit`:
 
-```bash
-#!/bin/bash
-# Regenerate visualizations if ontology changes
-
-if git diff --cached --name-only | grep -q "expanded-media-ontology.ttl"; then
-  echo "Ontology changed, regenerating visualizations..."
-  python3 scripts/visualize_ontology.py --format all
-  git add design/ontology/visualizations/
-fi
-```
+<<<CODEBLOCK_14>>>
 
 Make it executable:
-```bash
-chmod +x .git/hooks/pre-commit
-```
+<<<CODEBLOCK_15>>>
 
 ### CI/CD Integration
 
 Add to GitHub Actions workflow:
 
-```yaml
-- name: Generate Ontology Visualizations
-  run: |
-    python3 scripts/visualize_ontology.py --format all
-
-- name: Upload Visualizations
-  uses: actions/upload-artifact@v3
-  with:
-    name: ontology-visualizations
-    path: design/ontology/visualizations/
-```
+<<<CODEBLOCK_16>>>
 
 ## Troubleshooting
 
@@ -327,17 +219,7 @@ Add to GitHub Actions workflow:
 **Error**: `dot: command not found`
 
 **Solution**:
-```bash
-# Ubuntu/Debian
-sudo apt-get install graphviz
-
-# macOS
-brew install graphviz
-
-# Then regenerate
-cd design/ontology/visualizations
-dot -Tpng full-hierarchy.dot -o full-hierarchy.png
-```
+<<<CODEBLOCK_17>>>
 
 ### HTML Viewer Shows Empty Data
 
@@ -346,21 +228,16 @@ dot -Tpng full-hierarchy.dot -o full-hierarchy.png
 2. JSON wasn't generated (check `ontology.json` exists)
 
 **Debug**:
-```bash
-python3 scripts/visualize_ontology.py --format webvowl
-cat design/ontology/visualizations/ontology.json | jq '.class | length'
-```
+<<<CODEBLOCK_18>>>
 
 ### Mermaid Diagrams Not Rendering
 
 **In GitHub**: Ensure you're using triple backticks with `mermaid` language identifier:
 
-````markdown
-```mermaid
+<<<CODEBLOCK_19>>>mermaid
 graph TD
     A --> B
-```
-````
+<<<CODEBLOCK_20>>>`
 
 **In documentation tools**: Check your tool supports Mermaid (most modern tools do)
 
@@ -406,7 +283,7 @@ python3 scripts/visualize_ontology.py --help
 
 ### For Collaboration
 1. Start newcomers with the **HTML viewer**
-2. Use **color coding** consistently in discussions (red=media, teal=user, etc.)
+2. Use **colour coding** consistently in discussions (red=media, teal=user, etc.)
 3. Reference **specific class URIs** (e.g., `media:Film`) in code reviews
 4. Include **visual diagrams** in architecture decision records (ADRs)
 
@@ -449,7 +326,7 @@ genre_props = [p for p in onto['property']
 ## Resources
 
 - **Ontology Source**: `design/ontology/expanded-media-ontology.ttl`
-- **Visualization Script**: `scripts/visualize_ontology.py`
+- **visualisation Script**: `scripts/visualize_ontology.py`
 - **Output Directory**: `design/ontology/visualizations/`
 - **Interactive Viewer**: `design/ontology/visualizations/index.html`
 

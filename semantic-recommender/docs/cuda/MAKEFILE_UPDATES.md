@@ -5,12 +5,12 @@ Updated CUDA Makefiles to reference new kernel locations after reorganization in
 
 ## Files Updated
 
-### 1. `/src/cuda/kernels/Makefile` (T4-Optimized)
+### 1. `/src/cuda/kernels/Makefile` (T4-optimised)
 - Updated PTX_KERNELS to reference variant kernels in `variants/` subdirectory
 - Added separate handling for variant kernel object compilation
 - Updated benchmark algorithm paths to use `variants/`
 
-### 2. `/src/cuda/kernels/Makefile.a100` (A100-Optimized)
+### 2. `/src/cuda/kernels/Makefile.a100` (A100-optimised)
 - Updated PTX_KERNELS to reference variant kernels in `variants/` subdirectory
 - Added separate handling for variant kernel object compilation
 - Updated benchmark algorithm paths to use `variants/`
@@ -97,14 +97,14 @@ PTX Kernels (8 total):
 ## Build Targets Preserved
 
 ### T4 Targets
-- `all` - Build T4-optimized kernel library (default)
+- `all` - Build T4-optimised kernel library (default)
 - `ptx` - Generate PTX assembly for Rust FFI
 - `test-t4` - Run T4 validation tests
 - `benchmark` - Run T4 benchmarks
 - `benchmark-algorithms` - Build HNSW/LSH benchmark suite
 
 ### A100 Targets
-- `all` - Build A100-optimized kernel library (default)
+- `all` - Build A100-optimised kernel library (default)
 - `ptx` - Generate PTX assembly for Rust FFI
 - `benchmark-a100` - Build A100 benchmark binary
 - `run-benchmark` - Run A100 performance benchmarks

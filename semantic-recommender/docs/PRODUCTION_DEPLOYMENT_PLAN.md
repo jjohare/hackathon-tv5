@@ -24,7 +24,7 @@
 3. **CUDA Kernels (100%)**
    - ✅ semantic_similarity_fp16_tensor_cores.cu (38KB PTX)
    - ✅ Compiled for sm_75 (T4/A100 compatible)
-   - ✅ Tensor Core optimization ready
+   - ✅ Tensor Core optimisation ready
 
 4. **CPU Recommendation Engine (100%)**
    - ✅ Similar movie search (~27ms latency)
@@ -82,7 +82,7 @@ top_k = torch.topk(similarities, k=10)
 **Advantages:**
 - Maximum performance (Tensor Cores)
 - Fine-grained memory control
-- Optimized for specific hardware
+- optimised for specific hardware
 
 **Expected Performance:**
 - Latency: 0.05-0.2 ms per query
@@ -285,7 +285,7 @@ Knowledge Graph (Neo4j)
 
 ---
 
-## Cost Analysis
+## Cost analysis
 
 ### Development (Current)
 - GCP A100 VM: ~$3.67/hour

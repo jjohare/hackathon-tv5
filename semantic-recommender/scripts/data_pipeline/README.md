@@ -175,7 +175,7 @@ clean_movie_row(row)          # Transform row to clean dictionary
 - Progress tracking with ETA
 - Graceful fallback to PyTorch if TensorRT unavailable
 
-**GPU Optimization**:
+**GPU optimisation**:
 - Uses FP16 precision (2x memory reduction)
 - Zero-copy CUDA memory management
 - Batch size: 32 (optimal for A100)

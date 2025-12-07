@@ -176,7 +176,7 @@ def extract_themes_from_overview(self, overview: str) -> List[str]:
 4. **Progress Tracking**: Real-time ETA with tqdm
 5. **Graceful Fallback**: Falls back to PyTorch if TensorRT unavailable
 
-**GPU Optimization**:
+**GPU optimisation**:
 - FP16 precision (TensorRT engine)
 - Zero-copy CUDA memory
 - Batch size: 32 (optimal for A100)
@@ -321,7 +321,7 @@ MediaAsset {
 **Test Coverage**:
 - ✅ Stage 1: JSON parsing, year extraction
 - ✅ Stage 2: Genome vocabulary, keyword mapping, theme extraction
-- ✅ Stage 3: Encoder initialization, embedding generation, NaN/Inf validation
+- ✅ Stage 3: Encoder initialisation, embedding generation, NaN/Inf validation
 
 **Usage**:
 ```bash

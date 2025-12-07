@@ -68,7 +68,7 @@ QPS (single)         | 2.5         | 37.2          | 14.9x
 **Files Modified**:
 - `scripts/utils/trt_inference.py`: TensorRT inference wrapper with thread-safety
 - `scripts/utils/export_model_onnx.py`: ONNX export with custom pooling
-- `scripts/utils/build_trt_engine.py`: Engine builder with FP16 optimization
+- `scripts/utils/build_trt_engine.py`: Engine builder with FP16 optimisation
 
 ### 2. Graph Distance Ontology Reasoning
 
@@ -415,6 +415,6 @@ Successfully delivered a production-ready neuro-symbolic recommendation system w
 ---
 
 **Implemented by**: Claude AI Agent with Hierarchical Swarm Coordination
-**Methodology**: Dual optimization (TensorRT performance + ontology intelligence)
+**Methodology**: Dual optimisation (TensorRT performance + ontology intelligence)
 **Date**: 2025-12-07
 **Status**: ✅ Production Ready

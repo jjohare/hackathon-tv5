@@ -57,7 +57,7 @@ All queries demonstrate sub-second performance with comprehensive search across 
 }
 ```
 
-**Analysis**: Initial query shows model warmup overhead (28.1ms encoding). Demonstrates system's ability to handle cold starts gracefully.
+**analysis**: Initial query shows model warmup overhead (28.1ms encoding). Demonstrates system's ability to handle cold starts gracefully.
 
 #### Top 5 Results
 
@@ -108,7 +108,7 @@ The query successfully captured:
 }
 ```
 
-**Analysis**: Post-warmup query shows optimal performance (3.2ms total). 9x faster than cold start.
+**analysis**: Post-warmup query shows optimal performance (3.2ms total). 9x faster than cold start.
 
 #### Top 5 Results
 
@@ -122,13 +122,13 @@ The query successfully captured:
 
 #### Semantic Understanding
 
-Interesting behavior observed:
+Interesting behaviour observed:
 - ✅ **Philosophical depth**: Results lean toward contemplative, metaphysical themes
 - ⚠️ **Space opera missing**: Results favor "philosophical" over "space opera" genre
-- ✅ **Thematic consistency**: Color symbolism (blue, sky) suggests abstract thinking
+- ✅ **Thematic consistency**: colour symbolism (blue, sky) suggests abstract thinking
 - 💡 **Opportunity**: System prioritizes semantic depth over genre specificity
 
-**Query Weighting Analysis**:
+**Query Weighting analysis**:
 ```
 Semantic emphasis detected:
 - "philosophical themes": HIGH weight (philosophical content dominates)
@@ -158,7 +158,7 @@ This suggests the embedding model values thematic depth over genre classificatio
 }
 ```
 
-**Analysis**: Consistent optimal performance (3.1ms). Demonstrates stable throughput.
+**analysis**: Consistent optimal performance (3.1ms). Demonstrates stable throughput.
 
 #### Top 5 Results
 
@@ -210,7 +210,7 @@ Alternative interpretation (with genre ontology):
 }
 ```
 
-**Analysis**: Best search time (0.255ms). Demonstrates FAISS efficiency at scale.
+**analysis**: Best search time (0.255ms). Demonstrates FAISS efficiency at scale.
 
 #### Top 5 Results
 
@@ -230,7 +230,7 @@ Unexpected semantic mapping:
 - ✅ **Profession focus**: "Detective" mapped to "soldier" (investigation/duty)
 - 💡 **Insight**: Embeddings prioritize role/profession over historical context
 
-**Temporal and Spatial Analysis**:
+**Temporal and Spatial analysis**:
 ```
 Query breakdown:
 - "noir detective story": MEDIUM match (procedural/investigation themes)
@@ -261,7 +261,7 @@ Ontology enhancement opportunity: Add era and location metadata to boost relevan
 }
 ```
 
-**Analysis**: Fastest overall query (2.85ms). Optimal performance across all metrics.
+**analysis**: Fastest overall query (2.85ms). Optimal performance across all metrics.
 
 #### Top 5 Results
 
@@ -328,7 +328,7 @@ but also shows the need for genre constraints to focus results.
 - ✅ One example (Death Race) shows 26 ontology classes
 - ⚠️ `reasoning` and `ontology_boost` fields empty
 
-**Expected Behavior** (when fully functional):
+**Expected behaviour** (when fully functional):
 ```json
 {
   "ontology": {
@@ -349,7 +349,7 @@ but also shows the need for genre constraints to focus results.
 }
 ```
 
-### Hybrid Scoring Analysis
+### Hybrid Scoring analysis
 
 Current formula (observed):
 ```python
@@ -421,11 +421,11 @@ def extract_temporal_spatial(query: str) -> dict:
     }
 ```
 
-### 4. Performance Optimization
+### 4. Performance optimisation
 
 **Observation**: 28ms cold start vs 3ms warm queries
 
-**Optimization**:
+**optimisation**:
 ```python
 # Pre-warm model on server startup
 @app.before_first_request

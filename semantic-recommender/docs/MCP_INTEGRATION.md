@@ -25,26 +25,43 @@ The semantic recommender exposes both REST and MCP interfaces for maximum flexib
 
 ### Architecture
 
+**MCP Integration Layer - Complete Stack**
+
+```mermaid
+flowchart TD
+    Client[MCP Client<br/>Claude/Cursor/Custom] --> Protocol[MCP Protocol<br/>JSON-RPC 2.0]
+
+    Protocol --> Server[MCP Server<br/>scripts/mcp_server.py]
+
+    Server --> API[Query Interface<br/>Flask REST API]
+
+    API --> Pipeline[Neuro-Symbolic Pipeline]
+
+    Pipeline --> Encode[TensorRT Encoding]
+    Pipeline --> Search[GPU Similarity Search]
+    Pipeline --> Reason[Graph Distance Reasoning]
+
+    Encode --> Results[Results]
+    Search --> Results
+    Reason --> Results
+
+    style Client fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Protocol fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style Server fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    style API fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    style Pipeline fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Encode fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style Search fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style Reason fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style Results fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    MCP Integration Layer                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  MCP Client (Claude/Cursor)                                  │
-│         ↓                                                     │
-│  MCP Protocol (JSON-RPC)                                     │
-│         ↓                                                     │
-│  MCP Server (scripts/mcp_server.py)                         │
-│         ↓                                                     │
-│  Query Interface (Flask REST API)                            │
-│         ↓                                                     │
-│  Neuro-Symbolic Pipeline                                     │
-│    • TensorRT Encoding                                       │
-│    • GPU Similarity Search                                   │
-│    • Graph Distance Reasoning                                │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
-```
+
+**Integration Points:**
+- **MCP Client**: Claude Desktop, Cursor, or custom MCP-compatible clients
+- **MCP Protocol**: JSON-RPC 2.0 over stdio or HTTP
+- **MCP Server**: Python-based MCP protocol handler
+- **Query Interface**: Flask REST API for recommendation processing
+- **Neuro-Symbolic Pipeline**: GPU-accelerated semantic search with ontology reasoning
 
 ---
 
@@ -488,7 +505,7 @@ server {
 
 ---
 
-## Performance Optimization
+## Performance optimisation
 
 ### MCP-Specific Tuning
 

@@ -125,7 +125,7 @@ All algorithms compared against CPU Dijkstra with priority queue:
 
 ## Edge Cases Handled
 
-| Case | Input | Expected Behavior |
+| Case | Input | Expected behaviour |
 |------|-------|-------------------|
 | Single node | n=1, no edges | Distance[0] = 0 |
 | Disconnected | 2+ components | Infinity for unreachable |
@@ -145,7 +145,7 @@ All algorithms compared against CPU Dijkstra with priority queue:
 ### Phase 2: CUDA Integration (Pending)
 - [ ] Link GPU Dijkstra to CUDA kernels (`pathfinding.rs`)
 - [ ] Implement real Hybrid Duan (GPU hub processing)
-- [ ] Add device/memory pool initialization
+- [ ] Add device/memory pool initialisation
 - [ ] Update performance expectations
 - [ ] Re-tune crossover threshold
 
@@ -299,7 +299,7 @@ Test: Large Scale-Free
 1. **Integrate with CUDA**:
    - Replace `gpu_dijkstra()` mock with FFI call to `pathfinding.rs`
    - Implement real `hybrid_duan_sssp()` with GPU/CPU coordination
-   - Add device initialization and error handling
+   - Add device initialisation and error handling
 
 2. **Validate Performance**:
    - Re-run benchmarks with real CUDA kernels

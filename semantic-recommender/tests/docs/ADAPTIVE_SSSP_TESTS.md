@@ -46,7 +46,7 @@ Total: **13 test cases** covering:
 - **Graph**: 5K node scale-free (avg degree 8)
 - **Validation**: Compare Hybrid Duan vs CPU ground truth
 - **Tolerance**: < 1e-5 error
-- **Checks**: Hub-based optimization correctness
+- **Checks**: Hub-based optimisation correctness
 
 #### `test_correctness_both_algorithms_match`
 - **Graph**: 2K node Erdős-Rényi
@@ -74,7 +74,7 @@ Total: **13 test cases** covering:
 - **Checks**: Memory increase < 10MB
 - **Validates**: Efficient memory usage
 
-### 4. Adaptive Behavior Tests
+### 4. Adaptive behaviour Tests
 
 #### `test_adaptive_switching`
 - **Test Cases**:
@@ -311,7 +311,7 @@ Test: Large Scale-Free
 - [ ] Validate on road networks
 - [ ] Test on knowledge graph datasets
 
-### Phase 4: Optimization Tests
+### Phase 4: optimisation Tests
 - [ ] Test HNSW indexing integration
 - [ ] Validate landmark selection
 - [ ] Test approximate APSP
@@ -347,7 +347,7 @@ The test suite is designed to integrate with the existing CUDA implementation:
 
 1. **Replace Mock Functions**:
    - `gpu_dijkstra()` → Call `find_paths_dijkstra()` from pathfinding module
-   - Add device/memory pool initialization
+   - Add device/memory pool initialisation
 
 2. **Add Real Hybrid Implementation**:
    - Use `launch_bounded_dijkstra()` for local neighborhoods

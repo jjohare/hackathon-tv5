@@ -1,10 +1,10 @@
-# CUDA Optimization Guide
+# CUDA optimisation Guide
 
 ## Table of Contents
 - [Overview](#overview)
-- [Phase 1: Tensor Core Optimization](#phase-1-tensor-core-optimization)
-- [Phase 2: Memory Optimization](#phase-2-memory-optimization)
-- [Phase 3: Algorithm Complexity Analysis](#phase-3-algorithm-complexity-analysis)
+- [Phase 1: Tensor Core optimisation](#phase-1-tensor-core-optimisation)
+- [Phase 2: Memory optimisation](#phase-2-memory-optimisation)
+- [Phase 3: Algorithm Complexity analysis](#phase-3-algorithm-complexity-analysis)
 - [Benchmarking Guide](#benchmarking-guide)
 - [Troubleshooting](#troubleshooting)
 
@@ -12,13 +12,13 @@
 
 ## Overview
 
-This guide covers three progressive optimization phases for GPU-accelerated vector similarity search:
+This guide covers three progressive optimisation phases for GPU-accelerated vector similarity search:
 
 | Phase | Focus | Expected Speedup | Target Hardware |
 |-------|-------|------------------|-----------------|
 | 1 | Tensor Cores | 5-10x | V100, A100, H100 |
 | 2 | Memory Management | 2-4x additional | All CUDA GPUs |
-| 3 | Algorithm Optimization | 10-100x total | Production systems |
+| 3 | Algorithm optimisation | 10-100x total | Production systems |
 
 ### System Requirements
 - CUDA 11.0+ (12.0+ recommended)
@@ -29,11 +29,11 @@ This guide covers three progressive optimization phases for GPU-accelerated vect
 
 ---
 
-## Phase 1: Tensor Core Optimization
+## Phase 1: Tensor Core optimisation
 
 ### What Are Tensor Cores?
 
-Tensor Cores are specialized hardware units on NVIDIA GPUs (Volta, Turing, Ampere, Hopper architectures) designed for mixed-precision matrix operations.
+Tensor Cores are specialised hardware units on NVIDIA GPUs (Volta, Turing, Ampere, Hopper architectures) designed for mixed-precision matrix operations.
 
 **Key Capabilities:**
 - **FP16/BF16 Matrix Multiplication**: 8x-16x faster than FP32
@@ -58,7 +58,7 @@ def similarity_search_fp32(query_vectors, database_vectors):
 
 **Performance**: ~500 GFLOPS on A100
 
-#### 2. Tensor Core Optimized (FP16)
+#### 2. Tensor Core optimised (FP16)
 ```python
 import torch
 from torch.cuda.amp import autocast
@@ -79,7 +79,7 @@ def similarity_search_fp16(query_vectors, database_vectors):
 
 **Performance**: ~4000 GFLOPS on A100 (8x speedup)
 
-#### 3. Optimized Data Layout
+#### 3. optimised Data Layout
 ```python
 def prepare_tensors_for_tensor_cores(vectors):
     """
@@ -115,7 +115,7 @@ def prepare_tensors_for_tensor_cores(vectors):
 | FP32 | ±3.4e38 | ❌ | Baseline, debugging |
 | FP16 | ±65,504 | ✅ | Most vector search |
 | BF16 | ±3.4e38 | ✅ | Training, large models |
-| INT8 | ±127 | ✅ | Extreme optimization |
+| INT8 | ±127 | ✅ | Extreme optimisation |
 
 **Recommendation**: Start with FP16, use BF16 if encountering overflow.
 
@@ -195,7 +195,7 @@ def verify_tensor_core_usage():
 
 ---
 
-## Phase 2: Memory Optimization
+## Phase 2: Memory optimisation
 
 ### Memory Hierarchy on GPU
 
@@ -211,7 +211,7 @@ HBM (16-80GB)               [Main GPU memory]
 Host Memory (RAM)           [Slowest, largest]
 ```
 
-### Optimization Techniques
+### optimisation Techniques
 
 #### 1. Shared Memory for Tiling
 
@@ -345,7 +345,7 @@ class MemoryEfficientSearch:
                self.topk_indices[:batch_size, :top_k]
 ```
 
-### Memory Optimization Checklist
+### Memory optimisation Checklist
 
 ✅ **Use `.contiguous()`**: Ensure contiguous memory layout
 ✅ **Batch Operations**: Process multiple items together
@@ -374,7 +374,7 @@ def profile_memory_usage(func, *args):
 
 ---
 
-## Phase 3: Algorithm Complexity Analysis
+## Phase 3: Algorithm Complexity analysis
 
 ### Brute Force vs. Approximate Search
 
@@ -605,7 +605,7 @@ class ProductQuantizer:
         return scores, indices
 ```
 
-**PQ Complexity Analysis:**
+**PQ Complexity analysis:**
 ```
 Encoding:     O(K·D) per vector
 Search:       O(N·M·K) ≈ O(N·2048) vs O(N·D) ≈ O(N·768)
@@ -947,7 +947,7 @@ top_k_candidates = 10 * final_top_k  # Get more candidates, rerank
 
 **Symptoms:**
 - Hours to build HNSW index
-- LSH initialization slow
+- LSH initialisation slow
 
 **Solutions:**
 ```python
@@ -973,7 +973,7 @@ pq.train(vectors[:sample_size])
 ✅ **Batch Size**: Test different sizes for throughput
 ✅ **Data Layout**: All tensors `.contiguous()`
 ✅ **Precision**: FP16 for computation, FP32 for accuracy-critical
-✅ **Synchronization**: Minimize `torch.cuda.synchronize()` calls
+✅ **synchronisation**: Minimize `torch.cuda.synchronize()` calls
 ✅ **Streams**: Use multiple streams for overlap
 
 ### Profiling Tools
@@ -993,7 +993,7 @@ python -m torch.utils.bottleneck script.py
 
 ---
 
-## Optimization Summary
+## optimisation Summary
 
 | Phase | Key Technique | Expected Gain | Complexity |
 |-------|---------------|---------------|------------|
@@ -1003,7 +1003,7 @@ python -m torch.utils.bottleneck script.py
 
 **Recommended Path:**
 1. Start with Phase 1 (Tensor Cores) - easy wins
-2. Profile and optimize memory (Phase 2) if needed
+2. Profile and optimise memory (Phase 2) if needed
 3. Switch to approximate algorithms (Phase 3) for scale
 
 **Final Performance Target:**

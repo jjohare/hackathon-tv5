@@ -458,7 +458,7 @@ assert max_date.year <= 2025
 | Source File | Records | Target Output | Purpose |
 |-------------|---------|---------------|---------|
 | movies.csv | 62,423 | media/movies.jsonl | Base metadata |
-| ratings.csv | 25M | interactions/ratings.jsonl | User behavior |
+| ratings.csv | 25M | interactions/ratings.jsonl | User behaviour |
 | tags.csv | 1M | interactions/tags.jsonl | User tagging |
 | genome-tags.csv | 1,128 | In-memory lookup | Tag vocabulary |
 | genome-scores.csv | 15.5M | media/genome_scores.json | Semantic features |

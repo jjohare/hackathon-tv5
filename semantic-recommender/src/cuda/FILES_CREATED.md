@@ -10,8 +10,8 @@ Successfully created **3,000+ lines** of production-ready GPU graph search code 
 
 1. **`/home/devuser/workspace/hackathon-tv5/src/cuda/kernels/graph_search.cu`**
    - **805 lines** of CUDA kernel implementations
-   - 7 specialized kernels for content discovery
-   - Complete with error handling and optimization
+   - 7 specialised kernels for content discovery
+   - Complete with error handling and optimisation
 
 2. **`/home/devuser/workspace/hackathon-tv5/src/cuda/kernels/graph_search.cuh`**
    - **357 lines** public API header
@@ -42,7 +42,7 @@ Successfully created **3,000+ lines** of production-ready GPU graph search code 
 6. **`/home/devuser/workspace/hackathon-tv5/docs/cuda/graph_search_kernels.md`**
    - **511 lines** comprehensive documentation
    - Algorithm details and API reference
-   - Performance optimization guide
+   - Performance optimisation guide
 
 7. **`/home/devuser/workspace/hackathon-tv5/docs/cuda/IMPLEMENTATION_SUMMARY.md`**
    - **438 lines** implementation summary
@@ -76,7 +76,7 @@ Total:                2,994 lines
 
 ## Kernel Implementations
 
-### 7 Specialized Kernels
+### 7 specialised Kernels
 
 1. **`sssp_semantic_kernel`** - Single-source shortest path with semantic scoring
 2. **`select_content_landmarks_kernel`** - Landmark selection for APSP

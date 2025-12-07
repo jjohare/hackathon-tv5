@@ -1,6 +1,6 @@
-# Legacy Files Cleanup Analysis
+# Legacy Files Cleanup analysis
 
-**Analysis Date:** 2025-12-07
+**analysis Date:** 2025-12-07
 **Analyzer:** Code Analyzer Agent
 **Scope:** semantic-recommender directory structure
 
@@ -65,7 +65,7 @@ scripts/ops/build_trt_engine.py               |  437  | A100 production version 
 scripts/utils/build_trt_engine.py             |  221  | Generic utility version
 ```
 
-**Analysis:**
+**analysis:**
 - `scripts/ops/build_trt_engine.py` is referenced by:
   - `scripts/ops/test_trt_builder.py` (5 imports)
   - `scripts/ops/usage_example.py` (1 import)
@@ -281,7 +281,7 @@ python semantic-recommender/scripts/ops/test_trt_builder.py
 - Scripts: 5 files (~25KB)
 
 ### Files Moved: 15
-- Better organization, no data loss
+- Better organisation, no data loss
 - Improved discoverability
 
 ### Breaking Changes: NONE
@@ -368,6 +368,6 @@ git reset --hard <commit-hash>
 
 ---
 
-**Analysis Confidence:** HIGH
+**analysis Confidence:** HIGH
 **Risk Level:** LOW (all changes reversible, no production impact)
 **Recommended Action:** PROCEED with cleanup

@@ -13,7 +13,7 @@
 3. [Monitoring & Alerting](#3-monitoring--alerting)
 4. [Scaling Strategies](#4-scaling-strategies)
 5. [Disaster Recovery](#5-disaster-recovery)
-6. [Cost Optimization](#6-cost-optimization)
+6. [Cost optimisation](#6-cost-optimisation)
 
 ---
 
@@ -783,9 +783,9 @@ recovery_objectives:
 
 ---
 
-## 6. Cost Optimization
+## 6. Cost optimisation
 
-### 6.1 Resource Optimization
+### 6.1 Resource optimisation
 
 ```yaml
 # cost_optimization.yml
@@ -935,7 +935,7 @@ cost_optimization_opportunities:
 1. Run load tests
 2. Chaos engineering tests
 3. Security audit
-4. Cost optimization review
+4. Cost optimisation review
 
 **Related Guides:**
 - [GPU Setup Guide](gpu-setup-guide.md)

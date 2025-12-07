@@ -545,7 +545,7 @@ console.log(results.results);
 
 ## 🚀 Performance Tuning
 
-### A100 GPU Optimization
+### A100 GPU optimisation
 
 ```bash
 # Enable TF32 for 5-10x speedup

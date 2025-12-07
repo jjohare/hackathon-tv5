@@ -52,14 +52,14 @@ python scripts/ops/export_model_onnx.py \
 
 **What This Does**:
 - Downloads the pre-trained model from HuggingFace
-- Exports to ONNX format for hardware optimization
+- Exports to ONNX format for hardware optimisation
 - Creates two files: `.onnx` (graph) and `.onnx.data` (weights)
 
 ---
 
 ## Step 2: Build TensorRT Engine
 
-Convert the ONNX model to an optimized TensorRT engine.
+Convert the ONNX model to an optimised TensorRT engine.
 
 ```bash
 # Build TensorRT FP16 engine (takes ~5 minutes)
@@ -222,7 +222,7 @@ ln -sf ../../models/sentence_transformer_fp16_sm86.trt \
 - Throughput: ~28 QPS
 - Memory: 2.1 GB VRAM
 
-### TensorRT FP16 (Optimized)
+### TensorRT FP16 (optimised)
 - Encoding latency: ~2.3ms per query
 - Throughput: ~434 QPS
 - Memory: 1.1 GB VRAM

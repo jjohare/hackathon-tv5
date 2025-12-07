@@ -108,7 +108,7 @@ Complete data generation pipeline for the TV5 Media Recommendation System, desig
 
 **Media Embeddings**:
 - Text composition: Title + Genres + Top 10 Genome Tags
-- Batch size: 512 (A100 optimized)
+- Batch size: 512 (A100 optimised)
 - Processing time: ~8 minutes on A100
 
 **User Embeddings**:
@@ -116,7 +116,7 @@ Complete data generation pipeline for the TV5 Media Recommendation System, desig
 - Weight function: (rating - 1) / 4.0 (normalize 1-5 to 0-1)
 - L2 normalized to unit length
 
-**GPU Optimization**:
+**GPU optimisation**:
 - Automatic CUDA detection
 - FP32 precision (FP16 available for 2x speedup)
 - Batch processing with progress bars
@@ -146,7 +146,7 @@ Complete data generation pipeline for the TV5 Media Recommendation System, desig
 **Features**:
 - Automatic schema creation
 - Batch insertion (1,000 per batch)
-- Index creation with optimization
+- Index creation with optimisation
 - Search benchmarking
 - Collection loading to memory
 
@@ -169,7 +169,7 @@ Complete data generation pipeline for the TV5 Media Recommendation System, desig
 - Batch insertion (1,000 per batch)
 - Genome tag filtering (top 10, relevance >0.5)
 - Multi-region platform support
-- Query optimization
+- Query optimisation
 
 #### AgentDB RL Policies
 **Output**:
@@ -369,7 +369,7 @@ AgentDB:
 
 ## 🔧 Technical Details
 
-### Memory Optimization
+### Memory optimisation
 - Pandas chunking for large CSVs (1M rows)
 - Streaming JSONL writes
 - Numpy binary formats for embeddings
@@ -383,11 +383,11 @@ AgentDB:
 
 ### GPU Utilization
 - Automatic CUDA detection
-- Optimized batch sizes (512)
+- optimised batch sizes (512)
 - Mixed precision support
 - Progress tracking
 
-### Database Optimization
+### Database optimisation
 - HNSW indexing for vector search
 - Graph constraints and indexes
 - Batch insertions for performance
@@ -451,9 +451,9 @@ AgentDB:
    - Query Neo4j for explainability
    - Use AgentDB policies for RL-based recommendations
 
-4. **Monitor and Optimize**
+4. **Monitor and optimise**
    - Track validation metrics
-   - Optimize batch sizes
+   - optimise batch sizes
    - Tune HNSW parameters
    - Profile database queries
 
@@ -473,7 +473,7 @@ AgentDB:
 **Production Ready**:
 - ✅ Complete error handling
 - ✅ Progress tracking
-- ✅ Performance optimization
+- ✅ Performance optimisation
 - ✅ Quality validation
 - ✅ Comprehensive documentation
 - ✅ GPU acceleration

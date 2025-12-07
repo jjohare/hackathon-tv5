@@ -134,7 +134,7 @@ Contains:
 
 1. **scripts/server/query_interface.py**
    - Added `BatchProcessor` class (120 lines)
-   - Modified `QueryInterfaceBackend.__init__()` to initialize batch processor
+   - Modified `QueryInterfaceBackend.__init__()` to initialise batch processor
    - Modified `process_query()` to support `use_batch` parameter
    - Added `/api/query/batch` endpoint
    - Enhanced `/api/status` endpoint with batch processor info

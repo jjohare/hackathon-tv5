@@ -9,7 +9,7 @@ This module provides comprehensive type definitions for all system components:
 - **Content Models**: Media representation with multi-modal embeddings
 - **Embedding Types**: Visual, audio, text, and fused embeddings
 - **Ontology Models**: OWL classes, properties, and semantic reasoning
-- **User Models**: Profiles, psychographics, and behavioral tracking
+- **User Models**: Profiles, psychographics, and behavioural tracking
 - **Recommendation Models**: Scoring, ranking, and explanation generation
 - **GPU Types**: Memory-aligned structures for CUDA processing
 
@@ -102,7 +102,7 @@ let state = PsychographicState::new(
 user.current_state = Some(state);
 ```
 
-### GPU-Optimized Memory
+### GPU-optimised Memory
 
 32-byte aligned structures for optimal GPU transfer:
 
@@ -161,7 +161,7 @@ Key performance characteristics:
 
 1. **Type Safety**: Leverage Rust's type system for correctness
 2. **Zero-Copy**: Minimize allocations and copying
-3. **GPU-Friendly**: Memory layouts optimized for CUDA
+3. **GPU-Friendly**: Memory layouts optimised for CUDA
 4. **Extensibility**: Easy to add new features and models
 5. **Documentation**: Every public API is documented
 

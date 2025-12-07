@@ -12,7 +12,7 @@
 2. [FAISS Alternative Setup](#2-faiss-alternative-setup)
 3. [Indexing Strategies](#3-indexing-strategies)
 4. [Quantization Techniques](#4-quantization-techniques)
-5. [Performance Optimization](#5-performance-optimization)
+5. [Performance optimisation](#5-performance-optimisation)
 6. [Production Deployment](#6-production-deployment)
 
 ---
@@ -66,7 +66,7 @@ tracing-subscriber = "0.3"
 criterion = "0.5"
 ```
 
-### 1.3 Initialize Qdrant (RuVector Backend)
+### 1.3 initialise Qdrant (RuVector Backend)
 
 ```rust
 // src/vector_db.rs
@@ -588,7 +588,7 @@ let quantization_config = QuantizationConfig {
 
 ---
 
-## 5. Performance Optimization
+## 5. Performance optimisation
 
 ### 5.1 Batch Processing
 
@@ -892,7 +892,7 @@ criterion_main!(benches);
 - **Memory usage**: <40GB (with quantization)
 - **Recall@100**: >95%
 
-**Optimization Checklist:**
+**optimisation Checklist:**
 - [ ] HNSW parameters tuned (M=16, ef_construct=200)
 - [ ] Quantization enabled (int8 or PQ)
 - [ ] Caching layer implemented

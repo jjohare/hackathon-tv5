@@ -192,7 +192,7 @@ Expected: Star Trek, Alien, Blade Runner, etc.
 - ✅ Semantic relevance maintained
 - ✅ GPU time < 1ms (filtering done CPU-side)
 
-#### Test 5: Memory Analysis
+#### Test 5: Memory analysis
 **Purpose:** GPU memory efficiency validation
 
 **Expected:**
@@ -274,7 +274,7 @@ pip install torch --index-url https://download.pytorch.org/whl/cu121
    ```python
    print(embeddings.device)  # Should be "cuda:0"
    ```
-3. CUDA synchronization:
+3. CUDA synchronisation:
    ```python
    torch.cuda.synchronize()  # Before timing measurements
    ```
@@ -459,7 +459,7 @@ nvcc -O3 -use_fast_math -arch=sm_80 \
 
 ---
 
-## Cost Analysis
+## Cost analysis
 
 ### GCP A100 Pricing
 

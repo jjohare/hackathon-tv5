@@ -1,6 +1,6 @@
 # MCP Query Interface with Ontology Reasoning
 
-Complete decision logic visualization for GPU-accelerated semantic + ontology hybrid recommendations.
+Complete decision logic visualisation for GPU-accelerated semantic + ontology hybrid recommendations.
 
 ## Features
 
@@ -21,7 +21,7 @@ Formula:
 hybrid_score = 0.7 × semantic + 0.2 × ontology + 0.1 × genre
 ```
 
-### 📊 Complete Decision Logic Visualization
+### 📊 Complete Decision Logic visualisation
 
 The interface shows all decision steps:
 
@@ -36,7 +36,7 @@ The interface shows all decision steps:
 **Step 3: GPU Similarity Computation**
 - Items searched: 62,423
 - Max/mean/min similarity scores
-- GPU synchronization timing
+- GPU synchronisation timing
 
 **Step 4: Top-K Selection**
 - Candidate count (k)
@@ -66,7 +66,7 @@ Each result shows:
 
 ## Ontology Concepts
 
-The system maps MovieLens genome tags to AdA (Analysis of Film) ontology classes:
+The system maps MovieLens genome tags to AdA (analysis of Film) ontology classes:
 
 ### Visual Style
 - `dark` → `ada:DarkLighting`, `ada:HighContrast`
@@ -102,7 +102,7 @@ See `scripts/utils/gpu_ontology_reasoning.py` for complete mappings (26 genome t
 | Ontology Reasoning | 0.4 | 0.1% |
 | Filtering | 0.1 | 0.0% |
 
-### Optimization Opportunities
+### optimisation Opportunities
 
 **To reach 1000 QPS target:**
 
@@ -245,7 +245,7 @@ Execute semantic + ontology query.
 ### Decision Log Panel
 - Real-time step-by-step execution
 - Timing for each step
-- Input/output visualization
+- Input/output visualisation
 - JSON-formatted data
 
 ### Results Panel
@@ -254,7 +254,7 @@ Execute semantic + ontology query.
 - Ontology class tags
 - Hybrid score breakdown
 
-### Color Coding
+### colour Coding
 - **Purple Gradient**: Main theme
 - **Blue Pills**: Ontology class tags
 - **Green Badges**: Similarity scores

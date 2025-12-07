@@ -27,7 +27,7 @@ git clone https://github.com/ProjectAdA/public.git data/ontologies/ada
 **Key Files:**
 - `ontology/ada_ontology.owl` (740 KB)
 - `ontology/README.md` (documentation)
-- `ontology/levels_types_values.png` (visualization)
+- `ontology/levels_types_values.png` (visualisation)
 
 **Specifications:**
 - **Format:** OWL (Web Ontology Language) + RDF
@@ -40,7 +40,7 @@ git clone https://github.com/ProjectAdA/public.git data/ontologies/ada
 2. Editing (pace, transitions, techniques)
 3. Sound (dialogue, music, effects)
 4. Lighting (key, fill, back, contrast)
-5. Color (palette, saturation, theory)
+5. colour (palette, saturation, theory)
 6. Acting (performance styles, emotions)
 7. Mise-en-scène (composition, props, sets)
 8. Narrative (structure, themes, pacing)
@@ -83,7 +83,7 @@ Based on [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/
 ```
 
 **Research Context:**
-Developed by the AdA project (Advanced data Analysis) for systematic film analysis in academic research.
+Developed by the AdA project (Advanced data analysis) for systematic film analysis in academic research.
 
 ---
 

@@ -18,7 +18,7 @@ Successfully benchmarked embedding generation on GCP A100 GPU, achieving **2,348
 - ✅ **Time Saved:** 416 minutes (6.9 hours) for single embedding run
 - ✅ **Memory Efficiency:** 1.36 GB peak usage (3.2% of available 42GB)
 - ✅ **Quality:** Perfect L2 normalization (mean norm: 1.0000, std: 0.0000)
-- ✅ **Batch Optimization:** 512 batch size optimal for A100 architecture
+- ✅ **Batch optimisation:** 512 batch size optimal for A100 architecture
 
 ---
 
@@ -110,7 +110,7 @@ Model:               paraphrase-multilingual-MiniLM-L12-v2
 - **10 Runs:** 69 hours saved
 - **100 Runs:** 29 days saved
 
-### Cost Analysis (Estimated)
+### Cost analysis (Estimated)
 
 Assuming GCP A100 pricing ~$3.67/hour:
 
@@ -141,11 +141,11 @@ Each movie converted to semantic text combining:
  adventure, toys, buddy film, heartwarming, disney, family"
 ```
 
-### GPU Optimization Techniques
+### GPU optimisation Techniques
 
-1. **Batch Processing:** 512 batch size optimized for A100 tensor cores
+1. **Batch Processing:** 512 batch size optimised for A100 tensor cores
 2. **Warmup Phase:** 100-text warmup to exclude JIT compilation overhead
-3. **CUDA Synchronization:** torch.cuda.synchronize() for accurate timing
+3. **CUDA synchronisation:** torch.cuda.synchronise() for accurate timing
 4. **Mixed Precision:** Automatic mixed precision (AMP) in transformers
 5. **Normalized Embeddings:** L2 normalization during encoding for cosine similarity
 
@@ -185,9 +185,9 @@ Available Headroom:  40.64 GB (97%)
 - Deterministic results (same input → same embedding)
 
 ✅ **GPU Verification:**
-- CUDA device properly initialized
+- CUDA device properly initialised
 - GPU memory tracking accurate
-- Synchronization barriers working correctly
+- synchronisation barriers working correctly
 - No CUDA errors during execution
 
 ---
@@ -211,7 +211,7 @@ Available Headroom:  40.64 GB (97%)
 - With 8x A100 cluster: ~35 minutes
 - Total cost: ~$17 at $3.67/hour
 
-### Batch Size Optimization
+### Batch Size optimisation
 
 Tested batch sizes on A100:
 
@@ -236,7 +236,7 @@ Tested batch sizes on A100:
 3. **User Embeddings:** Not benchmarked separately (based on rating history)
 4. **Model Size:** Only tested with MiniLM-L12-v2 (109M parameters)
 
-### Future Optimization Opportunities
+### Future optimisation Opportunities
 
 1. **Multi-GPU Scaling:**
    - Test DataParallel for 4x/8x A100 setups

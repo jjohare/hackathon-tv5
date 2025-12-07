@@ -263,7 +263,7 @@ Comprehensive documentation: [docs/cuda/graph_search_kernels.md](../../docs/cuda
 Topics covered:
 - Algorithm details and complexity analysis
 - API reference with examples
-- Performance optimization guide
+- Performance optimisation guide
 - Memory management strategies
 - Troubleshooting common issues
 - Integration patterns
@@ -345,7 +345,7 @@ Production-ready for content discovery and recommendation systems.
    - Landmark-based APSP (Potamias et al., 2009)
    - Yen's k-Shortest Paths (1971)
 
-2. **GPU Optimization**
+2. **GPU optimisation**
    - "Accelerating Large Graph Algorithms on GPU Using CUDA" (Harish & Narayanan, 2007)
    - "Delta-Stepping: A Parallelizable Shortest Path Algorithm" (Meyer & Sanders, 2003)
 

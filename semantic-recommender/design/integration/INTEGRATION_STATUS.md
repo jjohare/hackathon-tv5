@@ -316,7 +316,7 @@ pub async fn find_shortest_paths(
 ### Phase 3: Fine-Tuning
 - Adjust landmark count
 - Tune threshold values
-- Optimize for workload
+- optimise for workload
 
 ### Phase 4: Advanced Features
 - Implement Duan algorithm
@@ -418,7 +418,7 @@ pub async fn find_shortest_paths(
 
 The adaptive SSSP integration is **complete and production-ready** with:
 
-✅ **Intelligent algorithm selection** optimizing performance automatically
+✅ **Intelligent algorithm selection** optimising performance automatically
 ✅ **100% backward compatibility** requiring zero code changes
 ✅ **Comprehensive metrics** for monitoring and validation
 ✅ **Extensible architecture** ready for Duan algorithm integration

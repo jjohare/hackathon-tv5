@@ -75,7 +75,7 @@ data/
 4. **Interactions**: 25M user-media events with temporal context
 5. **Contextual Information**: Temporal, environmental, social factors
 6. **Current Trends**: Popularity dynamics, viral moments, seasonality
-7. **Subtitle Analysis**: Dialogue segments, topics, sentiment arcs
+7. **Subtitle analysis**: Dialogue segments, topics, sentiment arcs
 8. **Ontology/Knowledge Graph**: Semantic relationships, reasoning
 
 ### 5. **Database Distribution Planned**
@@ -336,14 +336,14 @@ python scripts/benchmark_queries.py
    - End-to-end query pipeline
 
 5. **Performance Tuning** (2 hours)
-   - HNSW parameter optimization
+   - HNSW parameter optimisation
    - Neo4j index creation
    - Query caching strategies
    - Batch size tuning
 
 ---
 
-## 💡 Optimization Notes
+## 💡 optimisation Notes
 
 **GPU Utilization**:
 - Batch size 512 for A100 (optimal for 384-dim)

@@ -12,7 +12,7 @@
 2. [Rust OWL Reasoner Setup](#2-rust-owl-reasoner-setup)
 3. [Reasoning Pipeline](#3-reasoning-pipeline)
 4. [GPU Integration](#4-gpu-integration)
-5. [Performance Optimization](#5-performance-optimization)
+5. [Performance optimisation](#5-performance-optimisation)
 6. [Production Deployment](#6-production-deployment)
 
 ---
@@ -829,7 +829,7 @@ impl GPUOntologyProcessor {
 
 ---
 
-## 5. Performance Optimization
+## 5. Performance optimisation
 
 ### 5.1 Transitive Closure Caching
 
@@ -969,11 +969,11 @@ impl Neo4jOntologyStore {
 - **Materialization**: <10 minutes (full ontology)
 - **GPU constraint application**: <5ms
 
-**Optimization Checklist:**
+**optimisation Checklist:**
 - [ ] Transitive closure cached
 - [ ] Parallel rule application enabled
 - [ ] Neo4j indexes created
-- [ ] GPU kernels optimized
+- [ ] GPU kernels optimised
 - [ ] Rule fixed-point converges in <10 iterations
 
 ---

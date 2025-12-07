@@ -6,7 +6,7 @@ Upgrade from title-only embeddings (0.26-0.31 similarity) to full semantic embed
 
 **Strategy**: Enrich 50K most popular movies with plot descriptions, keywords, genres, and cast for demonstration.
 
-## Ontology Analysis Results
+## Ontology analysis Results
 
 ### robotenique/movies-ontology ❌
 - **Movies**: Only 511 movies total

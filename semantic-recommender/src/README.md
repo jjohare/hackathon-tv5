@@ -224,7 +224,7 @@ cargo bench
 ## Documentation
 
 - **[Design System](../design/README.md)**: Complete architecture and research
-- **[CUDA Optimization](../design/guides/cuda-optimization-strategies.md)**: Kernel tuning guide
+- **[CUDA optimisation](../design/guides/cuda-optimisation-strategies.md)**: Kernel tuning guide
 - **[OWL Reasoning](../design/guides/ontology-reasoning-guide.md)**: Ontology patterns
 - **[Deployment](../design/guides/deployment-guide.md)**: Production setup
 

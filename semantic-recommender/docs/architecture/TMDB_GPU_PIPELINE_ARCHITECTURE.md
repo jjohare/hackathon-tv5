@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-Design for migrating from MovieLens (62K movies) to TMDB (930K movies) using GPU-accelerated processing pipeline with TensorRT optimization, achieving sub-10ms personalization latency at 15× dataset scale.
+Design for migrating from MovieLens (62K movies) to TMDB (930K movies) using GPU-accelerated processing pipeline with TensorRT optimisation, achieving sub-10ms personalization latency at 15× dataset scale.
 
 **Key Metrics**:
 - **Dataset Scale**: 62K → 930K movies (15× increase)
@@ -264,7 +264,7 @@ def process_tmdb_embeddings(
                       f"ETA: {eta/3600:.1f}h")
 ```
 
-**Batch Size Optimization**:
+**Batch Size optimisation**:
 
 | Batch Size | Latency/Batch | Movies/Sec | GPU Mem | ETA (930K) |
 |------------|---------------|------------|---------|------------|
@@ -417,7 +417,7 @@ def resume_from_checkpoint(checkpoint_path: Path):
 
 ### 3.2 GPU Memory Requirements
 
-**Peak Memory Analysis**:
+**Peak Memory analysis**:
 ```
 GPU Memory Breakdown (RTX A6000 - 49GB):
 
@@ -460,7 +460,7 @@ BATCH_SIZE = 16  # 32 → 16 reduces memory by ~9GB
 
 ### 3.3 Storage Requirements
 
-**Disk Space Analysis**:
+**Disk Space analysis**:
 ```
 data/
 ├─ raw/tmdb/
@@ -490,7 +490,7 @@ data/
 └─ TOTAL:                               1.38TB
 ```
 
-**Optimization Options**:
+**optimisation Options**:
 ```python
 # Option 1: Use FP16 embeddings (halve storage)
 embeddings_dtype = 'float16'  # 1.35TB → 675GB
@@ -549,7 +549,7 @@ scripts/
 
 3. **`hdf5_writer.py`** (~150 lines)
    - Chunked HDF5 writing
-   - Compression optimization
+   - Compression optimisation
    - Atomic checkpoints
 
 4. **`run_tmdb_pipeline.py`** (~400 lines)
@@ -803,7 +803,7 @@ embeddings_batch = f['embeddings'][start:end]  # Efficient slicing
 
 ---
 
-## 6. Optimization Opportunities
+## 6. optimisation Opportunities
 
 ### 6.1 Encoding Optimizations
 
@@ -817,7 +817,7 @@ embeddings_batch = f['embeddings'][start:end]  # Efficient slicing
 - Test larger batches if memory allows
 - Potential: 32 → 64 = 1.5× faster
 
-**3. Sequence Length Optimization**
+**3. Sequence Length optimisation**
 ```python
 # Analyze actual sequence lengths
 seq_lengths = [len(tokenizer.encode(text)) for text in sample_texts]
@@ -1162,7 +1162,7 @@ assert validate_random_sample(embeddings, texts, n=100, threshold=0.99)
 
 **Short-term** (Week 2):
 1. Validate embedding quality (retrieval benchmarks)
-2. Optimize batch size based on actual GPU performance
+2. optimise batch size based on actual GPU performance
 3. Implement multi-GPU parallelism (if needed)
 4. Document pipeline for team
 

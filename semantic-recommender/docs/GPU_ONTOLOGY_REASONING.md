@@ -120,7 +120,7 @@ Successfully integrated **GPU-accelerated semantic similarity** with **ontology-
 | **9** | Toys | 0.596 | 0.852 | 0.000 | 0.000 | ✅ Theme |
 | **10** | Toy Story (forgot) | 0.595 | 0.849 | 0.000 | 0.000 | ✅ Franchise |
 
-**Analysis:**
+**analysis:**
 - ✅ **94% semantic similarity** for top match (Toy Story → Toy Story 2)
 - ✅ **Perfect franchise detection** (all Toy Story films in top 10)
 - ✅ **Theme coherence** (toys, animation, Pixar)
@@ -274,7 +274,7 @@ Reasoning Path:
 
 ---
 
-## Performance Analysis
+## Performance analysis
 
 ### Scalability Testing
 
@@ -286,7 +286,7 @@ Reasoning Path:
 | **100** | 30 ms | 10 ms | 40 ms | 2,500 QPS |
 | **1000** | 200 ms | 50 ms | 250 ms | 4,000 QPS |
 
-**Analysis:**
+**analysis:**
 - **Cold start penalty:** 90ms (one-time GPU warm-up)
 - **Warm performance:** <1ms total (production mode)
 - **Ontology overhead:** **<1% of total time** (0.5ms / 91ms)

@@ -660,7 +660,7 @@ METRICS_PORT=9090
 
 ## Performance Tuning
 
-### 1. Batch Size Optimization
+### 1. Batch Size optimisation
 
 **Trade-off:** Latency vs Throughput
 
@@ -744,7 +744,7 @@ export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
 export CUDA_LAUNCH_BLOCKING=1
 ```
 
-### 4. TensorRT Optimization
+### 4. TensorRT optimisation
 
 **Build Engine with Optimal Profile:**
 ```python
@@ -905,7 +905,7 @@ histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))
 nvidia_gpu_utilization_percent{gpu="0"}
 ```
 
-### 4. Log Analysis
+### 4. Log analysis
 
 **Structured Logging:**
 ```python
@@ -1289,7 +1289,7 @@ ab -n 10000 -c 100 http://localhost/api/search
 - [ ] GPU drivers updated (580.105.08+)
 - [ ] CUDA Toolkit installed (13.0+)
 - [ ] TensorRT engine built and validated
-- [ ] Worker count optimized for GPU memory
+- [ ] Worker count optimised for GPU memory
 - [ ] Batch size tuned for latency/throughput trade-off
 - [ ] Nginx load balancer configured
 - [ ] SSL/TLS certificates installed
@@ -1299,7 +1299,7 @@ ab -n 10000 -c 100 http://localhost/api/search
 - [ ] Backup and disaster recovery plan
 - [ ] Load testing completed (target: 100K QPS)
 
-**Production Optimization:**
+**Production optimisation:**
 - [ ] TF32 enabled for A100/RTX 3090+
 - [ ] Connection pooling (nginx keepalive)
 - [ ] HTTP/2 enabled

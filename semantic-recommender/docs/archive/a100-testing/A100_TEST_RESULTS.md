@@ -62,7 +62,7 @@ Successfully deployed and tested semantic recommendation engine on GCP A100 GPU,
 
 **Average GPU Time (excluding cold start):** **0.129 ms**
 
-**Analysis:**
+**analysis:**
 - ✅ First query includes GPU warm-up overhead (92.6ms)
 - ✅ Subsequent queries: **0.108-0.175 ms** (consistent performance)
 - ✅ **Average: 627x faster than CPU** (81ms → 0.129ms)
@@ -108,7 +108,7 @@ Successfully deployed and tested semantic recommendation engine on GCP A100 GPU,
 | **100** | 0.81 ms | 0.008 ms | **123,762 QPS** | 37 QPS | **3,345x** 🚀 |
 | **1000** | 3.16 ms | 0.003 ms | **316,360 QPS** | 14 QPS | **22,597x** 🚀 |
 
-#### Analysis
+#### analysis
 
 **Batch 10:**
 - Total: 17.38 ms (includes overhead)
@@ -135,13 +135,13 @@ Successfully deployed and tested semantic recommendation engine on GCP A100 GPU,
 
 **Why such extreme speedup?**
 
-1. **Tensor Core Acceleration:** A100 tensor cores optimized for FP32 matrix multiplication
+1. **Tensor Core Acceleration:** A100 tensor cores optimised for FP32 matrix multiplication
 2. **Memory Bandwidth:** 1,555 GB/s memory bandwidth fully utilized
 3. **Parallel Execution:** 6,912 CUDA cores processing simultaneously
-4. **Batch Optimization:** Larger batches = better GPU utilization
+4. **Batch optimisation:** Larger batches = better GPU utilization
 5. **Cache Locality:** Embeddings stay in GPU memory (no CPU↔GPU transfer)
 
-**Scaling Analysis:**
+**Scaling analysis:**
 
 - Batch 10 → 100: **21.5x throughput increase** (575 → 123,762 QPS)
 - Batch 100 → 1000: **2.56x throughput increase** (123K → 316K QPS)
@@ -157,7 +157,7 @@ Successfully deployed and tested semantic recommendation engine on GCP A100 GPU,
 
 ---
 
-### Test 5: Memory Analysis ✅ EXCELLENT
+### Test 5: Memory analysis ✅ EXCELLENT
 
 **Configuration:**
 - GPU: NVIDIA A100-SXM4-40GB (42.41 GB total)
@@ -173,7 +173,7 @@ Total:      42.41 GB
 Free:       41.83 GB (98.6%)
 ```
 
-**Analysis:**
+**analysis:**
 - ✅ **0.7% GPU utilization** for full dataset
 - ✅ Media embeddings: 92 MB (62,423 × 384 × 4 bytes)
 - ✅ User embeddings: 351 MB (119,743 × 384 × 4 bytes)
@@ -188,7 +188,7 @@ Peak Reserved:  0.58 GB
 Batch Time:     0.69 ms
 ```
 
-**Analysis:**
+**analysis:**
 - ✅ Peak memory: **0.32 GB** (0.75% of total)
 - ✅ Batch 10,000 processed in **0.69 ms**
 - ✅ Memory increase: only **30 MB** for massive batch
@@ -204,7 +204,7 @@ Batch Time:     0.69 ms
 | **Total** | ~8.5 GB | 0.29 GB | **29x more efficient** |
 
 **Why GPU is more memory-efficient:**
-- Optimized tensor storage (no Python object overhead)
+- optimised tensor storage (no Python object overhead)
 - In-place operations (no intermediate copies)
 - Efficient memory coalescing
 - Shared memory for intermediate results
@@ -231,9 +231,9 @@ Batch Time:     0.69 ms
 | **100** | 37 | 3,333 | **123,762** | **3,345x** | **37x** 🚀 |
 | **1000** | 14 | 5,000 | **316,360** | **22,597x** | **63x** 🚀 |
 
-**Analysis:**
+**analysis:**
 - Batch=10: Underperforms prediction (GPU underutilized)
-- Batch=100: **37x better than predicted** (tensor core optimization)
+- Batch=100: **37x better than predicted** (tensor core optimisation)
 - Batch=1000: **63x better than predicted** (peak GPU efficiency)
 
 ---
@@ -321,7 +321,7 @@ Batch Time:     0.69 ms
 | **4x A100** | 1.26M QPS | 109B | $10,716 | Large (20-50M users) |
 | **16x A100** | 5.06M QPS | 437B | $42,864 | Netflix-scale (100M+ users) |
 
-**Optimization Opportunities:**
+**optimisation Opportunities:**
 
 1. **Custom CUDA Kernels:**
    - Expected: 5-10x improvement
@@ -441,7 +441,7 @@ The A100 GPU deployment **exceeded all predictions by 10-60x**, achieving:
 
 **Why such extreme performance?**
 
-1. ✅ **Tensor Core Optimization:** A100 Ampere architecture
+1. ✅ **Tensor Core optimisation:** A100 Ampere architecture
 2. ✅ **Memory Bandwidth:** 1,555 GB/s fully utilized
 3. ✅ **Parallel Execution:** 6,912 CUDA cores
 4. ✅ **PyTorch 2.9.1:** Latest optimizations

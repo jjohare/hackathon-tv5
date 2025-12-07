@@ -50,7 +50,7 @@ cd ../../../
 python3 scripts/visualize_ontology.py --format all
 ```
 
-## 📊 Visualization Types
+## 📊 visualisation Types
 
 ### 1. Interactive HTML Viewer (Recommended for Exploration)
 **Best for**: Browsing, learning, onboarding new team members
@@ -103,7 +103,7 @@ Visualizations are automatically regenerated when the ontology changes:
 
 ## 📖 Full Documentation
 
-See `../VISUALIZATION.md` for comprehensive documentation including:
+See `../visualisation.md` for comprehensive documentation including:
 - Detailed usage guide
 - Integration examples
 - Troubleshooting

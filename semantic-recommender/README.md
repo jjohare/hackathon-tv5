@@ -90,23 +90,34 @@ A **neuro-symbolic recommendation system** that combines:
 
 ## Architecture Highlights
 
+**Neuro-Symbolic Pipeline - End-to-End Query Processing**
+
+```mermaid
+flowchart TD
+    Start([Query Text]) --> Encode[TensorRT FP16 Encoding<br/>14.4x faster 24ms]
+
+    Encode --> Search[GPU Semantic Search<br/>0.32ms for 62K items]
+
+    Search --> Reason[Graph Distance Reasoning<br/>Dijkstra SSSP]
+
+    Reason --> Fusion[Adaptive Hybrid Fusion<br/>Context-aware weights]
+
+    Fusion --> Results([Explainable Results<br/>With reasoning paths])
+
+    style Start fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Encode fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Search fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Reason fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Fusion fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+    style Results fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              NEURO-SYMBOLIC PIPELINE                         │
-├─────────────────────────────────────────────────────────────┤
-│  Query Text                                                  │
-│      ↓                                                       │
-│  TensorRT FP16 Encoding           ← 14.4x faster (24ms)     │
-│      ↓                                                       │
-│  GPU Semantic Search              ← 0.32ms for 62K items    │
-│      ↓                                                       │
-│  Graph Distance Reasoning         ← Dijkstra SSSP           │
-│      ↓                                                       │
-│  Adaptive Hybrid Fusion           ← Context-aware weights   │
-│      ↓                                                       │
-│  Explainable Results              ← With reasoning paths    │
-└─────────────────────────────────────────────────────────────┘
-```
+
+**Key Components:**
+- **TensorRT FP16 Encoding**: Ultra-fast query encoding (24ms, 14.4x speedup)
+- **GPU Semantic Search**: Massive-scale similarity search (0.32ms for 62K items)
+- **Graph Distance Reasoning**: Intelligent ontology traversal via Dijkstra SSSP
+- **Adaptive Hybrid Fusion**: Context-aware score weighting for optimal relevance
+- **Explainable Results**: Human-readable reasoning paths for transparency
 
 ### TensorRT Acceleration
 
@@ -466,7 +477,7 @@ semantic-recommender/
 
 3. **Complex Query Latency**
    - 987ms average for complex queries on 1.3M dataset
-   - Acceptable for current scale, needs optimization for real-time
+   - Acceptable for current scale, needs optimisation for real-time
    - **Fix**: Redis caching, query result pre-computation
 
 ### Future Enhancements
@@ -488,7 +499,7 @@ semantic-recommender/
    - Graph-based reasoning for explainability
    - Hybrid neural + symbolic scoring
 
-3. **Performance Optimization**
+3. **Performance optimisation**
    - INT8 quantization: 2x speedup, 4x memory reduction
    - Multi-GPU support: Linear scaling to 4x throughput
    - Redis caching: 80% hit rate → <50ms latency

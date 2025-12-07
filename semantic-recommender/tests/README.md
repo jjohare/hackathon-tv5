@@ -13,7 +13,7 @@ End-to-end tests validating the complete hybrid architecture:
 - **AgentDB Policy**: User preference-based re-ranking
 - **Cache Effectiveness**: Redis cache hit performance
 - **Concurrent Operations**: Multi-threaded read/write safety
-- **Filter Pushdown**: Query optimization validation
+- **Filter Pushdown**: Query optimisation validation
 
 **Run all integration tests:**
 ```bash
@@ -65,7 +65,7 @@ Criterion-based micro-benchmarks:
 - **Hybrid vs Vector-Only**: Architecture comparison
 - **Cache Effectiveness**: Cold vs warm cache
 - **Batch Ingestion**: Single vs batch write performance
-- **Filter Strategies**: Filter pushdown optimization
+- **Filter Strategies**: Filter pushdown optimisation
 - **Concurrent Queries**: Multi-threaded scaling
 - **AgentDB Re-ranking**: Policy-based overhead
 - **Embedding Dimensions**: 128 → 1024 dimension impact
@@ -253,7 +253,7 @@ All tests must:
 - Be self-contained (no external dependencies)
 - Use test fixtures from `tests/fixtures/`
 - Clean up resources after completion
-- Document expected behavior and assertions
+- Document expected behaviour and assertions
 - Include performance targets in comments
 
 ## References

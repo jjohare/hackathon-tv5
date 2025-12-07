@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `TensorRTEncoder` class provides a drop-in replacement for `SentenceTransformer.encode()` with 3-5x performance improvement through TensorRT optimization.
+The `TensorRTEncoder` class provides a drop-in replacement for `SentenceTransformer.encode()` with 3-5x performance improvement through TensorRT optimisation.
 
 ## Architecture
 
@@ -190,7 +190,7 @@ embeddings = encoder.encode(texts)
 - [ ] Updated `gpu_hyper_personalization.py` to use `TensorRTEncoder`
 - [ ] Benchmarked performance improvement
 - [ ] Verified memory usage (should be similar or lower)
-- [ ] Tested fallback behavior (without engine)
+- [ ] Tested fallback behaviour (without engine)
 
 ## API Reference
 

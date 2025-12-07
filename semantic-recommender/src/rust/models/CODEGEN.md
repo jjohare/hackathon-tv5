@@ -44,7 +44,7 @@ The build script extracts these OWL class hierarchies and generates Rust enums:
 | Ontology Class | Rust Enum | Variants | Use Case |
 |----------------|-----------|----------|----------|
 | `media:Genre` | `Genre` | 8 | Content classification |
-| `media:VisualAesthetic` | `VisualAesthetic` | 4 | GPU-derived color grading |
+| `media:VisualAesthetic` | `VisualAesthetic` | 4 | GPU-derived colour grading |
 | `media:NarrativeStructure` | `NarrativeStructure` | 4 | Story structure analysis |
 | `media:Mood` | `Mood` | 4 | Audio-visual mood detection |
 | `media:Pacing` | `Pacing` | 3 | Motion/cut frequency metrics |
@@ -121,7 +121,7 @@ use crate::models::{Genre, VisualAesthetic};
 
 ## Validation
 
-Tests verify synchronization:
+Tests verify synchronisation:
 ```bash
 cargo test --test ontology_rust_sync_test
 ```

@@ -60,7 +60,7 @@ cat docs/SEMANTIC_UPGRADE_REPORT.md
 ### Before (Title-Only)
 - Embeddings from movie titles only
 - Similarity scores: **0.26-0.31**
-- Keyword matching behavior
+- Keyword matching behaviour
 
 ### After (Full Semantic)
 - Rich text: title + overview + genres + keywords + cast + director
@@ -149,7 +149,7 @@ cat data/processed/tmdb/enrichment_checkpoint.json
 See [SEMANTIC_ENRICHMENT_GUIDE.md](../../docs/SEMANTIC_ENRICHMENT_GUIDE.md) for:
 - Detailed stage explanations
 - API setup guide
-- Performance optimization
+- Performance optimisation
 - Production deployment
 - Troubleshooting guide
 

@@ -33,7 +33,7 @@ docker run -d \
   agentdb/agentdb:latest
 ```
 
-### 1.2 Initialize Learning System
+### 1.2 initialise Learning System
 
 ```python
 # src/learning/agentdb_integration.py
@@ -973,7 +973,7 @@ if __name__ == "__main__":
 - **Statistical significance**: Within 7 days
 - **Exploration rate**: 10-15%
 
-**Optimization Checklist:**
+**optimisation Checklist:**
 - [ ] AgentDB integration working
 - [ ] Contextual bandits trained
 - [ ] A/B testing framework deployed

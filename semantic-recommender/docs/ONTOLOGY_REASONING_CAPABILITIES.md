@@ -56,7 +56,7 @@
 
 ## Advanced Reasoning Capabilities
 
-### 1. Cinematic DNA Analysis
+### 1. Cinematic DNA analysis
 
 **Concept:** Every film has a unique "cinematic signature" derived from ontology + genome
 
@@ -148,7 +148,7 @@ signature = {
 
 ---
 
-### 2. Temporal Film Evolution Analysis
+### 2. Temporal Film Evolution analysis
 
 **Concept:** Track how film techniques/styles evolved over 117 years (1902-2019)
 
@@ -157,7 +157,7 @@ signature = {
 - Genome scores across decades
 - Rating patterns over time
 
-**Analysis Capabilities:**
+**analysis Capabilities:**
 
 **A) Genre Evolution**
 ```sql
@@ -213,7 +213,7 @@ handheld_timeline = track_technique_adoption('handheld')
 # 2010s: Mainstream (0.73 across all genres)
 ```
 
-**C) Cultural Trend Analysis**
+**C) Cultural Trend analysis**
 ```python
 # Which themes are rising/falling?
 def detect_cultural_trends(start_year, end_year):
@@ -261,7 +261,7 @@ falling_trends = [
 - User demographics (7 archetypes)
 - Contextual data (time of day, day of week)
 
-**Advanced Analysis:**
+**Advanced analysis:**
 
 **A) Taste Genome Construction**
 ```python
@@ -584,7 +584,7 @@ remarkably similar: visual metaphor for psychological state.
 
 ---
 
-### 6. Business Intelligence & Market Analysis
+### 6. Business Intelligence & Market analysis
 
 **Concept:** Ontology reasoning for industry insights
 
@@ -668,7 +668,7 @@ segment_2 = {
 # Segment 2: Marvel, Fast & Furious, etc.
 ```
 
-**C) Content Gap Analysis**
+**C) Content Gap analysis**
 ```python
 def find_underserved_niches():
     """
@@ -755,7 +755,7 @@ niches = [
 ## Conclusion
 
 The combination of:
-- **MovieLens 25M** (rich behavioral data)
+- **MovieLens 25M** (rich behavioural data)
 - **Genome Tags** (1,128 semantic dimensions)
 - **Film Ontologies** (AdA + Movies)
 - **Whelk-rs** (fast EL++ reasoning)

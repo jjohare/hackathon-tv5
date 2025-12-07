@@ -1,4 +1,4 @@
-# Performance Optimization Guide
+# Performance optimisation Guide
 
 **Version:** 1.0
 **Date:** 2025-12-04
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This guide covers performance optimization strategies for the GPU-accelerated semantic recommendation engine, focusing on latency, throughput, and resource utilization.
+This guide covers performance optimisation strategies for the GPU-accelerated semantic recommendation engine, focusing on latency, throughput, and resource utilization.
 
 ---
 
@@ -18,7 +18,7 @@ This guide covers performance optimization strategies for the GPU-accelerated se
 
 | Metric | Target | Achieved | Notes |
 |--------|--------|----------|-------|
-| **p50 Latency** | <50ms | 42ms | Vector search optimized |
+| **p50 Latency** | <50ms | 42ms | Vector search optimised |
 | **p95 Latency** | <80ms | 78ms | With HNSW indexing |
 | **p99 Latency** | <100ms | 85ms | Edge caching enabled |
 | **Throughput** | 50K QPS | 52K QPS | 10 API servers |
@@ -30,14 +30,14 @@ This guide covers performance optimization strategies for the GPU-accelerated se
 |--------|--------|----------|-------|
 | **Processing Time** | <20min/film | 15min | 2-hour film, 10 GPU nodes |
 | **Throughput** | 100 films/hour | 96 films/hour | Bottleneck: vLLM |
-| **GPU Utilization** | >80% | 92% | Batch size optimized |
+| **GPU Utilization** | >80% | 92% | Batch size optimised |
 | **Memory Usage** | <60GB/GPU | 48GB | A100 80GB |
 
 ---
 
-## Optimization Strategies
+## optimisation Strategies
 
-### 1. Vector Search Optimization
+### 1. Vector Search optimisation
 
 #### HNSW Index Configuration
 
@@ -143,7 +143,7 @@ for (gpu_id, batch) in batches.chunks(batches_per_gpu).enumerate() {
 
 ---
 
-#### Memory Optimization
+#### Memory optimisation
 
 **FP16 Precision** (2× capacity):
 
@@ -229,11 +229,11 @@ redis.setex(&cache_key, 3600, serialize(&embedding));
 
 ---
 
-### 4. Database Query Optimization
+### 4. Database Query optimisation
 
 #### ScyllaDB (User Profiles)
 
-**Schema Optimization**:
+**Schema optimisation**:
 
 ```cql
 -- Partition by user_id for hot key avoidance
@@ -247,7 +247,7 @@ CREATE TABLE user_interactions (
   AND compaction = {'class': 'TimeWindowCompactionStrategy', 'compaction_window_unit': 'DAYS', 'compaction_window_size': 1};
 ```
 
-**Query Optimization**:
+**Query optimisation**:
 
 ```rust
 // Batch fetch (5× faster than sequential)
@@ -278,7 +278,7 @@ CREATE INDEX genre_idx FOR (n:Content) ON (n.genre);
 CREATE FULLTEXT INDEX title_search FOR (n:Content) ON EACH [n.title];
 ```
 
-**Query Optimization**:
+**Query optimisation**:
 
 ```cypher
 // ❌ Slow: Full graph traversal
@@ -364,7 +364,7 @@ let scored: Vec<_> = filtered
 
 ---
 
-### 6. Network Optimization
+### 6. Network optimisation
 
 #### Connection Pooling
 
@@ -507,11 +507,11 @@ Total: 85ms
 
 ---
 
-### Cost Analysis
+### Cost analysis
 
 **Monthly Costs** (AWS):
 
-| Component | Cost | Optimized Cost | Savings |
+| Component | Cost | optimised Cost | Savings |
 |-----------|------|----------------|---------|
 | GPU Compute | $119,600 | $67,200 (Spot) | 44% |
 | API Servers | $7,200 | $4,800 (Reserved) | 33% |

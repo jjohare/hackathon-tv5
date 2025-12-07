@@ -210,7 +210,7 @@ let engine = RecommendationEngine::with_sssp_config(
 | Landmark APSP (k=32) | O(k(m + n log n)) | 585M (precomputed) | 110ms query |
 | Duan et al. (future) | O(m log^(2/3) n) | 585M | 110ms |
 
-### Scaling Behavior
+### Scaling behaviour
 
 ```
 Graph Size  | Auto-Selected | Reason

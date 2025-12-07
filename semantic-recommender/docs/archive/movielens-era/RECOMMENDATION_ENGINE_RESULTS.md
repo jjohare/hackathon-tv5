@@ -59,7 +59,7 @@ Successfully implemented and tested a semantic recommendation engine using pre-c
 | 4 | Toy Story Toons: Small Fry | 0.8857 | Animation, Children |
 | 5 | Antz | 0.8840 | Animation, Children, Comedy |
 
-**Analysis:**
+**analysis:**
 - Perfect semantic understanding of franchise relationships
 - High similarity scores (0.88-0.94) indicate strong matches
 - Genre consistency maintained across recommendations
@@ -81,7 +81,7 @@ Successfully implemented and tested a semantic recommendation engine using pre-c
 | 4 | Exotica | 0.8706 | 1994 | Drama |
 | 5 | Delicatessen | 0.8673 | 1991 | Comedy, Drama, Romance |
 
-**Analysis:**
+**analysis:**
 - User has preference for arthouse/independent cinema
 - Strong preference for drama genre
 - International film appreciation (Hungarian, Italian, French)
@@ -103,7 +103,7 @@ Successfully implemented and tested a semantic recommendation engine using pre-c
 | **Total Queries** | 100 |
 | **Success Rate** | 100% |
 
-**Analysis:**
+**analysis:**
 - Consistent performance across batch
 - CPU-bound at ~38 QPS
 - Linear scaling observed
@@ -111,7 +111,7 @@ Successfully implemented and tested a semantic recommendation engine using pre-c
 
 ---
 
-## Performance Analysis
+## Performance analysis
 
 ### CPU Performance Profile
 
@@ -135,7 +135,7 @@ Based on A100 benchmark results (2,348x speedup for embeddings):
 - **Throughput:** 30,000 - 90,000 queries/second
 - **Speedup:** 800-2,300x faster than CPU
 
-**Cost Analysis:**
+**Cost analysis:**
 - CPU: ~38 QPS = ~3.3M queries/day
 - A100: ~50,000 QPS = ~4.3B queries/day
 - Cost per query: CPU ($0.0003) vs GPU ($0.0000004) - **750x cheaper**
@@ -211,7 +211,7 @@ Quality: ✅ Thematic understanding beyond keywords
 2. **Filtering/Re-ranking**
    - Already-watched content exclusion
    - Business rule enforcement (age ratings, regions)
-   - Diversity optimization
+   - Diversity optimisation
 
 3. **Real-time Learning**
    - Thompson Sampling for exploitation/exploration

@@ -40,7 +40,7 @@ This directory contains comprehensive implementation guides for building the glo
 - FAISS GPU-accelerated alternative
 - HNSW vs IVF vs CAGRA indexing strategies
 - Scalar/Product/Binary quantization techniques
-- Performance optimization (batch processing, caching)
+- Performance optimisation (batch processing, caching)
 - High-availability deployment
 
 **Outcome**: Production-ready vector search with <10ms p99 latency
@@ -58,7 +58,7 @@ This directory contains comprehensive implementation guides for building the glo
 - Transitive closure and rule-based inference
 - GPU constraint enforcement kernels
 - Neo4j production deployment
-- Performance optimization (caching, parallelization)
+- Performance optimisation (caching, parallelization)
 
 **Outcome**: Real-time semantic reasoning with <5ms query latency
 
@@ -92,7 +92,7 @@ This directory contains comprehensive implementation guides for building the glo
 - Prometheus monitoring and Grafana dashboards
 - Horizontal/cluster autoscaling
 - Disaster recovery procedures
-- Cost optimization strategies
+- Cost optimisation strategies
 
 **Outcome**: Production deployment with 99.9% availability and <100ms latency
 
@@ -116,12 +116,12 @@ This directory contains comprehensive implementation guides for building the glo
 1. **Week 9**: Kubernetes cluster setup
 2. **Week 10**: Service deployment (API, databases)
 3. **Week 11**: Monitoring and alerting configuration
-4. **Week 12**: Load testing and optimization
+4. **Week 12**: Load testing and optimisation
 
-### Phase 4: Optimization & Scaling (Weeks 13-16)
+### Phase 4: optimisation & Scaling (Weeks 13-16)
 1. **Week 13**: Performance tuning
 2. **Week 14**: Multi-region replication
-3. **Week 15**: Cost optimization
+3. **Week 15**: Cost optimisation
 4. **Week 16**: Disaster recovery testing
 
 **Total Time to Production**: 16 weeks
@@ -167,7 +167,7 @@ AgentDB Learning (RL update)
 ### Infrastructure
 - **Kubernetes**: Container orchestration
 - **Kafka**: Event streaming for online learning
-- **Prometheus/Grafana**: Monitoring and visualization
+- **Prometheus/Grafana**: Monitoring and visualisation
 - **Cloudflare**: CDN and edge caching
 
 ---
@@ -195,10 +195,10 @@ AgentDB Learning (RL update)
 - Storage (Vector DB + Graph): $120K
 - Network (CDN + Transfer): $130K
 
-**Cost Optimization Opportunities**:
+**Cost optimisation Opportunities**:
 - Reserved instances: -$240K/year
 - Spot instances for GPU: -$420K/year
-- Storage optimization: -$36K/year
+- Storage optimisation: -$36K/year
 - **Total potential savings**: -$696K/year (46%)
 
 ---

@@ -965,7 +965,7 @@ async fn main() -> anyhow::Result<()> {
 
 **See Also**:
 - [INTEGRATION.md](../INTEGRATION.md) - Integration patterns
-- [GPU_ACCELERATION.md](../GPU_ACCELERATION.md) - GPU optimization
+- [GPU_ACCELERATION.md](../GPU_ACCELERATION.md) - GPU optimisation
 - [ONTOLOGY_GUIDE.md](../ONTOLOGY_GUIDE.md) - Knowledge graph usage
 
 ---

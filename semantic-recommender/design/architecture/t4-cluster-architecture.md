@@ -9,10 +9,10 @@
 
 ## Executive Summary
 
-This document specifies a production-grade architecture for deploying the GMC-O (Global Media Compatibility - Optimized) recommendation engine on a 100-node Google T4 GPU cluster. The design prioritizes:
+This document specifies a production-grade architecture for deploying the GMC-O (Global Media Compatibility - optimised) recommendation engine on a 100-node Google T4 GPU cluster. The design prioritizes:
 
 - **Sub-100ms p99 latency** through intelligent sharding and caching
-- **166K+ req/sec throughput** via horizontal scaling and batch optimization
+- **166K+ req/sec throughput** via horizontal scaling and batch optimisation
 - **99.95% uptime** with 3x replication and automatic failover
 - **Cost efficiency** at ~$2.40/hour for 100x T4 GPUs
 
@@ -443,7 +443,7 @@ spec:
 
 ### 4.3 Network Bandwidth Requirements
 
-**Per-GPU Node Traffic Analysis**:
+**Per-GPU Node Traffic analysis**:
 
 ```
 Inbound (per node):
@@ -632,7 +632,7 @@ class FailoverController:
 
 ---
 
-## 6. Performance Optimization
+## 6. Performance optimisation
 
 ### 6.1 Batch Processing Strategy
 
@@ -1171,7 +1171,7 @@ groups:
 
 ---
 
-## 9. Cost Analysis
+## 9. Cost analysis
 
 ### 9.1 Infrastructure Costs (Monthly)
 
@@ -1246,7 +1246,7 @@ Savings: 43% cheaper than Lambda, 71% cheaper than Cloud Run
 | Serverless (Cloud Run) | N/A | $172,000/mo | 150ms | 166K rps | $0.40 |
 | CPU-only (256 cores) | 0 | $35,000/mo | 800ms | 50K rps | $0.23 |
 
-**Analysis**:
+**analysis**:
 - Proposed 100 × T4 offers best latency/cost balance
 - A100s are 50% more expensive with only 20% better latency
 - Serverless is 3.5× more expensive and 4× slower

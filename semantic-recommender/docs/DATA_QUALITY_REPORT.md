@@ -74,7 +74,7 @@ text_to_embed = movie["title"]  # e.g., "Inception"
 - Overview: Rich description (50-200 tokens)
 - **Result**: Embeddings capture **title keywords**, not **thematic/plot similarity**
 
-### Similarity Score Analysis
+### Similarity Score analysis
 
 **Measured Performance** (verified on 1.3M dataset):
 
@@ -141,7 +141,7 @@ Result 5: score=0.26  # "Shutter Island"
 
 ---
 
-## Root Cause Analysis
+## Root Cause analysis
 
 ### Source Data Investigation
 
@@ -163,7 +163,7 @@ production_countries,spoken_languages,keywords
 **Why This Happened**:
 - TMDB CSV dataset may be a lightweight export (IDs + titles only)
 - Full metadata requires TMDB API v3 calls (not in CSV)
-- CSV optimized for ID mapping, not semantic search
+- CSV optimised for ID mapping, not semantic search
 
 ---
 
@@ -238,7 +238,7 @@ text = f"{title}. {overview}. {' '.join(keywords)}. Starring {', '.join(cast)}"
 - Graph-based reasoning (Dijkstra SSSP)
 - Hybrid neural + symbolic scoring
 
-**Phase 4: Production Optimization** (1-2 days)
+**Phase 4: Production optimisation** (1-2 days)
 - Redis caching for frequent queries
 - Multi-GPU scaling
 - INT8 quantization

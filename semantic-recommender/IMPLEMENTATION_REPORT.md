@@ -239,30 +239,33 @@ All Phase 2 requirements satisfied:
 
 ## Architecture Integration
 
+**TensorRT Optimization Pipeline - 3 Phases**
+
+```mermaid
+flowchart TD
+    PyTorch[PyTorch Model<br/>sentence-transformers<br/>MiniLM-L12-v2]
+
+    ONNX[ONNX Export<br/>convert_to_onnx.py<br/>Phase 1]
+
+    TRT[TensorRT Build<br/>build_trt_engine.py<br/>Phase 2 THIS]
+
+    Inference[A100 Inference<br/>TRT Runtime<br/>Phase 3 Next]
+
+    PyTorch --> ONNX
+    ONNX --> TRT
+    TRT --> Inference
+
+    style PyTorch fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style ONNX fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style TRT fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+    style Inference fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
 ```
-┌─────────────────────┐
-│  PyTorch Model      │
-│  (sentence-trans.)  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  ONNX Export        │ ← Phase 1
-│  (convert_to_onnx)  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  TensorRT Build     │ ← Phase 2 (THIS)
-│  (build_trt_engine) │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  A100 Inference     │ ← Phase 3 (Next)
-│  (TRT Runtime)      │
-└─────────────────────┘
-```
+
+**Pipeline Stages:**
+1. **PyTorch Model**: Original sentence-transformers model (MiniLM-L12-v2)
+2. **ONNX Export** (Phase 1): Convert to ONNX intermediate format for portability
+3. **TensorRT Build** (Phase 2 - Current): Optimize with FP16, dynamic shapes, A100 target
+4. **A100 Inference** (Phase 3 - Next): Deploy optimized engine for production queries
 
 ## Deployment Guide
 

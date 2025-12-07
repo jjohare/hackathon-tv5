@@ -1,7 +1,7 @@
 # Data Directory Structure
 
 ## Overview
-Comprehensive data organization for the TV5 Media Recommendation System supporting multi-modal semantic search with GPU acceleration.
+Comprehensive data organisation for the TV5 Media Recommendation System supporting multi-modal semantic search with GPU acceleration.
 
 ## Directory Structure
 
@@ -51,7 +51,7 @@ data/
 
 **Raw Data Sources**:
 - MovieLens ratings.csv (userId, rating patterns)
-- MovieLens tags.csv (user tagging behavior)
+- MovieLens tags.csv (user tagging behaviour)
 - Synthetic user demographics
 - Synthetic viewing contexts
 
@@ -272,7 +272,7 @@ TrendingItem {
 }
 ```
 
-### 7. Subtitle Analysis
+### 7. Subtitle analysis
 **Purpose**: Semantic content from dialogue and text
 
 **Schema**:
@@ -436,7 +436,7 @@ OntologyRelationship {
 ### Phase 5: Learning Data
 1. Generate AgentDB policies
 2. Create episode trajectories
-3. Initialize Q-values
+3. initialise Q-values
 4. Populate PostgreSQL
 
 ## File Formats

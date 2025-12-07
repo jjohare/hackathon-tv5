@@ -11,7 +11,7 @@
 
 Every night, millions spend up to **45 minutes deciding what to watch**—billions of hours lost globally, not from lack of content, but from fragmentation. This design system presents a revolutionary solution: a **GPU-accelerated semantic intelligence recommendation engine** that understands content at a deep multi-modal level, delivering personalized recommendations in under 100ms.
 
-**Core Innovation**: Move beyond metadata matching to true semantic understanding—analyzing visual aesthetics, audio characteristics, narrative structure, and cultural context to predict what users *actually* want to watch, not just what they've watched before.
+**Core Innovation**: Move beyond metadata matching to true semantic understanding—analysing visual aesthetics, audio characteristics, narrative structure, and cultural context to predict what users *actually* want to watch, not just what they've watched before.
 
 ---
 
@@ -69,7 +69,7 @@ Real-time personalized ranking
 **GPU Computing**:
 - NVIDIA CUDA for parallel semantic processing
 - Custom kernels: `semantic_forces.cu`, `ontology_constraints.cu`, `gpu_landmark_apsp.cu`
-- TensorRT-LLM for optimized inference
+- TensorRT-LLM for optimised inference
 - H100/A100 GPUs for training and inference
 
 **Vector Intelligence**:
@@ -162,7 +162,7 @@ Beyond vector similarity, we use **graph algorithms** to find semantically relat
 
 **Semantic Force Fields** (`semantic_forces.cu`):
 - Computes attraction/repulsion forces between content based on multi-modal similarity
-- Enables "content constellations" visualization
+- Enables "content constellations" visualisation
 - Used for diversity checks and serendipity injection
 
 ### 4. Contextual Intent Inference
@@ -294,7 +294,7 @@ design/
 | Stage | Budget | Components |
 |-------|--------|------------|
 | Edge Cache | <1ms | Cloudflare Workers, Redis |
-| Context Analysis | <10ms | Session parsing, history fetch, intent LLM |
+| Context analysis | <10ms | Session parsing, history fetch, intent LLM |
 | Candidate Generation | <20ms | Vector search (RuVector), graph search (APSP) |
 | Filtering & Ranking | <30ms | Hard filters, semantic reasoning, hybrid ranker |
 | Personalization | <20ms | AgentDB RL policy, optional LLM re-ranker |
@@ -382,7 +382,7 @@ design/
 
 1. **Content Ingestion Pipeline** (Cold Path)
    - Frame extraction with smart sampling
-   - Color palette GPU kernel (`semantic_forces.cu`)
+   - colour palette GPU kernel (`semantic_forces.cu`)
    - Audio spectrogram analysis
    - Subtitle/script parsing
    - Multi-modal fusion
@@ -487,7 +487,7 @@ hackathon-tv5/
 
 **GPU/CUDA Engineers**:
 - Implement custom CUDA kernels
-- Optimize tensor operations
+- optimise tensor operations
 - Benchmark GPU performance
 
 **ML/AI Engineers**:
@@ -503,11 +503,11 @@ hackathon-tv5/
 **Data Engineers**:
 - Design ETL pipelines
 - Manage database schemas
-- Optimize data flows
+- optimise data flows
 
 **Frontend Engineers**:
 - Build demo UI
-- Visualize semantic spaces
+- visualise semantic spaces
 - Create explanations
 
 ### Development Workflow
@@ -529,7 +529,7 @@ hackathon-tv5/
 
 ## Visual Diagrams & Examples
 
-### Semantic Space Visualization
+### Semantic Space visualisation
 
 ```
                     LIGHT/UPLIFTING
@@ -673,7 +673,7 @@ Candidates: Not just more cozy mysteries, but semantically related content
 **Week 4: Demo & Polish**
 - [ ] UI implementation
 - [ ] End-to-end testing
-- [ ] Performance optimization
+- [ ] Performance optimisation
 - [ ] Demo preparation
 
 ### Post-Hackathon (Q1 2026)
@@ -691,7 +691,7 @@ Candidates: Not just more cozy mysteries, but semantically related content
 - Federated learning for privacy
 - Real-time personalization during session
 - Cross-platform unified profiles
-- Quantum-inspired optimization
+- Quantum-inspired optimisation
 
 ---
 
@@ -700,7 +700,7 @@ Candidates: Not just more cozy mysteries, but semantically related content
 ### Team
 
 **Architecture & Design**: Semantic Intelligence Working Group
-**GPU Research**: CUDA Optimization Team
+**GPU Research**: CUDA optimisation Team
 **Ontology Design**: Knowledge Representation Team
 **ML/AI Research**: Neural Systems Team
 

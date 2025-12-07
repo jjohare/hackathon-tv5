@@ -232,11 +232,11 @@ flowchart TB
    - Target: 100-500 frames per 2-hour film
    - Algorithm: Histogram difference + motion vector analysis
 
-2. **Color Palette Analysis** (`semantic_forces.cu`)
-   - Extract dominant colors (K-means on GPU)
-   - Compute color harmony metrics
+2. **colour Palette analysis** (`semantic_forces.cu`)
+   - Extract dominant colours (K-means on GPU)
+   - Compute colour harmony metrics
    - Map to aesthetic categories: Noir, Neon, Pastel, Desaturated
-   - Output: 64-dim color vector
+   - Output: 64-dim colour vector
 
 3. **Motion Detection**
    - Optical flow computation (Lucas-Kanade GPU)
@@ -246,7 +246,7 @@ flowchart TB
 
 4. **OCR Processing**
    - Text detection (EAST detector on GPU)
-   - Recognition (Tesseract GPU)
+   - recognition (Tesseract GPU)
    - Extract: titles, credits, signage
    - Output: Structured text data
 
@@ -271,7 +271,7 @@ flowchart TB
    - Extract audio tracks (music, dialogue, effects)
    - Separate stems (Spleeter GPU)
 
-2. **Spectrogram Analysis**
+2. **Spectrogram analysis**
    - Compute mel-spectrograms (GPU FFT)
    - Feature extraction: MFCC, chroma, spectral centroid
 
@@ -293,7 +293,7 @@ flowchart TB
 
 **Technology Stack:**
 - vLLM for efficient LLM inference (GPU)
-- TensorRT-LLM for optimized inference
+- TensorRT-LLM for optimised inference
 - text-embedding-3 (OpenAI) for text embeddings
 - Language: EN/FR bias with multilingual support
 
@@ -307,7 +307,7 @@ flowchart TB
    - Translate to EN/FR if needed (NLLB GPU)
    - Preserve cultural context
 
-3. **LLM Script Analysis**
+3. **LLM Script analysis**
    - Theme extraction (vLLM batch inference)
    - Trope identification (narrative patterns)
    - Emotional arc profiling
@@ -411,7 +411,7 @@ flowchart TB
    - News feeds (major events)
    - Update frequency: 1 hour
 
-#### 2.2.2 Trend Analysis Engine
+#### 2.2.2 Trend analysis Engine
 
 **Processing Flow:**
 1. **Trend Aggregator**
@@ -457,7 +457,7 @@ flowchart TB
    - TTL: 1 hour
    - Reduces DB load by 80%
 
-#### 2.3.2 Context Analysis (<10ms)
+#### 2.3.2 Context analysis (<10ms)
 
 **Processing Flow:**
 1. **Session Context**
@@ -723,7 +723,7 @@ Final Ranked List (12 items) → User
 
 **Total Latency Breakdown:**
 - Edge Cache: <1ms (hit) or continue
-- Context Analysis: <10ms
+- Context analysis: <10ms
 - Candidate Generation: <20ms
 - Filtering & Ranking: <30ms
 - Personalization: <20ms
@@ -823,7 +823,7 @@ flowchart TB
    - Kubernetes GPU operator for orchestration
    - Target: 1 node per 10 films/hour
 
-2. **Batch Optimization**
+2. **Batch optimisation**
    - Batch inference for embeddings (batch size: 32)
    - Pipeline parallelism (visual + audio + text in parallel)
    - Asynchronous processing (non-blocking)
@@ -910,7 +910,7 @@ flowchart TB
 | Stage | Target | Actual (Projected) |
 |-------|--------|-------------------|
 | Edge Cache | <1ms | 0.5ms |
-| Context Analysis | <10ms | 8ms |
+| Context analysis | <10ms | 8ms |
 | Candidate Generation | <20ms | 18ms |
 | Vector Search | <10ms | 9ms |
 | Graph Search (APSP) | <8ms | 7ms |
@@ -952,7 +952,7 @@ flowchart TB
 
 ### 6.1 Semantic Forces Kernel (`semantic_forces.cu`)
 
-**Purpose:** Compute semantic attraction/repulsion forces for color palette analysis
+**Purpose:** Compute semantic attraction/repulsion forces for colour palette analysis
 
 **Algorithm:**
 ```cuda
@@ -1107,7 +1107,7 @@ __global__ void landmark_apsp_kernel(
 **Rationale:**
 - Lower cost (no SaaS fees)
 - Better latency (local deployment, no network overhead)
-- Custom HNSW tuning (optimized for our data distribution)
+- Custom HNSW tuning (optimised for our data distribution)
 - Full control over scaling
 
 **Tradeoffs:**
@@ -1142,7 +1142,7 @@ __global__ void landmark_apsp_kernel(
 **Rationale:**
 - Clear latency/cost tradeoffs per tier
 - Independent scaling (scale GPU for Cold, scale API for Hot)
-- Optimized for different access patterns
+- optimised for different access patterns
 
 **Tradeoffs:**
 - Increased complexity (three separate systems)
@@ -1184,7 +1184,7 @@ __global__ void landmark_apsp_kernel(
 | **Region outage** | High | Low | Multi-region deployment, DNS failover |
 | **GPU node failure** | Medium | Medium | Horizontal scaling, job re-queuing |
 | **Scaling bottleneck** | High | Medium | Auto-scaling, load testing |
-| **Cost overrun** | Medium | High | Budget alerts, cost optimization (spot instances) |
+| **Cost overrun** | Medium | High | Budget alerts, cost optimisation (spot instances) |
 
 ---
 
@@ -1202,7 +1202,7 @@ __global__ void landmark_apsp_kernel(
 
 3. **Real-Time Personalization**
    - Update user model during session (not just post-session)
-   - Adapt recommendations based on in-session behavior
+   - Adapt recommendations based on in-session behaviour
 
 ### 10.2 Phase 3 (12-24 months)
 
@@ -1241,7 +1241,7 @@ This architecture delivers a global-scale, GPU-accelerated recommendation engine
 1. Prototype cold path GPU pipeline (4 weeks)
 2. Benchmark RuVector at scale (2 weeks)
 3. Implement hot path API (6 weeks)
-4. Integration testing and optimization (4 weeks)
+4. Integration testing and optimisation (4 weeks)
 5. **Total Time to MVP: 16 weeks**
 
 ---

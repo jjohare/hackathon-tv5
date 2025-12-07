@@ -252,7 +252,7 @@ sequenceDiagram
 | **State Mgmt** | AgentDB | Latest | RL personalization |
 | **Cache** | Redis | 7.x | Result caching |
 | **Monitoring** | Prometheus | 2.x | Metrics collection |
-| **Visualization** | Grafana | 10.x | Dashboard |
+| **visualisation** | Grafana | 10.x | Dashboard |
 
 ---
 
@@ -279,7 +279,7 @@ sequenceDiagram
 
 ### 2. Why FP16 Tensor Cores?
 
-**Precision Analysis**:
+**Precision analysis**:
 
 | Precision | TFLOPS (T4) | Memory BW | Accuracy Loss |
 |-----------|-------------|-----------|---------------|
@@ -340,7 +340,7 @@ sequenceDiagram
 
 ### Memory Efficiency
 
-| Component | Memory | Optimization |
+| Component | Memory | optimisation |
 |-----------|--------|--------------|
 | Embeddings (1M items) | 2GB | FP16 quantization |
 | HNSW Index (1M items) | 8GB | INT8 quantization |

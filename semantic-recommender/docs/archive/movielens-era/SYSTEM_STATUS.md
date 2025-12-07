@@ -82,13 +82,13 @@ The semantic recommendation engine is **fully operational** with CPU-based recom
 | `hybrid_sssp` | 22 KB | ✅ | Graph shortest path |
 | `ontology_reasoning` | 39 KB | ✅ | Knowledge graph |
 | `semantic_similarity` | 94 KB | ✅ | FP32 fallback |
-| `semantic_similarity_fp16` | 53 KB | ✅ | FP16 optimization |
+| `semantic_similarity_fp16` | 53 KB | ✅ | FP16 optimisation |
 | `product_quantization` | 41 KB | ✅ | Memory compression |
 
 **Compilation Flags:**
 - Architecture: sm_75 (Turing/Ampere)
 - Precision: FP16 + Tensor Cores
-- Optimization: -O3, -use_fast_math
+- optimisation: -O3, -use_fast_math
 
 ### 4. Recommendation Engine ✅ FUNCTIONAL
 
@@ -355,7 +355,7 @@ Storage:           ~8 GB total
 
 ---
 
-## Cost Analysis
+## Cost analysis
 
 ### Development Costs (Current)
 - GCP A100 testing: $15 (4 hours @ $3.67/hour)

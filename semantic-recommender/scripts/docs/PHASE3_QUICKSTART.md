@@ -108,7 +108,7 @@ Without optional packages, system uses fallback automatically.
 
 1. **Phase 2**: Build TensorRT engine (prerequisite)
    - Convert ONNX to TensorRT `.plan` file
-   - Optimize for target GPU (A100)
+   - optimise for target GPU (A100)
 
 2. **Phase 4**: Integration
    - Update `gpu_hyper_personalization.py`

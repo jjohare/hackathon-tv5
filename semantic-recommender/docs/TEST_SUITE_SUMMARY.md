@@ -31,7 +31,7 @@
 - ✅ `test_context_aware_reranking` - Context affects ranking
 
 **Shared Fixtures** (`tests/conftest.py`):
-- Session-scoped system initialization
+- Session-scoped system initialisation
 - Sample queries and contexts
 - Reusable test data
 

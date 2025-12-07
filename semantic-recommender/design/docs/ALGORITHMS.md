@@ -831,7 +831,7 @@ M = 4   # subspace_dim = 192 (lower compression, higher quality)
 # Rule of thumb: subspace_dim should be 32-128
 ```
 
-### Optimized PQ (OPQ)
+### optimised PQ (OPQ)
 
 Learns rotation matrix to improve quantization:
 

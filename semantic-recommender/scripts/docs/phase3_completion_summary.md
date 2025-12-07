@@ -193,11 +193,11 @@ onnxruntime-gpu >= 1.15.0
 3. Configure engine paths in deployment configs
 4. Monitor performance metrics in production
 
-### Phase 6: Optimization
+### Phase 6: optimisation
 1. Experiment with FP16 precision (5x speedup)
 2. Test INT8 quantization (8x speedup)
 3. Profile CUDA kernels for bottlenecks
-4. Optimize batch sizes for throughput
+4. optimise batch sizes for throughput
 
 ## Files Created
 
@@ -264,7 +264,7 @@ Speedup: 3.2x faster with TensorRT
 ## Known Limitations
 
 1. **Dynamic shapes**: Requires reallocation if batch size changes significantly
-2. **Sequence length**: Fixed at initialization (default 128)
+2. **Sequence length**: Fixed at initialisation (default 128)
 3. **Model architecture**: Works with BERT-style models only
 4. **TensorRT version**: Tested with TRT 8.6+, may need updates for newer versions
 

@@ -2,14 +2,14 @@
 
 **Target**: Production-ready dataset for TV5 Media Recommendation System
 **Hardware**: GCP A100 VM (40GB GPU)
-**Timeline**: Optimized for batch processing
+**Timeline**: optimised for batch processing
 **Output**: Multi-database population (Milvus, Neo4j, PostgreSQL, Redis)
 
 ---
 
 ## Executive Summary
 
-Transform 25M MovieLens ratings + synthetic data into a comprehensive multi-modal recommendation dataset optimized for GPU-accelerated semantic search.
+Transform 25M MovieLens ratings + synthetic data into a comprehensive multi-modal recommendation dataset optimised for GPU-accelerated semantic search.
 
 **Key Metrics**:
 - 62,000 movies with 384-dim embeddings

@@ -11,7 +11,7 @@
 1. [CUDA Toolkit Installation](#1-cuda-toolkit-installation)
 2. [Rust CUDA Bindings Setup](#2-rust-cuda-bindings-setup)
 3. [Testing GPU Kernels](#3-testing-gpu-kernels)
-4. [Performance Optimization](#4-performance-optimization)
+4. [Performance optimisation](#4-performance-optimisation)
 5. [Troubleshooting](#5-troubleshooting)
 
 ---
@@ -513,7 +513,7 @@ ncu --set full ./target/release/semantic-gpu-bench
 
 ---
 
-## 4. Performance Optimization
+## 4. Performance optimisation
 
 ### 4.1 Tensor Core Utilization
 
@@ -559,7 +559,7 @@ for (int i = threadIdx.x; i < N; i += blockDim.x) {
 }
 ```
 
-### 4.3 Occupancy Optimization
+### 4.3 Occupancy optimisation
 
 ```bash
 # Check occupancy with Nsight Compute
@@ -700,14 +700,14 @@ nsys profile --trace=cuda,nvtx --output=report.nsys-rep ./kernel
 - GPU utilization: >85%
 - Kernel occupancy: >75%
 
-**Optimization Checklist:**
+**optimisation Checklist:**
 - [ ] Tensor cores enabled (WMMA/MMA API)
 - [ ] Memory access coalesced (128-byte aligned)
 - [ ] Shared memory usage <48KB per block
 - [ ] Occupancy >75% (check with Nsight Compute)
 - [ ] Multi-stream processing implemented
 - [ ] FP16 precision used where applicable
-- [ ] Batch size optimized (256-512 items)
+- [ ] Batch size optimised (256-512 items)
 
 ---
 

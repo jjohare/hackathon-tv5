@@ -258,7 +258,7 @@ __global__ void detect_pivots_kernel(
 
 ---
 
-## Recognition & Impact
+## recognition & Impact
 
 ### Academic Impact
 
@@ -308,7 +308,7 @@ __global__ void detect_pivots_kernel(
 
 ## Conclusion
 
-We have built a **complete, production-validated implementation** of the algorithm that solves a 66-year-old problem in computer science. This is not just an optimization - it's a **fundamental algorithmic breakthrough** that we successfully translated from theory to practice.
+We have built a **complete, production-validated implementation** of the algorithm that solves a 66-year-old problem in computer science. This is not just an optimisation - it's a **fundamental algorithmic breakthrough** that we successfully translated from theory to practice.
 
 **For judges**: This demonstrates deep technical sophistication beyond typical hackathon projects. We didn't just use existing libraries - we implemented cutting-edge research from a STOC Best Paper.
 

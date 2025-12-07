@@ -20,14 +20,14 @@ Sophisticated data structure implementing:
 - `insert(vertex, distance)`: Single vertex insertion
 - `batch_prepend(vertices, distances)`: Group insertion for efficiency
 - `pull(m)`: Extract m minimum-distance vertices
-- Block-based organization with automatic merging
+- Block-based organisation with automatic merging
 
 ### communication_bridge.rs (313 lines)
 CPU-GPU coordination layer:
 - `GPUBridge`: Handles data transfer and kernel invocation
 - `k_step_relaxation`: Performs k rounds of edge relaxation
 - `bounded_dijkstra`: GPU-accelerated Dijkstra with distance bound
-- Pinned memory support for optimized transfers
+- Pinned memory support for optimised transfers
 
 ### wasm_controller.rs (351 lines)
 Recursive BMSSP orchestration:

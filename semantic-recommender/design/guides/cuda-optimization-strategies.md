@@ -1,4 +1,4 @@
-# CUDA Kernel Optimization Strategies for Media Gateway Hackathon
+# CUDA Kernel optimisation Strategies for Media Gateway Hackathon
 
 **Document Version**: 1.0
 **Date**: December 4, 2025
@@ -10,7 +10,7 @@
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [Memory Optimization](#2-memory-optimization)
+2. [Memory optimisation](#2-memory-optimisation)
 3. [Warp-Level Optimizations](#3-warp-level-optimizations)
 4. [Kernel Launch Configuration](#4-kernel-launch-configuration)
 5. [Multi-GPU Strategies](#5-multi-gpu-strategies)
@@ -24,7 +24,7 @@
 
 ## 1. Executive Summary
 
-This document provides comprehensive CUDA optimization strategies for building a high-performance semantic recommendation engine for the Media Gateway Hackathon. The system processes millions of media items with sub-100ms latency using GPU-accelerated graph algorithms and semantic embeddings.
+This document provides comprehensive CUDA optimisation strategies for building a high-performance semantic recommendation engine for the Media Gateway Hackathon. The system processes millions of media items with sub-100ms latency using GPU-accelerated graph algorithms and semantic embeddings.
 
 ### 1.1 Architecture Overview
 
@@ -73,7 +73,7 @@ This document provides comprehensive CUDA optimization strategies for building a
 - **End-to-end recommendation**: <50ms (p95 latency)
 - **Throughput**: >2000 recommendations/second per GPU
 
-### 1.3 Optimization Priorities
+### 1.3 optimisation Priorities
 
 1. **Memory bandwidth utilization**: Target >80% of theoretical peak (1.6 TB/s A100, 3.35 TB/s H100)
 2. **Occupancy**: Maintain >75% active warps
@@ -83,7 +83,7 @@ This document provides comprehensive CUDA optimization strategies for building a
 
 ---
 
-## 2. Memory Optimization
+## 2. Memory optimisation
 
 Memory bandwidth is the primary bottleneck for GPU kernels. Effective memory access patterns can provide 10-100x speedups.
 
@@ -165,7 +165,7 @@ __global__ void semantic_similarity_matrix(
 }
 ```
 
-### 2.2 Shared Memory Optimization
+### 2.2 Shared Memory optimisation
 
 **Shared memory**: Fast on-chip memory (48 KB L1 cache on A100/H100) shared by threads in a block.
 
@@ -602,7 +602,7 @@ for (int cat = 0; cat < num_categories; cat++) {
 
 Optimal grid and block dimensions are critical for GPU utilization.
 
-### 4.1 Occupancy Optimization
+### 4.1 Occupancy optimisation
 
 **Occupancy**: Ratio of active warps to maximum possible warps per SM (streaming multiprocessor).
 
@@ -838,7 +838,7 @@ For billion-scale recommendation systems, multi-GPU architectures are essential.
 
 ### 5.1 Data Parallelism with NCCL
 
-NCCL (NVIDIA Collective Communications Library) provides optimized multi-GPU operations.
+NCCL (NVIDIA Collective Communications Library) provides optimised multi-GPU operations.
 
 ```cpp
 #include <nccl.h>
@@ -1229,7 +1229,7 @@ void recommendation_pipeline() {
 
 **Timeline analysis** reveals:
 - Kernel launch overhead
-- CPU-GPU synchronization points
+- CPU-GPU synchronisation points
 - Idle GPU time (bubbles)
 - Multi-stream concurrency
 
@@ -1386,7 +1386,7 @@ Realistic performance expectations based on research and industry standards.
 | Training | A100 (single) | PyTorch Geometric | 18 s | - |
 | Training | A100 (4x) | DDP | 5.2 s | - |
 | Inference | CPU | PyTorch Geometric | 145 ms | 6.9 QPS |
-| **Inference** | **A100** | **DGL (optimized)** | **6.3 ms** | **158.7 QPS** |
+| **Inference** | **A100** | **DGL (optimised)** | **6.3 ms** | **158.7 QPS** |
 
 **Speedup**:
 - Single A100 training vs CPU: **15.9x faster**
@@ -1413,9 +1413,9 @@ Realistic performance expectations based on research and industry standards.
 | Kernel | Bandwidth | Utilization | Bottleneck |
 |--------|-----------|-------------|------------|
 | Semantic similarity (naive) | 645 GB/s | 40.3% | Memory access pattern |
-| Semantic similarity (tiled) | 1,287 GB/s | 80.4% | **Optimized** ✅ |
+| Semantic similarity (tiled) | 1,287 GB/s | 80.4% | **optimised** ✅ |
 | Graph aggregation | 892 GB/s | 55.8% | Irregular access |
-| PageRank iteration | 1,412 GB/s | 88.3% | **Optimized** ✅ |
+| PageRank iteration | 1,412 GB/s | 88.3% | **optimised** ✅ |
 | Tensor core matmul (FP16) | N/A | - | Compute-bound |
 
 ### 7.7 Multi-GPU Scaling Efficiency
@@ -1509,7 +1509,7 @@ __global__ void semantic_forces_optimized(
 }
 ```
 
-**Optimization strategies**:
+**optimisation strategies**:
 1. **Precompute similarities**: Avoid redundant dot product calculations
 2. **Shared memory for item embedding**: Reduce global memory reads
 3. **Early exit for neutral zone**: Skip unnecessary computation
@@ -1517,7 +1517,7 @@ __global__ void semantic_forces_optimized(
 
 **Performance**:
 - Baseline: 28.3 ms (1M items, K=100)
-- Optimized: 8.7 ms (**3.3x speedup**)
+- optimised: 8.7 ms (**3.3x speedup**)
 
 ### 8.2 Ontology Constraints Kernel (488 lines)
 
@@ -1583,14 +1583,14 @@ __global__ void ontology_constraints_optimized(
 }
 ```
 
-**Optimization strategies**:
+**optimisation strategies**:
 1. **FP64 for hyperbolic operations**: Use double precision for acosh to avoid numerical instability
 2. **Constant memory for hierarchy levels**: Fast broadcast of small lookup table
 3. **Precomputed expected distances**: Avoid log computation in kernel
 
 **Performance**:
 - Baseline: 15.2 ms (1M items)
-- Optimized (FP64): 12.8 ms with stable numerics
+- optimised (FP64): 12.8 ms with stable numerics
 
 ### 8.3 GPU Landmark APSP Kernel (152 lines)
 
@@ -1672,7 +1672,7 @@ __global__ void landmark_sssp_batch(
 }
 ```
 
-**Optimization strategies**:
+**optimisation strategies**:
 1. **Batch processing**: Process multiple landmarks in parallel (one per block)
 2. **Shared memory buckets**: Fast bucket management
 3. **Atomic operations for race conditions**: Safe parallel edge relaxation
@@ -1819,7 +1819,7 @@ impl HybridSSSP {
 }
 ```
 
-**Optimization strategies**:
+**optimisation strategies**:
 1. **Adaptive dispatch**: Automatically choose CPU vs GPU based on problem size
 2. **Asynchronous transfers**: Overlap data movement with computation
 3. **Rust safety**: Zero-cost abstractions with memory safety guarantees
@@ -2402,17 +2402,17 @@ class ABTestManager:
 
 ## 11. Conclusion & Next Steps
 
-### 11.1 Optimization Checklist
+### 11.1 optimisation Checklist
 
 Before deployment, ensure all optimizations are applied:
 
-**Memory Optimization**:
+**Memory optimisation**:
 - [ ] Coalesced memory access (SoA layout)
 - [ ] Shared memory utilization (>30 KB per block)
 - [ ] Constant memory for small lookups
 - [ ] Pinned memory for CPU-GPU transfers
 
-**Compute Optimization**:
+**Compute optimisation**:
 - [ ] Tensor cores enabled (FP16/BF16/FP8)
 - [ ] Warp shuffle for reductions
 - [ ] Minimal warp divergence
@@ -2459,7 +2459,7 @@ Before deployment, ensure all optimizations are applied:
 **Open-Source Projects**:
 - [FAISS](https://github.com/facebookresearch/faiss): Vector similarity search
 - [PyTorch Geometric](https://pytorch-geometric.readthedocs.io/): GNN library
-- [DGL](https://www.dgl.ai/): Deep Graph Library (NVIDIA-optimized)
+- [DGL](https://www.dgl.ai/): Deep Graph Library (NVIDIA-optimised)
 
 ---
 
@@ -2478,4 +2478,4 @@ Before deployment, ensure all optimizations are applied:
 
 ---
 
-*This comprehensive guide provides battle-tested CUDA optimization strategies for building billion-scale semantic recommendation engines. All benchmarks and techniques are based on state-of-the-art research (2024-2025) and proven industry practices from Netflix, Meta, and NVIDIA.*
+*This comprehensive guide provides battle-tested CUDA optimisation strategies for building billion-scale semantic recommendation engines. All benchmarks and techniques are based on state-of-the-art research (2024-2025) and proven industry practices from Netflix, Meta, and NVIDIA.*

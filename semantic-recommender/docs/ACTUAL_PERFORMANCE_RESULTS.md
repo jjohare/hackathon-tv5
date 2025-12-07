@@ -109,7 +109,7 @@ Score range: 0.26 - 0.31
 
 ---
 
-## Similarity Score Analysis
+## Similarity Score analysis
 
 ### Score Distribution
 
@@ -275,10 +275,10 @@ Max: 1072 ms
 Std dev: 52 ms
 ```
 
-**Analysis**:
+**analysis**:
 - 1.3M vectors × 384 dimensions = 513M floating-point operations
 - Throughput: ~530 million ops/second
-- CPU-based (numpy): NumPy optimized routines
+- CPU-based (numpy): NumPy optimised routines
 - GPU alternative: Could use FAISS for <100ms search
 
 **Verification**: ✅ Search performance scales linearly with dataset size
@@ -317,18 +317,18 @@ Stage 5: Result formatting (JSON)
 Total: 990 ms (±5%)
 ```
 
-**Bottleneck Analysis**:
+**Bottleneck analysis**:
 ```
 Encoding:  2.5% (24.3ms / 990ms)
 Search:   97.3% (963ms / 990ms)  ← BOTTLENECK
 Top-K:     0.2%
 ```
 
-**Optimization Opportunity**: GPU-accelerated similarity search (FAISS)
+**optimisation Opportunity**: GPU-accelerated similarity search (FAISS)
 - Expected improvement: 963ms → <100ms (10x speedup)
 - Total pipeline: 990ms → ~127ms
 
-**Verification**: ✅ Bottleneck identified, optimization path clear
+**Verification**: ✅ Bottleneck identified, optimisation path clear
 
 ---
 
@@ -460,7 +460,7 @@ Mean: 0.102, Std: 0.045, Max: 1.000
 - Use case: Full semantic search with 0.7-0.9 scores
 - Recommended: For production movie recommendation
 
-### For Optimization
+### For optimisation
 
 **High Impact** (10x improvement potential):
 1. GPU similarity search (FAISS): 963ms → <100ms
@@ -473,7 +473,7 @@ Mean: 0.102, Std: 0.045, Max: 1.000
 3. Multi-GPU scaling: Linear throughput scaling
 
 **Low Impact** (<20% improvement):
-1. Top-K algorithm optimization: Already fast (2.1ms)
+1. Top-K algorithm optimisation: Already fast (2.1ms)
 2. Metadata lookup caching: Already fast (0.4ms)
 
 ---

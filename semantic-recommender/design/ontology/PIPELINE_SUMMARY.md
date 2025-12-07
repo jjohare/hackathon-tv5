@@ -1,15 +1,15 @@
-# GMC-O Ontology Visualization Pipeline - Implementation Summary
+# GMC-O Ontology visualisation Pipeline - Implementation Summary
 
 ## ✅ Deliverables Completed
 
-### 1. Core Visualization Script
+### 1. Core visualisation Script
 **File**: `/home/devuser/workspace/hackathon-tv5/scripts/visualize_ontology.py`
 
 **Features**:
 - Parses Turtle (.ttl) ontology files
 - Generates 4 output formats (GraphViz, Mermaid, WebVOWL JSON, Interactive HTML)
 - Supports namespace-focused views
-- Color-coded by domain (media=red, user=teal, ctx=blue, gpu=orange)
+- colour-coded by domain (media=red, user=teal, ctx=blue, gpu=orange)
 - No external Python dependencies (uses standard library only)
 
 **Usage**:
@@ -68,7 +68,7 @@ python3 scripts/visualize_ontology.py --format html
 - **`design/ontology/visualizations/README.md`** (Quick reference)
   - File descriptions
   - Quick start commands
-  - Color coding reference
+  - colour coding reference
   - Dependency information
 
 - **`design/ontology/PIPELINE_SUMMARY.md`** (This file)
@@ -91,7 +91,7 @@ Generates PNG/SVG from DOT files (requires GraphViz):
 
 Automatically regenerates visualizations when ontology changes:
 - Detects changes to `expanded-media-ontology.ttl`
-- Runs visualization pipeline
+- Runs visualisation pipeline
 - Generates images if GraphViz available
 - Stages updated files for commit
 
@@ -110,7 +110,7 @@ Automatically regenerates visualizations when ontology changes:
 - `gpu:` - 4 classes (Semantic processing, graph traversal)
 
 ### Generated Artifacts
-- **14 visualization files** (84KB total)
+- **14 visualisation files** (84KB total)
 - **5 GraphViz diagrams** ready for PNG/SVG conversion
 - **6 Mermaid diagrams** ready for documentation embedding
 - **1 interactive HTML viewer** (zero external dependencies)
@@ -120,11 +120,11 @@ Automatically regenerates visualizations when ontology changes:
 
 ### 1. Grokable for Frontend Developers
 - **TypeScript analogies** in documentation
-- **Color-coded namespaces** for visual recognition
+- **colour-coded namespaces** for visual recognition
 - **Interactive HTML viewer** requires no ontology expertise
 - **Code examples** show practical integration
 
-### 2. Multiple Visualization Modes
+### 2. Multiple visualisation Modes
 - **Exploratory**: Interactive HTML viewer for browsing
 - **Documentation**: Mermaid diagrams embed in markdown
 - **Presentation**: GraphViz generates high-quality images
@@ -183,10 +183,10 @@ sudo apt-get install graphviz
 
 ## 🎨 Visual Design
 
-### Color Scheme
-Consistent across all visualization formats:
+### colour Scheme
+Consistent across all visualisation formats:
 
-| Namespace | Color | Hex | Visual |
+| Namespace | colour | Hex | Visual |
 |-----------|-------|-----|--------|
 | `media:` | Red | `#FF6B6B` | 🔴 |
 | `user:` | Teal | `#4ECDC4` | 🩵 |
@@ -197,7 +197,7 @@ Consistent across all visualization formats:
 - **Hierarchy**: Top-down (TB) ranking
 - **Nodes**: Rounded boxes with labels
 - **Edges**: Labeled relationships (subClassOf, disjoint)
-- **Legend**: Namespace color reference in full hierarchy
+- **Legend**: Namespace colour reference in full hierarchy
 
 ### Mermaid Style
 - **Class diagrams** for structured domains
@@ -224,10 +224,10 @@ Consistent across all visualization formats:
    - Renders automatically on GitHub
 
 ### Future Enhancements
-1. **Add SHACL constraints visualization** (validation rules)
+1. **Add SHACL constraints visualisation** (validation rules)
 2. **Generate property relationship graphs** (domain/range connections)
 3. **Add example instance data** in visualizations
-4. **Create animated tutorial** using visualization sequence
+4. **Create animated tutorial** using visualisation sequence
 5. **Add SPARQL query examples** with visual results
 
 ### Frontend Integration
@@ -249,7 +249,7 @@ Consistent across all visualization formats:
 - **Source Ontology**: `design/ontology/expanded-media-ontology.ttl`
 
 ### Scripts
-- **Visualization Pipeline**: `scripts/visualize_ontology.py`
+- **visualisation Pipeline**: `scripts/visualize_ontology.py`
 - **Image Generation**: `scripts/generate_images.sh`
 - **Git Hook**: `.git/hooks/pre-commit`
 
@@ -260,14 +260,14 @@ Consistent across all visualization formats:
 
 ## ✅ Success Criteria Met
 
-- ✅ **GraphViz generator** - Creates .dot files with namespace colors
+- ✅ **GraphViz generator** - Creates .dot files with namespace colours
 - ✅ **WebVOWL integration** - Exports compatible JSON format
 - ✅ **Mermaid diagrams** - Generates markdown-embeddable diagrams
 - ✅ **PNG/SVG generation** - Script provided (requires GraphViz install)
 - ✅ **Interactive HTML viewer** - Standalone web explorer
 - ✅ **Auto-generation on updates** - Git hook implemented
 - ✅ **Developer-friendly docs** - Comprehensive guides with examples
-- ✅ **"Grokable" for non-experts** - TypeScript analogies, color coding, simple explanations
+- ✅ **"Grokable" for non-experts** - TypeScript analogies, colour coding, simple explanations
 
 ## 🎓 Learning Path for Developers
 
@@ -279,7 +279,7 @@ Consistent across all visualization formats:
 ### Level 2: Understand (15 minutes)
 - Read `design/ontology/VISUALIZATION.md`
 - View Mermaid diagrams in documentation
-- Understand namespace color coding
+- Understand namespace colour coding
 
 ### Level 3: Integrate (30 minutes)
 - Import `ontology.json` in your code
@@ -287,7 +287,7 @@ Consistent across all visualization formats:
 - Generate UI components from ontology
 
 ### Level 4: Extend (1+ hours)
-- Modify visualization script for custom views
+- Modify visualisation script for custom views
 - Add new classes to ontology
 - Test automatic regeneration
 

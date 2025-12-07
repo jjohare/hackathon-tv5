@@ -105,7 +105,7 @@ Graph Size (n) and Edges (m)
       (Only option for scale)
 ```
 
-### Crossover Point Analysis
+### Crossover Point analysis
 
 **Formula**:
 ```rust
@@ -444,10 +444,10 @@ sssp_avg_graph_size{algorithm="duan"} 25000000
    - Total QPS
    - By algorithm
 
-4. **Crossover Analysis** (scatter plot)
+4. **Crossover analysis** (scatter plot)
    - X-axis: Graph size (n)
    - Y-axis: Latency (ms)
-   - Color: Algorithm used
+   - colour: Algorithm used
    - Shows crossover point visually
 
 5. **Complexity Factor** (gauge, Duan only)
@@ -560,7 +560,7 @@ Report bug to development team for complexity formula fix.
 
 ## Performance Tuning Recipes
 
-### Recipe 1: Optimize for Small Graphs (<10K nodes)
+### Recipe 1: optimise for Small Graphs (<10K nodes)
 
 **Goal**: Minimize latency for typical queries
 
@@ -580,7 +580,7 @@ block_size = 256
 
 ---
 
-### Recipe 2: Optimize for Large Graphs (>10M nodes)
+### Recipe 2: optimise for Large Graphs (>10M nodes)
 
 **Goal**: Maximize throughput for batch processing
 

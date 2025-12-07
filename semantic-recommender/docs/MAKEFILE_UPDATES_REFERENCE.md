@@ -6,7 +6,7 @@
 
 ## Summary
 
-All Makefile references have been successfully updated to reflect the new kernel organization with variant kernels moved to `variants/` subdirectory.
+All Makefile references have been successfully updated to reflect the new kernel organisation with variant kernels moved to `variants/` subdirectory.
 
 ## Updated References
 
@@ -84,7 +84,7 @@ All paths expand correctly with no missing rule errors.
 
 | Target | Status | Notes |
 |--------|--------|-------|
-| `all` | Ready | Builds T4-optimized kernel library |
+| `all` | Ready | Builds T4-optimised kernel library |
 | `ptx` | Ready | Generates PTX for Rust FFI |
 | `benchmark-algorithms` | Ready | Compiles benchmark suite |
 | `test-algorithms` | Ready | Runs algorithm tests |

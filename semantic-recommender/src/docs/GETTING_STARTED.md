@@ -14,7 +14,7 @@ This guide introduces the core data models and provides practical examples for b
 
 - **Multi-Modal Embeddings**: Visual (768-dim) + Audio (512-dim) + Text (1024-dim) → Unified (1024-dim)
 - **OWL Ontology Reasoning**: GMC-O (Global Media & Context Ontology) for semantic understanding
-- **GPU-Optimized Memory Layouts**: CUDA-aligned data structures for maximum throughput
+- **GPU-optimised Memory Layouts**: CUDA-aligned data structures for maximum throughput
 - **User Psychographics**: Context-aware personalization with mood detection
 - **Semantic Path Discovery**: Explainable recommendations with reasoning trails
 
@@ -166,7 +166,7 @@ UserProfile
 └── Tolerance Levels (violence, complexity, subtitles)
 ```
 
-**Key Point**: The psychographic state is inferred from context (time, device, recent behavior) and significantly improves recommendations.
+**Key Point**: The psychographic state is inferred from context (time, device, recent behaviour) and significantly improves recommendations.
 
 ### 3. Recommendation Pipeline
 
@@ -392,10 +392,10 @@ fn filter_by_context(
 
 - **Anonymize IDs**: Use UUIDs, not personally identifiable information
 - **Data retention**: Keep only recent 100 interactions
-- **Consent**: Obtain user consent for behavior tracking
+- **Consent**: Obtain user consent for behaviour tracking
 - **Encryption**: Encrypt user embeddings at rest
 
-### 3. Performance Optimization
+### 3. Performance optimisation
 
 - **Use HNSW indexing**: For sub-10ms vector search
 - **GPU batching**: Aim for 90%+ GPU utilization
@@ -423,7 +423,7 @@ fn filter_by_context(
 
 2. **Read API Reference**: Detailed documentation in `/src/docs/API_REFERENCE.md`
 
-3. **Performance Tuning**: Optimization guide in `/src/docs/PERFORMANCE.md`
+3. **Performance Tuning**: optimisation guide in `/src/docs/PERFORMANCE.md`
 
 4. **Deploy**: Follow deployment guide in `/design/guides/deployment-guide.md`
 

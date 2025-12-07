@@ -111,7 +111,7 @@ semantic-recommender/
 
 ---
 
-## Data Organization
+## Data organisation
 
 ```
 data/

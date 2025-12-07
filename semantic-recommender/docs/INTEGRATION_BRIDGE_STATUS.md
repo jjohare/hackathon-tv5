@@ -44,7 +44,7 @@ Connect the Axum REST API layer (`src/api`) to the core recommendation engine (`
 ### 6. AppState Enhanced
 **File**: `semantic-recommender/src/integration/app_state.rs`
 - Added `embedding_service: Arc<EmbeddingService>` field
-- Initialized with 384-dimensional vectors (SBERT compatible)
+- initialised with 384-dimensional vectors (SBERT compatible)
 - Ready for injection into recommendation engine
 
 ### 7. Recommendation Engine Updated
@@ -217,7 +217,7 @@ When ready for production with real backends:
    - Cohere API (embed-multilingual-v3.0)
    - Local SBERT model (sentence-transformers)
 
-2. Initialize HybridStorageCoordinator:
+2. initialise HybridStorageCoordinator:
    ```rust
    let milvus = Arc::new(MilvusClient::new(config).await?);
    let neo4j = Arc::new(Neo4jClient::new(config).await?);

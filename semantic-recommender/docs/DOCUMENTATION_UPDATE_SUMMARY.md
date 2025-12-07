@@ -78,7 +78,7 @@ head -30 README.md | grep -A5 "Data Quality"
 2. **Data Reality vs Expectations**: Shows actual vs expected metadata structure
 3. **Impact on Semantic Search**: Explains why similarity scores are 0.26-0.31
 4. **Achievements Despite Limitation**: Infrastructure validated at scale
-5. **Root Cause Analysis**: Investigation of TMDB CSV structure
+5. **Root Cause analysis**: Investigation of TMDB CSV structure
 6. **Solution Path**: Three-phase approach (immediate, short-term, long-term)
 7. **Verification Evidence**: Reproducible commands to verify all claims
 8. **Recommendations**: For evaluation, deployment, and development priorities
@@ -97,7 +97,7 @@ head -30 README.md | grep -A5 "Data Quality"
   }
   ```
 
-- **Similarity Score Analysis** (lines 64-89):
+- **Similarity Score analysis** (lines 64-89):
   - Measured scores: 0.26-0.31 range
   - Interpretation table: Title-only vs Expected with Overviews
   - Explanation of why scores are lower (keyword overlap vs semantic alignment)
@@ -140,7 +140,7 @@ ls -lh docs/DATA_QUALITY_REPORT.md
    - Top similarity scores (0.26-0.31 range)
    - Aggregate statistics: Mean 987ms, Median 956ms
 
-3. **Similarity Score Analysis** (lines 120-163):
+3. **Similarity Score analysis** (lines 120-163):
    - Percentile distribution (P99: 0.31, P50: 0.27, P01: 0.23)
    - Score interpretation table for title-only embeddings
    - Comparison to expected full-text embeddings (0.70-0.90)
@@ -154,7 +154,7 @@ ls -lh docs/DATA_QUALITY_REPORT.md
 5. **Search Performance Breakdown** (lines 210-253):
    - Vector similarity search: 963ms (measured across 100 runs)
    - Bottleneck analysis: Search is 97.3% of total time
-   - Optimization opportunity: FAISS GPU could reduce to <100ms
+   - optimisation opportunity: FAISS GPU could reduce to <100ms
 
 6. **End-to-End Query Pipeline** (lines 255-289):
    - Stage-by-stage timing:

@@ -258,7 +258,7 @@ Movies: 62,423
 **Model**: `paraphrase-multilingual-MiniLM-L12-v2`
 - Parameters: 118M
 - Embedding dim: 384
-- Precision: FP16 (TensorRT optimized)
+- Precision: FP16 (TensorRT optimised)
 
 **Performance Profile**:
 ```
@@ -621,7 +621,7 @@ Throughput: 1032 QPS
 
 ### 4.1 Latency Breakdown
 
-**Single Query (Optimized)**:
+**Single Query (optimised)**:
 ```
 Component                    Latency
 ────────────────────────────────────
@@ -678,7 +678,7 @@ Query cache                  100 MB
 Total                        ~2.7 GB
 ```
 
-### 4.3 Throughput Analysis
+### 4.3 Throughput analysis
 
 **Single-Query Mode**:
 ```

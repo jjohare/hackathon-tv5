@@ -1,0 +1,124 @@
+{
+  "queries": [
+    {
+      "category": "Multi-Genre Complex",
+      "query": "mind-bending psychological thriller with time travel",
+      "old_avg": 0.271415114402771,
+      "new_avg": 0.2572315990924835,
+      "improvement": -5.225764726292889,
+      "old_top": {
+        "title": "Little Life",
+        "year": 2008,
+        "score": 0.271415114402771,
+        "tmdb_id": "557559"
+      },
+      "new_top": {
+        "title": "Thunderstruck",
+        "year": "N/A",
+        "score": 0.260689914226532,
+        "tmdb_id": 119738
+      }
+    },
+    {
+      "category": "Emotional Tone",
+      "query": "heartwarming story about found family",
+      "old_avg": 0.2890458106994629,
+      "new_avg": 0.277826726436615,
+      "improvement": -3.881420815509764,
+      "old_top": {
+        "title": "Educanda",
+        "year": 2002,
+        "score": 0.2890458106994629,
+        "tmdb_id": "545922"
+      },
+      "new_top": {
+        "title": "The Great Waldo Pepper",
+        "year": "N/A",
+        "score": 0.2978895306587219,
+        "tmdb_id": 19740
+      }
+    },
+    {
+      "category": "Visual Style",
+      "query": "visually stunning cyberpunk with neon-lit streets",
+      "old_avg": 0.35405421257019043,
+      "new_avg": 0.2815632700920105,
+      "improvement": -20.4745318384847,
+      "old_top": {
+        "title": "The Battle of Shangri-la",
+        "year": 2022,
+        "score": 0.35405421257019043,
+        "tmdb_id": "646973"
+      },
+      "new_top": {
+        "title": "Mickey's Amateurs",
+        "year": "N/A",
+        "score": 0.3021707236766815,
+        "tmdb_id": 67005
+      }
+    },
+    {
+      "category": "Character-Driven",
+      "query": "complex anti-hero struggling with redemption",
+      "old_avg": 0.34398365020751953,
+      "new_avg": 0.27190030217170713,
+      "improvement": -20.95545761908327,
+      "old_top": {
+        "title": "Project Pitchfork - Live",
+        "year": 2004,
+        "score": 0.34398365020751953,
+        "tmdb_id": "208530"
+      },
+      "new_top": {
+        "title": "Aladdin",
+        "year": "N/A",
+        "score": 0.2823614776134491,
+        "tmdb_id": 812
+      }
+    },
+    {
+      "category": "Reference-Based",
+      "query": "like Inception meets The Matrix",
+      "old_avg": 0.27598294615745544,
+      "new_avg": 0.28693142533302307,
+      "improvement": 3.9670854043717743,
+      "old_top": {
+        "title": "In Memoriam",
+        "year": 2023,
+        "score": 0.27598294615745544,
+        "tmdb_id": "1125725"
+      },
+      "new_top": {
+        "title": "Troll",
+        "year": "N/A",
+        "score": 0.3010513186454773,
+        "tmdb_id": 33061
+      }
+    },
+    {
+      "category": "Mood + Pacing",
+      "query": "slow-burn atmospheric horror building dread",
+      "old_avg": 0.3260905146598816,
+      "new_avg": 0.2769420325756073,
+      "improvement": -15.072036712118742,
+      "old_top": {
+        "title": "K\u00e9t h\u00e9t pihen\u0151",
+        "year": null,
+        "score": 0.3260905146598816,
+        "tmdb_id": "1394826"
+      },
+      "new_top": {
+        "title": "Getaway Plan",
+        "year": "N/A",
+        "score": 0.28858110308647156,
+        "tmdb_id": 436827
+      }
+    }
+  ],
+  "summary": {
+    "old_avg": 0.31009537478288013,
+    "new_avg": 0.2753992259502411,
+    "improvement_pct": -10.273687717852932,
+    "multiplier": 0.8881113629736261
+  }
+}

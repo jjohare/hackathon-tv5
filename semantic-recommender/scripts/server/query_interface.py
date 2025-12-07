@@ -9,7 +9,10 @@ Runs on DISPLAY=:1 for visual monitoring.
 import sys
 import json
 import time
+import asyncio
 from pathlib import Path
+from collections import deque
+from threading import Lock, Thread
 from flask import Flask, render_template, request, jsonify
 import torch
 import torch.nn.functional as F
@@ -33,6 +36,128 @@ except ImportError:
     print("[Warning] Ontology reasoning not available")
 
 app = Flask(__name__)
+
+
+class BatchProcessor:
+    """
+    Batch request processor for high-throughput query processing
+
+    Accumulates incoming requests and processes them in batches using TensorRT
+    to maximize GPU utilization and achieve 1000+ QPS.
+    """
+
+    def __init__(self, encoder, max_batch_size=32, max_wait_ms=50):
+        """
+        Initialize batch processor
+
+        Args:
+            encoder: TensorRT or SentenceTransformer encoder
+            max_batch_size: Maximum batch size (matches TensorRT engine)
+            max_wait_ms: Maximum wait time before processing partial batch (ms)
+        """
+        self.encoder = encoder
+        self.max_batch_size = max_batch_size
+        self.max_wait_ms = max_wait_ms / 1000.0  # Convert to seconds
+
+        # Request queue
+        self.queue = deque()
+        self.lock = Lock()
+
+        # Processing thread
+        self.running = False
+        self.processor_thread = None
+
+    def start(self):
+        """Start batch processing thread"""
+        if not self.running:
+            self.running = True
+            self.processor_thread = Thread(target=self._process_loop, daemon=True)
+            self.processor_thread.start()
+
+    def stop(self):
+        """Stop batch processing thread"""
+        self.running = False
+        if self.processor_thread:
+            self.processor_thread.join(timeout=1.0)
+
+    def _process_loop(self):
+        """Main processing loop - runs in background thread"""
+        while self.running:
+            batch_queries = []
+            batch_futures = []
+
+            # Collect batch
+            start_time = time.time()
+            while len(batch_queries) < self.max_batch_size:
+                # Check timeout
+                elapsed = time.time() - start_time
+                if elapsed >= self.max_wait_ms and batch_queries:
+                    break
+
+                # Try to get request from queue
+                with self.lock:
+                    if self.queue:
+                        query, future = self.queue.popleft()
+                        batch_queries.append(query)
+                        batch_futures.append(future)
+                    elif batch_queries:
+                        # Have some requests and queue is empty - process now
+                        break
+                    else:
+                        # Queue empty, no requests - wait a bit
+                        time.sleep(0.001)  # 1ms sleep to avoid busy waiting
+                        continue
+
+            # Process batch if we have requests
+            if batch_queries:
+                try:
+                    # Encode all queries in single TensorRT call
+                    embeddings = self.encoder.encode(
+                        batch_queries,
+                        batch_size=len(batch_queries),
+                        convert_to_tensor=True
+                    )
+
+                    # Return results to individual requests
+                    for i, future in enumerate(batch_futures):
+                        future['result'] = embeddings[i]
+                        future['ready'] = True
+
+                except Exception as e:
+                    # Return error to all requests in batch
+                    for future in batch_futures:
+                        future['error'] = str(e)
+                        future['ready'] = True
+
+    def encode(self, query, timeout=5.0):
+        """
+        Encode query (batched)
+
+        Args:
+            query: Query text
+            timeout: Maximum wait time for result (seconds)
+
+        Returns:
+            Embedding tensor
+        """
+        # Create future for result
+        future = {'result': None, 'error': None, 'ready': False}
+
+        # Add to queue
+        with self.lock:
+            self.queue.append((query, future))
+
+        # Wait for result
+        start = time.time()
+        while not future['ready']:
+            if time.time() - start > timeout:
+                raise TimeoutError(f"Batch encoding timeout after {timeout}s")
+            time.sleep(0.0001)  # 0.1ms sleep
+
+        if future['error']:
+            raise RuntimeError(f"Batch encoding error: {future['error']}")
+
+        return future['result']
 
 
 class QueryInterfaceBackend:
@@ -73,7 +198,16 @@ class QueryInterfaceBackend:
             except Exception as e:
                 print(f"[Warning] Failed to load ontology reasoner: {e}")
 
+        # Initialize batch processor for high-throughput queries
+        self.batch_processor = BatchProcessor(
+            encoder=self.encoder,
+            max_batch_size=32,
+            max_wait_ms=50
+        )
+        self.batch_processor.start()
+
         print(f"[Interface] Ready! Backend: {self.backend_type}")
+        print(f"[Interface] Batch processor enabled (batch_size=32, max_wait=50ms)")
 
     def load_data(self):
         """Load media embeddings and metadata"""
@@ -125,23 +259,42 @@ class QueryInterfaceBackend:
         self.media_embeddings = torch.randn(100, 384, device=self.device)
         self.media_embeddings = F.normalize(self.media_embeddings, p=2, dim=1)
 
-    def process_query(self, query: str, limit: int = 10, filters: dict = None) -> dict:
-        """Process query with full decision logging"""
+    def process_query(self, query: str, limit: int = 10, filters: dict = None, use_batch: bool = False) -> dict:
+        """
+        Process query with full decision logging
+
+        Args:
+            query: Query text
+            limit: Maximum number of results
+            filters: Optional filters (genres, year_range, min_rating)
+            use_batch: Use batch processor for high-throughput encoding
+
+        Returns:
+            Results with decision log and performance metrics
+        """
         decision_log = {
             'query': query,
             'timestamp': time.time(),
             'backend': self.backend_type,
             'device': str(self.device),
+            'batch_mode': use_batch,
             'steps': []
         }
 
         # Step 1: Query Encoding
         start = time.time()
-        query_embedding = self.encoder.encode(
-            query,
-            convert_to_tensor=True,
-            device=self.device if hasattr(self.encoder, 'device') else None
-        )
+
+        if use_batch:
+            # Use batch processor (queues request for batch processing)
+            query_embedding = self.batch_processor.encode(query)
+        else:
+            # Direct encoding (bypass batch processor)
+            query_embedding = self.encoder.encode(
+                query,
+                convert_to_tensor=True,
+                device=self.device if hasattr(self.encoder, 'device') else None
+            )
+
         if not isinstance(query_embedding, torch.Tensor):
             query_embedding = torch.tensor(query_embedding, device=self.device)
 
@@ -296,7 +449,7 @@ class QueryInterfaceBackend:
                 }
             }
 
-            # Add ontology information if available
+            # Add ontology information if available and compute hybrid score
             if media_id in ontology_scores:
                 result['ontology'] = {
                     'ontology_score': round(ontology_scores[media_id]['ontology_score'], 4),
@@ -307,12 +460,17 @@ class QueryInterfaceBackend:
 
                 # Compute hybrid score
                 weights = {'semantic': 0.7, 'ontology': 0.2, 'genre': 0.1}
-                result['hybrid_score'] = round(
+                hybrid_score = round(
                     weights['semantic'] * float(sim) +
                     weights['ontology'] * ontology_scores[media_id]['ontology_score'] +
                     weights['genre'] * ontology_scores[media_id]['genre_score'],
                     4
                 )
+                result['hybrid_score'] = hybrid_score
+                result['score'] = hybrid_score  # Unified score field (hybrid when available)
+            else:
+                # No ontology info - use semantic score only
+                result['score'] = round(float(sim), 4)
 
             results.append(result)
 
@@ -363,17 +521,101 @@ def index():
 
 @app.route('/api/query', methods=['POST'])
 def api_query():
-    """Process query and return decision log"""
+    """Process single query and return decision log"""
     data = request.json
     query = data.get('query', '')
     limit = data.get('limit', 10)
     filters = data.get('filters', {})
+    use_batch = data.get('use_batch', False)  # Optional batch mode
 
     if not query:
         return jsonify({'error': 'Query is required'}), 400
 
-    result = backend.process_query(query, limit, filters)
+    result = backend.process_query(query, limit, filters, use_batch=use_batch)
     return jsonify(result)
+
+
+@app.route('/api/query/batch', methods=['POST'])
+def api_query_batch():
+    """
+    Process multiple queries in batch for high-throughput
+
+    Request body:
+        {
+            "queries": ["query1", "query2", ...],  # List of queries
+            "limit": 10,  # Results per query (default: 10)
+            "filters": {...}  # Optional filters
+        }
+
+    Response:
+        {
+            "results": [
+                {
+                    "query": "query1",
+                    "results": [...],
+                    "performance": {...}
+                },
+                ...
+            ],
+            "batch_performance": {
+                "total_queries": N,
+                "total_time_ms": X,
+                "avg_time_per_query_ms": Y,
+                "qps": Z
+            }
+        }
+    """
+    data = request.json
+
+    # Support both single query and array of queries
+    queries = data.get('queries', [])
+    if isinstance(queries, str):
+        queries = [queries]
+
+    if not queries:
+        # Try single query field for backward compatibility
+        single_query = data.get('query', '')
+        if single_query:
+            queries = [single_query]
+
+    if not queries:
+        return jsonify({'error': 'queries (array) or query (string) is required'}), 400
+
+    limit = data.get('limit', 10)
+    filters = data.get('filters', {})
+
+    # Process all queries using batch processor
+    batch_start = time.time()
+    batch_results = []
+
+    for query in queries:
+        try:
+            result = backend.process_query(query, limit, filters, use_batch=True)
+            batch_results.append({
+                'query': query,
+                'results': result['results'],
+                'performance': result['performance']
+            })
+        except Exception as e:
+            batch_results.append({
+                'query': query,
+                'error': str(e)
+            })
+
+    batch_time = (time.time() - batch_start) * 1000
+
+    # Batch performance metrics
+    response = {
+        'results': batch_results,
+        'batch_performance': {
+            'total_queries': len(queries),
+            'total_time_ms': round(batch_time, 3),
+            'avg_time_per_query_ms': round(batch_time / len(queries), 3) if queries else 0,
+            'qps': round(len(queries) / (batch_time / 1000), 2) if batch_time > 0 else 0
+        }
+    }
+
+    return jsonify(response)
 
 
 @app.route('/api/status')
@@ -384,7 +626,14 @@ def api_status():
         'device': str(backend.device),
         'cuda_available': torch.cuda.is_available(),
         'gpu_count': torch.cuda.device_count() if torch.cuda.is_available() else 0,
-        'items_loaded': len(backend.media_ids)
+        'items_loaded': len(backend.media_ids),
+        'batch_processor': {
+            'enabled': True,
+            'max_batch_size': backend.batch_processor.max_batch_size,
+            'max_wait_ms': backend.batch_processor.max_wait_ms * 1000,
+            'queue_size': len(backend.batch_processor.queue),
+            'running': backend.batch_processor.running
+        }
     })
 
 

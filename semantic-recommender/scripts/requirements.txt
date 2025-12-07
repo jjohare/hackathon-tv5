@@ -29,3 +29,7 @@ python-dotenv>=1.0.0
 tensorrt>=10.0.0  # TensorRT 10.x for GPU acceleration
 pycuda>=2025.1    # CUDA Python bindings for TensorRT
 onnx>=1.14.0      # ONNX model support
+
+# Web server (query interface)
+flask>=3.0.0      # Web framework for query API
+requests>=2.31.0  # HTTP client for testing

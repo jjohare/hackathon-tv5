@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Union
 import logging
+import threading
 
 import torch
 import numpy as np
@@ -73,6 +74,9 @@ class TensorRTEncoder:
 
         # CUDA stream for async execution
         self.cuda_stream = None
+
+        # Thread lock for TensorRT execution (fix concurrency bug)
+        self.execution_lock = threading.Lock()
 
         # Initialize
         self._initialize()
@@ -337,14 +341,17 @@ class TensorRTEncoder:
 
         # Execute inference (TensorRT 10.x API)
         # Use CUDA stream handle for async execution
+        # Thread-safe execution: only one inference at a time to prevent Myelin graph conflict
         import pycuda.driver as cuda
-        success = self.context.execute_async_v3(self.cuda_stream.handle)
 
-        if not success:
-            raise RuntimeError("TensorRT inference failed")
+        with self.execution_lock:
+            success = self.context.execute_async_v3(self.cuda_stream.handle)
 
-        # Synchronize stream to ensure inference completes
-        self.cuda_stream.synchronize()
+            if not success:
+                raise RuntimeError("TensorRT inference failed")
+
+            # Synchronize stream to ensure inference completes
+            self.cuda_stream.synchronize()
 
         # Get output (assume first output binding is embeddings)
         output_name = list(self.output_buffers.keys())[0]

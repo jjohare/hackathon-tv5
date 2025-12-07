@@ -1,10 +1,12 @@
 # TMDB Dataset Processing Pipeline
 
-Complete GPU-accelerated pipeline for processing 930k TMDB movies with semantic embeddings and ontology mapping.
+Complete GPU-accelerated pipeline for processing 1.3M TMDB movies with semantic embeddings.
+
+**⚠️ Data Quality Notice**: Current dataset contains **movie titles only** (no plot overviews/descriptions). See [DATA_QUALITY_REPORT.md](../../docs/DATA_QUALITY_REPORT.md) for details and enrichment path.
 
 ## Overview
 
-This pipeline transforms the TMDB Movies Dataset (930k movies) into production-ready semantic vectors for the TV5 Media Recommendation System.
+This pipeline transforms the TMDB Movies Dataset (1,334,069 movies) into production-ready semantic vectors for the TV5 Media Recommendation System. Infrastructure is proven at scale; semantic depth requires metadata enrichment.
 
 ### Pipeline Architecture
 
@@ -94,20 +96,23 @@ extract_year(release_date)    # Extract year from various date formats
 clean_movie_row(row)          # Transform row to clean dictionary
 ```
 
-**Expected Output**:
+**Actual Output** (verified 2025-12-07):
 ```json
 {
-  "tmdb_id": "123456",
-  "imdb_id": "tt1234567",
-  "ml_id": "ml_1",
-  "title": "Movie Title",
-  "overview": "Movie description...",
-  "year": 2020,
-  "genres": ["Action", "Drama"],
-  "keywords": ["revenge", "betrayal"],
-  "vote_average": 7.5
+  "tmdb_id": "27205",
+  "imdb_id": "tt1375666",
+  "ml_id": "ml_79132",
+  "title": "Inception",
+  "year": 2010,
+  "genres": []  // Empty - source data limitation
 }
 ```
+
+**⚠️ Known Limitation**:
+- NO `overview` field (source CSV doesn't contain plot descriptions)
+- NO `keywords` field (source CSV doesn't contain semantic tags)
+- Empty `genres` arrays (field present but unpopulated in source)
+- This limits embeddings to title-only matching
 
 ### Stage 2: Ontology Mapping
 
@@ -176,15 +181,19 @@ clean_movie_row(row)          # Transform row to clean dictionary
 - Batch size: 32 (optimal for A100)
 - Expected throughput: 1,000 movies/second
 
-**Text Source**:
+**Text Source** (actual implementation):
 ```python
-# Primary: Movie overview
-text = movie['overview']
+# Current reality: Title only (overview field doesn't exist)
+text = movie['title']  # e.g., "Inception"
 
-# Fallback: Title (if no overview)
-if not text:
-    text = movie['title']
+# Desired (requires TMDB API enrichment):
+# text = f"{title}. {overview}. {keywords}. Starring {cast}"
 ```
+
+**Impact on Embeddings**:
+- Current: "Inception" (1 token) → 384-dim vector
+- Expected with overviews: "Inception. A thief steals secrets through dreams..." (50+ tokens)
+- Similarity scores: Current 0.26-0.31 → Expected 0.70-0.90 with enrichment
 
 **Checkpointing**:
 ```python

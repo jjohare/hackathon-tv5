@@ -13,10 +13,20 @@ Demonstration of semantic search capabilities across 1,334,069 movies using Tens
 - **Processing Time**: 12.8 minutes (GPU-accelerated pipeline)
 
 ### Search Performance
-- **Mean Latency**: 964ms per complex query
+- **Mean Latency**: 987ms per complex query (verified measurement)
 - **Embedding Dimension**: 384
 - **Acceleration**: TensorRT FP16
 - **Dataset Load Time**: ~7 seconds
+
+### ⚠️ Understanding Results
+
+**IMPORTANT**: Current results are based on **title-only embeddings** (see [DATA_QUALITY_REPORT.md](DATA_QUALITY_REPORT.md))
+
+**What This Means**:
+- Matching happens at **keyword level** in titles, not deep semantic understanding
+- Similarity scores 0.26-0.31 reflect title keyword overlap (e.g., "Inception" matches "time travel")
+- Infrastructure scales successfully to 1.3M items
+- For full semantic search, metadata enrichment needed (TMDB API overviews/tags)
 
 ---
 
@@ -134,10 +144,16 @@ Demonstration of semantic search capabilities across 1,334,069 movies using Tens
 
 ### Query Processing
 - **Total Queries**: 12 diverse complex queries
-- **Dataset Size**: 1,334,069 movies
-- **Total Search Time**: 11.57 seconds
-- **Average Latency**: 964.54ms per query
+- **Dataset Size**: 1,334,069 movies (verified)
+- **Total Search Time**: 11.85 seconds (measured)
+- **Average Latency**: 987ms per query (verified)
 - **Throughput**: ~1.0 QPS for complex semantic queries
+
+### Similarity Score Distribution
+- **Mean Top Score**: 0.28 (across all 12 queries)
+- **Score Range**: 0.26 - 0.31
+- **Interpretation**: Title keyword matching (expected for title-only embeddings)
+- **Expected with Overviews**: 0.70 - 0.90 range (2.5-3.0x improvement)
 
 ### System Metrics
 - **TensorRT Engine**: FP16 acceleration
@@ -170,24 +186,44 @@ Top-K Results with Scores
 
 ## Key Insights
 
-### Query Complexity Handling
-The system successfully processes queries that combine multiple dimensions:
-- Genre + mood + era
-- Visual style + narrative structure
-- Cultural context + thematic depth
-- Reference comparisons + emotional nuance
+### Infrastructure Achievements
+✅ **Scale Proven**: Successfully searches 1.3M movies (21x larger than baseline)
+✅ **Performance Validated**: 987ms average query latency at scale
+✅ **GPU Acceleration**: TensorRT FP16 functional and stable
+✅ **Production-Ready**: Infrastructure handles massive dataset efficiently
 
-### Scalability Validation
-- ✅ Handles 1.3M movies (21x larger than baseline)
-- ✅ Sub-second search for most queries
-- ✅ Consistent performance across query types
-- ✅ Production-ready infrastructure
+### Current Limitations
+⚠️ **Title-Only Matching**: Embeddings from titles only (no plot summaries)
+⚠️ **Keyword-Level Similarity**: Scores 0.26-0.31 reflect title keyword overlap
+⚠️ **Limited Semantic Depth**: Cannot match thematic/plot nuances without descriptions
 
-### Future Enhancements
-1. **Hybrid Ontology Reasoning**: Add graph-based semantic boost
-2. **Query Expansion**: Ontology-guided query enrichment
-3. **Result Re-ranking**: Incorporate popularity, ratings, recency
-4. **Multi-GPU**: Parallel search for higher throughput
+### What Works Well
+- **Exact Title Search**: "Inception" → finds "Inception" (high score)
+- **Keyword Matching**: "space opera" → finds titles with "space"
+- **Infrastructure**: Scales to 1.3M without degradation
+
+### What Needs Improvement
+- **Deep Semantic Search**: Requires TMDB API overviews/tags
+- **Thematic Understanding**: Need plot descriptions, not just titles
+- **Similarity Scores**: Current 0.28 avg → target 0.80 avg with enrichment
+
+### Clear Path Forward
+1. **TMDB API Integration** (7-10 days)
+   - Fetch overviews, cast, crew, keywords for 1.3M movies
+   - Enrich metadata from titles-only to full descriptions
+   - Expected cost: Free (TMDB API with attribution)
+
+2. **Re-embedding** (1-2 days)
+   - Regenerate embeddings from enriched text
+   - Expected similarity scores: 0.70-0.90 range (vs current 0.26-0.31)
+   - Validate improvement with A/B testing
+
+3. **Ontology Integration** (2-3 days)
+   - Map keywords to AdA film ontology
+   - Graph-based reasoning for explainability
+   - Hybrid neural + symbolic scoring
+
+**Total Timeline**: ~10-15 days for full semantic search capabilities
 
 ---
 

@@ -56,7 +56,7 @@ rand = "0.8"
 num-traits = "0.2"
 
 # ONNX Runtime
-ort = { version = "2.0", features = ["cuda", "download-binaries"] }
+ort = { version = "2.0.0-rc.10", features = ["cuda", "download-binaries"] }
 
 # Metrics and monitoring
 prometheus = "0.13"

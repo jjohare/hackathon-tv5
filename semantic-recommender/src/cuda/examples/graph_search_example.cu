@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <cfloat>
 #include "graph_search.cuh"
 
 // =============================================================================

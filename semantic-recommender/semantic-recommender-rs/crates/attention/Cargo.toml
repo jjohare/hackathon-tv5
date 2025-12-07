@@ -14,7 +14,6 @@ categories = ["algorithms", "science"]
 [dependencies]
 # Workspace dependencies
 tokio = { workspace = true }
-cudarc = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
@@ -24,6 +23,7 @@ num-traits = { workspace = true }
 
 # Crate-specific
 bytemuck = "1.14"
+tch = "0.16"
 
 # Local dependencies
 gpu-embeddings = { path = "../gpu-embeddings" }
@@ -36,7 +36,7 @@ approx = "0.5"
 
 [features]
 default = ["cuda"]
-cuda = ["cudarc/cuda-11070", "cudarc/cublas"]
+cuda = []
 cpu-fallback = []
 
 [[bench]]

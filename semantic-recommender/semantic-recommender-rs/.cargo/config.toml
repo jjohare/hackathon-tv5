@@ -2,13 +2,10 @@
 rustflags = [
     # CUDA-specific optimizations
     "-C", "target-cpu=native",
-    "-C", "link-arg=-fuse-ld=lld",  # Use LLD linker for faster builds
 ]
 
 [target.x86_64-unknown-linux-gnu]
-linker = "clang"
 rustflags = [
-    "-C", "link-arg=-fuse-ld=lld",
     "-C", "target-cpu=native",
     "-C", "target-feature=+avx2,+fma",  # Enable AVX2 and FMA
 ]

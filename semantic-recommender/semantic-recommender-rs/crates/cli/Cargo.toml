@@ -27,6 +27,10 @@ hyper-personalization = { path = "../hyper-personalization" }
 # CLI-specific
 comfy-table = "7.1"
 dialoguer = "0.11"
+tabled = "0.15"
+csv = "1.3"
+sysinfo = "0.30"
+chrono = { workspace = true }
 
 [features]
 default = ["cuda"]

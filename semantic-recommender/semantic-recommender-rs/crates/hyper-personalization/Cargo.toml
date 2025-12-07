@@ -26,6 +26,7 @@ parking_lot = { workspace = true }
 uuid = { workspace = true }
 chrono = { workspace = true }
 metrics = { workspace = true }
+prometheus = { workspace = true, optional = true }
 
 # Local dependencies
 gpu-embeddings = { path = "../gpu-embeddings" }
@@ -42,12 +43,15 @@ tokio-test = "0.4"
 fake = { workspace = true }
 
 [features]
-default = ["cuda", "onnx"]
+default = ["onnx"]
 cuda = ["cudarc/cuda-11070", "gpu-embeddings/cuda", "temporal-cache/cuda", "attention/cuda"]
 cpu-only = ["gpu-embeddings/cpu-fallback", "temporal-cache/cpu-fallback", "attention/cpu-fallback", "semantic-model/cpu-only"]
 onnx = ["semantic-model/onnx"]
 distributed = []
 metrics-export = ["prometheus"]
+
+# Full feature set (requires libtorch installed)
+full = ["cuda", "onnx", "attention/cuda"]
 
 [[example]]
 name = "demo"

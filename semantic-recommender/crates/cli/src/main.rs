@@ -1,6 +1,6 @@
-// Semantic Recommender CLI - Main Entry Point
+// Semantic Recommender CLI - Complete Implementation
 //
-// GPU-accelerated semantic search for 62,423 movies with A100 optimization
+// GPU-accelerated semantic search with comprehensive benchmarking
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand, ValueEnum};
@@ -40,7 +40,7 @@ struct Cli {
     command: Commands,
 }
 
-#[derive(Clone, ValueEnum)]
+#[derive(Clone, ValueEnum, Debug)]
 enum DeviceType {
     /// Use CPU only
     Cpu,
@@ -50,7 +50,7 @@ enum DeviceType {
     Auto,
 }
 
-#[derive(Clone, ValueEnum)]
+#[derive(Clone, ValueEnum, Debug)]
 enum OutputFormat {
     /// Pretty table output
     Table,
@@ -234,5 +234,17 @@ mod tests {
 
         let cli = Cli::parse_from(["semantic-rec", "--device", "cuda", "query", "test query"]);
         assert!(matches!(cli.device, DeviceType::Cuda));
+    }
+
+    #[test]
+    fn test_device_type() {
+        let cli = Cli::parse_from(["semantic-rec", "--device", "auto", "info"]);
+        assert!(matches!(cli.device, DeviceType::Auto));
+    }
+
+    #[test]
+    fn test_output_format() {
+        let cli = Cli::parse_from(["semantic-rec", "--output", "json", "test"]);
+        assert!(matches!(cli.output, OutputFormat::Json));
     }
 }

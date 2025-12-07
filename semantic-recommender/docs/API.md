@@ -570,4 +570,4 @@ const { results } = await response.json();
 
 ---
 
-See [INTEGRATION.md](INTEGRATION.md) for integration patterns with the hackathon.
+See [INTEGRATION.md](reference/INTEGRATION.md) for integration patterns with the hackathon.

@@ -71,7 +71,7 @@ Based on [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/
 **Processing Requirements:**
 1. Parse OWL file using horned-owl Rust library
 2. Extract class hierarchy (8 levels → 78 types → 502 values)
-3. Map MovieLens genome tags to AdA concepts (see ONTOLOGY_INTEGRATION_PLAN.md)
+3. Map MovieLens genome tags to AdA concepts (see [ONTOLOGY_INTEGRATION_PLAN.md](ontology/ONTOLOGY_INTEGRATION_PLAN.md))
 4. Load into whelk-rs for EL++ reasoning
 
 **Example Mapping (Genome Tag → AdA Concept):**
@@ -372,7 +372,7 @@ def map_metadata_to_ontology(movie_metadata):
 
 ### Phase 3: Reasoning Integration (Week 2)
 
-See ONTOLOGY_INTEGRATION_PLAN.md for complete architecture.
+See [ONTOLOGY_INTEGRATION_PLAN.md](ontology/ONTOLOGY_INTEGRATION_PLAN.md) for complete architecture.
 
 ---
 

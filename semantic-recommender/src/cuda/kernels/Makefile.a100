@@ -60,26 +60,30 @@ PTX_DIR := ../../../target/ptx_a100
 
 # Source files - A100 optimized kernels
 # Core kernels with A100-specific optimizations
+# Note: Variant kernels moved to variants/ subdirectory
 PTX_KERNELS := \
 	$(KERNEL_DIR)/semantic_similarity.cu \
-	$(KERNEL_DIR)/semantic_similarity_fp16.cu \
-	$(KERNEL_DIR)/semantic_similarity_tf32.cu \
-	$(KERNEL_DIR)/semantic_similarity_fp16_tensor_cores.cu \
+	$(KERNEL_DIR)/variants/semantic_similarity_fp16.cu \
+	$(KERNEL_DIR)/variants/semantic_similarity_tf32.cu \
+	$(KERNEL_DIR)/variants/semantic_similarity_fp16_tensor_cores.cu \
 	$(KERNEL_DIR)/graph_search.cu \
 	$(KERNEL_DIR)/ontology_reasoning.cu \
 	$(KERNEL_DIR)/hybrid_sssp.cu \
-	$(KERNEL_DIR)/product_quantization.cu
+	$(KERNEL_DIR)/variants/product_quantization.cu
 
 # All kernels including experimental
 ALL_KERNELS := $(PTX_KERNELS) \
 	$(KERNEL_DIR)/unified_pipeline.cu \
-	$(KERNEL_DIR)/memory_layout.cu \
-	$(KERNEL_DIR)/sorted_similarity.cu \
-	$(KERNEL_DIR)/lsh_gpu.cu \
-	$(KERNEL_DIR)/hybrid_index.cu
+	$(KERNEL_DIR)/variants/memory_layout.cu \
+	$(KERNEL_DIR)/variants/sorted_similarity.cu \
+	$(KERNEL_DIR)/variants/lsh_gpu.cu \
+	$(KERNEL_DIR)/variants/hybrid_index.cu
 
 # Object files
-OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(ALL_KERNELS))
+# Separate handling for variant and non-variant kernels
+MAIN_OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(filter-out $(KERNEL_DIR)/variants/%,$(ALL_KERNELS)))
+VARIANT_OBJECTS := $(patsubst $(KERNEL_DIR)/variants/%.cu,$(BUILD_DIR)/%.o,$(filter $(KERNEL_DIR)/variants/%,$(ALL_KERNELS)))
+OBJECTS := $(MAIN_OBJECTS) $(VARIANT_OBJECTS)
 
 # ============================================================================
 # BUILD TARGETS
@@ -92,6 +96,12 @@ dirs:
 
 # Compile individual kernels with A100 optimizations
 $(BUILD_DIR)/%.o: $(KERNEL_DIR)/%.cu | dirs
+	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(OCCUPANCY_FLAGS) $(INCLUDE) \
+		-dc $< -o $@
+	@echo "✓ Compiled (A100): $< -> $@"
+
+# Compile variant kernels with A100 optimizations
+$(BUILD_DIR)/%.o: $(KERNEL_DIR)/variants/%.cu | dirs
 	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(OCCUPANCY_FLAGS) $(INCLUDE) \
 		-dc $< -o $@
 	@echo "✓ Compiled (A100): $< -> $@"
@@ -139,9 +149,9 @@ ptx: $(PTX_KERNELS) | dirs
 benchmark-a100: $(BUILD_DIR)/benchmark_a100
 	@echo "A100 benchmark binary ready: $(BUILD_DIR)/benchmark_a100"
 
-$(BUILD_DIR)/benchmark_a100: benchmark_algorithms.cu hnsw_gpu.cuh lsh_gpu.cu | dirs
+$(BUILD_DIR)/benchmark_a100: variants/benchmark_algorithms.cu hnsw_gpu.cuh variants/lsh_gpu.cu | dirs
 	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
-		benchmark_algorithms.cu -o $@ $(LIBS) -lcurand
+		variants/benchmark_algorithms.cu -o $@ $(LIBS) -lcurand
 	@echo "✓ A100 benchmark compiled: $@"
 
 run-benchmark: benchmark-a100

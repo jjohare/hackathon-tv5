@@ -119,7 +119,7 @@ curl -X POST http://localhost:8080/api/v1/search \
 
 ### Option A: Integrate via REST API
 
-See [API.md](API.md) for:
+See [API.md](../reference/API.md) for:
 - Authentication
 - Batch search
 - Recommendations
@@ -143,7 +143,7 @@ cargo run --release --bin mcp-server
 }
 ```
 
-See [INTEGRATION.md](INTEGRATION.md) for patterns.
+See [INTEGRATION.md](../reference/INTEGRATION.md) for patterns.
 
 ### Option C: Deploy to Docker
 
@@ -266,10 +266,10 @@ cargo bench --bench quickstart
 
 ## What's Next?
 
-1. **API Integration** → [API.md](API.md)
-2. **MCP/Agent Integration** → [INTEGRATION.md](INTEGRATION.md)
-3. **Architecture Deep-Dive** → [ARCHITECTURE.md](ARCHITECTURE.md)
-4. **Production Deployment** → [ARCHITECTURE.md#deployment](ARCHITECTURE.md#deployment)
+1. **API Integration** → [API.md](../reference/API.md)
+2. **MCP/Agent Integration** → [INTEGRATION.md](../reference/INTEGRATION.md)
+3. **Architecture Deep-Dive** → [ARCHITECTURE.md](../architecture/SYSTEM_OVERVIEW.md)
+4. **Production Deployment** → [ARCHITECTURE.md#deployment](../architecture/SYSTEM_OVERVIEW.md#deployment)
 
 ---
 

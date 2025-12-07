@@ -35,32 +35,36 @@ PTX_DIR := ../../../target/ptx
 # Source files - Critical kernels for Rust FFI
 # Core kernels verified to compile successfully to PTX for T4 GPU (sm_75)
 # These 4 are the primary kernels required for Rust FFI:
+# Note: Variant kernels moved to variants/ subdirectory
 PTX_KERNELS := \
-	$(KERNEL_DIR)/semantic_similarity_fp16_tensor_cores.cu \
+	$(KERNEL_DIR)/variants/semantic_similarity_fp16_tensor_cores.cu \
 	$(KERNEL_DIR)/graph_search.cu \
 	$(KERNEL_DIR)/ontology_reasoning.cu \
 	$(KERNEL_DIR)/hybrid_sssp.cu \
 	$(KERNEL_DIR)/semantic_similarity.cu \
-	$(KERNEL_DIR)/semantic_similarity_fp16.cu \
-	$(KERNEL_DIR)/product_quantization.cu
+	$(KERNEL_DIR)/variants/semantic_similarity_fp16.cu \
+	$(KERNEL_DIR)/variants/product_quantization.cu
 
 # Legacy variable for compatibility
 KERNELS := $(PTX_KERNELS)
 
 # Benchmark algorithms
-BENCHMARK_SRC := benchmark_algorithms.cu
+BENCHMARK_SRC := variants/benchmark_algorithms.cu
 BENCHMARK_BIN := benchmark_algorithms
 TEST_BIN := ../../../tests/test_benchmark_algorithms
 
 # All kernels for object file compilation (including non-PTX-compatible)
 ALL_KERNELS := $(PTX_KERNELS) \
-	$(KERNEL_DIR)/unified_pipeline.cu \
-	$(KERNEL_DIR)/memory_layout.cu \
-	$(KERNEL_DIR)/sorted_similarity.cu \
-	$(KERNEL_DIR)/lsh_gpu.cu
+	$(KERNEL_DIR)/variants/unified_pipeline.cu \
+	$(KERNEL_DIR)/variants/memory_layout.cu \
+	$(KERNEL_DIR)/variants/sorted_similarity.cu \
+	$(KERNEL_DIR)/variants/lsh_gpu.cu
 
 # Object files (use ALL_KERNELS for library builds)
-OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(ALL_KERNELS))
+# Separate handling for variant and non-variant kernels
+MAIN_OBJECTS := $(patsubst $(KERNEL_DIR)/%.cu,$(BUILD_DIR)/%.o,$(filter-out $(KERNEL_DIR)/variants/%,$(ALL_KERNELS)))
+VARIANT_OBJECTS := $(patsubst $(KERNEL_DIR)/variants/%.cu,$(BUILD_DIR)/%.o,$(filter $(KERNEL_DIR)/variants/%,$(ALL_KERNELS)))
+OBJECTS := $(MAIN_OBJECTS) $(VARIANT_OBJECTS)
 
 # Build all (includes PTX for Rust FFI)
 all: ptx $(BUILD_DIR)/libkernels_t4.a $(BUILD_DIR)/t4_validation
@@ -77,6 +81,12 @@ $(BUILD_DIR)/t4_validation: ../examples/t4_validation.cu | $(BUILD_DIR)
 
 # Compile individual kernels
 $(BUILD_DIR)/%.o: $(KERNEL_DIR)/%.cu | $(BUILD_DIR)
+	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
+		-dc $< -o $@
+	@echo "Compiled: $< -> $@"
+
+# Compile variant kernels
+$(BUILD_DIR)/%.o: $(KERNEL_DIR)/variants/%.cu | $(BUILD_DIR)
 	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
 		-dc $< -o $@
 	@echo "Compiled: $< -> $@"
@@ -252,13 +262,13 @@ phase2-bandwidth: phase2-benchmark
 .PHONY: phase2-benchmark phase2-test phase2-profile phase2-bandwidth
 
 # HNSW/LSH Benchmark Algorithms
-benchmark-algorithms: $(BENCHMARK_SRC) hnsw_gpu.cuh lsh_gpu.cu $(BUILD_DIR)
+benchmark-algorithms: $(BENCHMARK_SRC) hnsw_gpu.cuh variants/lsh_gpu.cu $(BUILD_DIR)
 	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
 		$(BENCHMARK_SRC) -o $(BUILD_DIR)/$(BENCHMARK_BIN) $(LIBS) -lcurand
 	@echo "✅ Benchmark compiled: $(BUILD_DIR)/$(BENCHMARK_BIN)"
 	@echo "Run with: ./$(BUILD_DIR)/$(BENCHMARK_BIN)"
 
-test-algorithms: ../../../tests/test_benchmark_algorithms.cu hnsw_gpu.cuh lsh_gpu.cu $(BUILD_DIR)
+test-algorithms: ../../../tests/test_benchmark_algorithms.cu hnsw_gpu.cuh variants/lsh_gpu.cu $(BUILD_DIR)
 	$(NVCC) $(CUDA_ARCH) $(CUDA_FLAGS) $(TENSOR_FLAGS) $(INCLUDE) \
 		../../../tests/test_benchmark_algorithms.cu -o $(BUILD_DIR)/$(TEST_BIN) $(LIBS) -lcurand
 	@echo "✅ Tests compiled: $(BUILD_DIR)/$(TEST_BIN)"

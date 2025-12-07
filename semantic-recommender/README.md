@@ -23,7 +23,7 @@
 - Complex thematic queries work at keyword level, not deep semantic understanding
 - Infrastructure is production-ready; data quality depends on source enrichment
 
-**To Get Full Semantic Search**: Enrich with TMDB API data (overviews, cast, crew, tags) - see Future Improvements below.
+**To Get Full Semantic Search**: Ready-to-use enrichment pipeline available! See [SEMANTIC_ENRICHMENT_GUIDE.md](docs/SEMANTIC_ENRICHMENT_GUIDE.md) for ~30 minute implementation.
 
 ---
 
@@ -471,10 +471,17 @@ semantic-recommender/
 
 ### Future Enhancements
 
-1. **Data Enrichment** (HIGHEST PRIORITY)
-   - TMDB API integration for overviews, cast, crew, keywords
-   - Regenerate embeddings from enriched descriptions
-   - Expected similarity scores: 0.7-0.9 range (vs current 0.26-0.31)
+1. **Data Enrichment** ✅ **IMPLEMENTATION READY**
+   - **Status**: Complete semantic enrichment pipeline implemented
+   - **Scripts**: 4-stage pipeline (651 lines of code)
+     1. `select_demo_subset.py` - Select top 50K movies ✅ Complete
+     2. `enrich_tmdb_metadata.py` - TMDB API enrichment (~20-30 min)
+     3. `generate_rich_text.py` - Rich semantic text generation
+     4. `embed_rich_text.py` - TensorRT re-embedding
+   - **Timeline**: ~30 minutes for 50K demo subset
+   - **Expected improvement**: 0.26-0.31 → 0.70-0.90 similarity scores (2.5-3.0x)
+   - **Documentation**: See [SEMANTIC_ENRICHMENT_GUIDE.md](docs/SEMANTIC_ENRICHMENT_GUIDE.md)
+   - **Next step**: Get TMDB API key and run enrichment
 
 2. **Ontology Integration**
    - Map enriched keywords to AdA film ontology

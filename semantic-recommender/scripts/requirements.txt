@@ -34,3 +34,6 @@ onnx>=1.14.0      # ONNX model support
 # Web server (query interface)
 flask>=3.0.0      # Web framework for query API
 requests>=2.31.0  # HTTP client for testing
+
+# TMDB API enrichment
+ratelimit>=2.2.1  # Rate limiting for TMDB API (50 req/sec)

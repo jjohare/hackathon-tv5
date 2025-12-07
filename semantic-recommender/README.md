@@ -14,6 +14,8 @@
 
 [Features](#-revolutionary-innovations) • [Results](#-phenomenal-results) • [Quick Start](#-quick-start) • [Architecture](#-hybrid-architecture) • [Documentation](#-documentation)
 
+> **🏆 Production Baseline:** `main` contains the stable **316K QPS** production system with MCP server. `experimental-features` contains hyper-personalization, TensorRT, and Rust explorations.
+
 </div>
 
 ---

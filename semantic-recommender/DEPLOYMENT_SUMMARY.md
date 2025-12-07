@@ -67,11 +67,11 @@ A100 Performance (PyTorch):
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| `SYSTEM_STATUS.md` | Current status | ✅ |
+| `reports/SYSTEM_STATUS.md` | Current status | ✅ |
 | `PRODUCTION_DEPLOYMENT_PLAN.md` | GPU deployment | ✅ |
-| `A100_GPU_BENCHMARK_REPORT.md` | Embedding perf | ✅ |
-| `RECOMMENDATION_ENGINE_RESULTS.md` | Test results | ✅ |
-| `DATA_PIPELINE_COMPLETE.md` | Pipeline validation | ✅ |
+| `reports/A100_GPU_BENCHMARK_REPORT.md` | Embedding perf | ✅ |
+| `reports/RECOMMENDATION_ENGINE_RESULTS.md` | Test results | ✅ |
+| `reports/DATA_PIPELINE_COMPLETE.md` | Pipeline validation | ✅ |
 
 ---
 
@@ -218,11 +218,17 @@ semantic-recommender/
 │   ├── processed/           # 7.6 GB (gitignored)
 │   └── raw/                 # 1.1 GB (gitignored)
 ├── docs/
-│   ├── SYSTEM_STATUS.md                      # ⭐ Current status
+│   ├── reports/                              # Benchmark & test reports
+│   │   ├── SYSTEM_STATUS.md                  # ⭐ Current status
+│   │   ├── A100_GPU_BENCHMARK_REPORT.md      # Embedding perf
+│   │   ├── RECOMMENDATION_ENGINE_RESULTS.md  # Test results
+│   │   ├── DATA_PIPELINE_COMPLETE.md         # Pipeline validation
+│   │   ├── A100_DEPLOYMENT_GUIDE.md          # GCP A100 setup
+│   │   ├── A100_TEST_RESULTS.md              # Actual benchmark results
+│   │   ├── EXPECTED_A100_RESULTS.md          # Performance predictions
+│   │   └── A100_HYPER_PERSONALIZATION_FINAL_BENCHMARK.md  # Advanced features
 │   ├── PRODUCTION_DEPLOYMENT_PLAN.md         # ⭐ GPU deployment
-│   ├── A100_GPU_BENCHMARK_REPORT.md          # Embedding perf
-│   ├── RECOMMENDATION_ENGINE_RESULTS.md      # Test results
-│   └── DATA_PIPELINE_COMPLETE.md             # Pipeline validation
+│   ├── QUICKSTART.md                         # Setup guide
 ├── scripts/
 │   ├── parse_movielens.py            # Data parser
 │   ├── generate_embeddings.py        # Embedding generation

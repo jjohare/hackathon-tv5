@@ -110,7 +110,7 @@ gcloud compute scp semantics-testbed-a100:/home/devuser/semantic-recommender/res
 | Batch 100 | 2,730 ms | 30 ms | **91x** |
 | Throughput | 37 QPS | 10,000 QPS | **270x** |
 
-See `docs/EXPECTED_A100_RESULTS.md` for detailed predictions.
+See `docs/reports/EXPECTED_A100_RESULTS.md` for detailed predictions.
 
 ---
 
@@ -144,10 +144,10 @@ cat results/a100_test_results.json | python3 -m json.tool
 
 ## 📚 Documentation
 
-- **Deployment Guide:** `docs/A100_DEPLOYMENT_GUIDE.md`
-- **Expected Results:** `docs/EXPECTED_A100_RESULTS.md`
+- **Deployment Guide:** `docs/reports/A100_DEPLOYMENT_GUIDE.md`
+- **Expected Results:** `docs/reports/EXPECTED_A100_RESULTS.md`
 - **Ontology Integration:** `docs/ONTOLOGY_INTEGRATION_PLAN.md`
-- **System Status:** `docs/SYSTEM_STATUS.md`
+- **System Status:** `docs/reports/SYSTEM_STATUS.md`
 
 ---
 

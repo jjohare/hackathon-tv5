@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CUDA](https://img.shields.io/badge/CUDA-12.8-76B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C?logo=pytorch)](https://pytorch.org/)
-[![A100](https://img.shields.io/badge/A100-316K_QPS-00D084)](docs/A100_TEST_RESULTS.md)
+[![A100](https://img.shields.io/badge/A100-316K_QPS-00D084)](docs/reports/A100_TEST_RESULTS.md)
 [![Whelk-rs](https://img.shields.io/badge/Whelk--rs-EL++-orange)](docs/GPU_ONTOLOGY_REASONING.md)
 
 [Features](#-revolutionary-innovations) • [Results](#-phenomenal-results) • [Quick Start](#-quick-start) • [Architecture](#-hybrid-architecture) • [Documentation](#-documentation)
@@ -143,7 +143,7 @@ Built for the [Agentics Foundation Hackathon](https://github.com/agenticsorg/hac
 - CPU ontology: **0.5ms** (Jaccard on concepts)
 - **Total: <1ms** for production queries
 
-**📖 See [A100_TEST_RESULTS.md](docs/A100_TEST_RESULTS.md) for complete benchmarks.**
+**📖 See [A100_TEST_RESULTS.md](docs/reports/A100_TEST_RESULTS.md) for complete benchmarks.**
 **📖 See [GPU_ONTOLOGY_REASONING.md](docs/GPU_ONTOLOGY_REASONING.md) for hybrid system details.**
 
 ---
@@ -327,7 +327,7 @@ graph TB
 | **Complex graph** | VectorDB + Neo4j | 15ms | 5K QPS | $0.0001 |
 | **Personalized** | All layers | 20ms | 3K QPS | $0.00015 |
 
-**📖 See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for technical deep-dive.**
+**📖 See [ARCHITECTURE.md](docs/architecture/SYSTEM_OVERVIEW.md) for technical deep-dive.**
 
 ---
 
@@ -374,7 +374,7 @@ unzip ml-25m.zip
 cd ../..
 
 # 5. Process dataset and generate embeddings
-python scripts/parse_movielens.py  # ~5 minutes
+python scripts/data_pipeline/parse_movielens.py  # ~5 minutes
 python scripts/generate_embeddings.py  # ~10 minutes on A100
 ```
 
@@ -639,7 +639,7 @@ cinematography and intellectual themes.
 | **Spotify** | 20-50ms | 100K QPS | Minimal | ~$0.00005 |
 | **Our System** | **1.2ms** | **316K QPS** | **Full** | **$0.0000000033** |
 
-**📖 See [A100_TEST_RESULTS.md](docs/A100_TEST_RESULTS.md) for complete benchmarks.**
+**📖 See [A100_TEST_RESULTS.md](docs/reports/A100_TEST_RESULTS.md) for complete benchmarks.**
 
 ---
 
@@ -676,7 +676,7 @@ WEIGHTS = {
 # - Strict filtering: (0.4, 0.3, 0.3)
 ```
 
-**📖 See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for deployment topologies.**
+**📖 See [ARCHITECTURE.md](docs/architecture/SYSTEM_OVERVIEW.md) for deployment topologies.**
 
 ---
 
@@ -684,14 +684,14 @@ WEIGHTS = {
 
 | Document | Purpose | Highlights |
 |----------|---------|-----------|
-| [A100_TEST_RESULTS.md](docs/A100_TEST_RESULTS.md) | Complete A100 benchmarks | 316K QPS, 1.6 TB/s bandwidth |
+| [reports/A100_TEST_RESULTS.md](docs/reports/A100_TEST_RESULTS.md) | Complete A100 benchmarks | 316K QPS, 1.6 TB/s bandwidth |
 | [GPU_ONTOLOGY_REASONING.md](docs/GPU_ONTOLOGY_REASONING.md) | Hybrid system architecture | 91ms hybrid, <1ms warm |
 | [ONTOLOGY_SOURCES.md](docs/ONTOLOGY_SOURCES.md) | Ontology licenses & attribution | AdA, Movies, OMC licenses |
-| [A100_DEPLOYMENT_GUIDE.md](docs/A100_DEPLOYMENT_GUIDE.md) | GCP A100 deployment | Complete setup guide |
+| [reports/A100_DEPLOYMENT_GUIDE.md](docs/reports/A100_DEPLOYMENT_GUIDE.md) | GCP A100 deployment | Complete setup guide |
 | [ONTOLOGY_INTEGRATION_PLAN.md](docs/ONTOLOGY_INTEGRATION_PLAN.md) | 4-week integration roadmap | Whelk-rs + AdA integration |
 | [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup guide | First query in minutes |
-| [API.md](docs/API.md) | API reference | REST + MCP endpoints |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical deep-dive | System design + diagrams |
+| [API.md](docs/reference/API.md) | API reference | REST + MCP endpoints |
+| [ARCHITECTURE.md](docs/architecture/SYSTEM_OVERVIEW.md) | Technical deep-dive | System design + diagrams |
 
 ---
 

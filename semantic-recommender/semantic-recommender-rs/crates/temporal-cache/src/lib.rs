@@ -11,7 +11,7 @@
 //! - 2.48 GB GPU memory for 10K×62K matrix
 
 use cudarc::cublas::{CudaBlas, Gemm, GemmConfig};
-use cudarc::driver::{CudaDevice, CudaSlice, DevicePtr, DevicePtrMut};
+use cudarc::driver::{CudaDevice, CudaSlice};
 use cudarc::cublas::sys::cublasOperation_t;
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 use thiserror::Error;
-use tracing::{debug, info, warn};
+use tracing::{debug, info};
 
 /// Cache errors
 #[derive(Error, Debug)]
@@ -182,15 +182,13 @@ impl TemporalGPUCache {
         info!("Initializing TemporalGPUCache: {} items, {} dim, {} popular",
               num_items, embed_dim, num_popular);
 
-        // Initialize CUDA device
+        // Initialize CUDA device (returns Arc<CudaDevice>)
         let device = CudaDevice::new(0)
             .map_err(|e| CacheError::Cuda(format!("Failed to initialize CUDA device: {}", e)))?;
-        let device = Arc::new(device);
 
         // Initialize cuBLAS
-        let blas = CudaBlas::new(device.clone())
-            .map_err(|e| CacheError::Cuda(format!("Failed to initialize cuBLAS: {}", e)))?;
-        let blas = Arc::new(blas);
+        let blas = Arc::new(CudaBlas::new(device.clone())
+            .map_err(|e| CacheError::Cuda(format!("Failed to initialize cuBLAS: {}", e)))?);
 
         // Copy embeddings to GPU
         let item_embeddings = device.htod_sync_copy(item_embeddings_cpu)
@@ -251,7 +249,7 @@ impl TemporalGPUCache {
         let mut popular_emb_cpu = vec![0.0f32; self.num_popular * self.embed_dim];
 
         // Copy from GPU
-        let all_embeddings_cpu = self.device.dtoh_sync_copy(&self.item_embeddings)
+        let all_embeddings_cpu = self.device.dtoh_sync_copy(&*self.item_embeddings)
             .map_err(|e| CacheError::GpuOperation(format!("Failed to copy embeddings from GPU: {}", e)))?;
 
         for (i, &idx) in self.popular_indices.iter().enumerate() {
@@ -289,7 +287,7 @@ impl TemporalGPUCache {
             self.blas.gemm(
                 config,
                 &popular_emb_gpu,
-                &self.item_embeddings,
+                &*self.item_embeddings,
                 Arc::get_mut(&mut self.popular_similarities)
                     .ok_or_else(|| CacheError::GpuOperation("Cannot get mutable reference to similarities".to_string()))?,
             ).map_err(|e| CacheError::GpuOperation(format!("GEMM failed: {}", e)))?;
@@ -332,10 +330,9 @@ impl TemporalGPUCache {
             let offset = cache_idx * self.num_items;
 
             // Copy similarities from GPU
-            let similarities = self.device.dtoh_sync_copy_range(
-                &self.popular_similarities,
-                offset..offset + self.num_items,
-            ).map_err(|e| CacheError::GpuOperation(format!("Failed to copy similarities: {}", e)))?;
+            let slice_view = self.popular_similarities.slice(offset..offset + self.num_items);
+            let similarities = self.device.dtoh_sync_copy(&slice_view)
+                .map_err(|e| CacheError::GpuOperation(format!("Failed to copy similarities: {}", e)))?;
 
             let latency = start.elapsed();
             let latency_ms = latency.as_secs_f64() * 1000.0;
@@ -372,10 +369,9 @@ impl TemporalGPUCache {
 
         // Extract query embedding from GPU
         let offset = item_id * self.embed_dim;
-        let query_emb = self.device.dtoh_sync_copy_range(
-            &self.item_embeddings,
-            offset..offset + self.embed_dim,
-        ).map_err(|e| CacheError::GpuOperation(format!("Failed to copy query embedding: {}", e)))?;
+        let slice_view = self.item_embeddings.slice(offset..offset + self.embed_dim);
+        let query_emb = self.device.dtoh_sync_copy(&slice_view)
+            .map_err(|e| CacheError::GpuOperation(format!("Failed to copy query embedding: {}", e)))?;
 
         // Compute dot products on GPU
         self.get_similarities(&query_emb, start)
@@ -425,7 +421,7 @@ impl TemporalGPUCache {
         unsafe {
             self.blas.gemm(
                 config,
-                &self.item_embeddings,
+                &*self.item_embeddings,
                 &query_gpu,
                 &mut output_gpu,
             ).map_err(|e| CacheError::GpuOperation(format!("GEMM failed: {}", e)))?;

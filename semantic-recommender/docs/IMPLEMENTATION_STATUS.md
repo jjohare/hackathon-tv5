@@ -67,27 +67,67 @@
 ### Status
 
 - **Code:** ✅ Complete (5,189 lines across 13 crates)
-- **Build:** ❌ Blocked - torch-sys dependency cannot find libtorch
+- **Code Fixes Applied:** ✅ Fixed temporal-cache cudarc API issues, made PyTorch optional
+- **Build:** ❌ Blocked - Multiple dependency incompatibilities
 - **Deploy:** ⏳ Blocked (cannot build binaries)
 - **Benchmark:** ⏳ Blocked
 
-### Build Error
+### Build Blockers (December 7, 2025)
 
+**1. PyTorch 2.5.1 Circular Import (Python 3.13)**
 ```
-error: failed to run custom build command for `torch-sys v0.16.1`
-Cannot find a libtorch install, you can either:
-- Install libtorch manually and set the LIBTORCH environment variable
-- Use a system wide install in /usr/lib/libtorch.so
-- Use a Python environment with PyTorch installed by setting LIBTORCH_USE_PYTORCH=1
+ImportError: cannot import name 'WrapperDescriptorType' from partially initialized module 'types'
+(most likely due to a circular import) (torch/types.py)
 ```
+- PyTorch 2.5.1 has circular import with Python 3.13
+- Affects torch-sys build script which queries PyTorch version
 
-**Root Cause:** `ort` (ONNX Runtime) crate pulls in `torch-sys` which requires libtorch C++ library. The Rust implementation uses cudarc for GPU operations (pure Rust CUDA) but depends on ONNX Runtime for the semantic encoder model.
+**2. torch-sys API Incompatibility**
+- `tch-rs` (Rust PyTorch bindings) incompatible with PyTorch 2.5.x
+- Requires PyTorch 2.3.0, but system has 2.9.1 (A100) or 2.5.1 (local)
+- 20+ missing/changed C++ API functions
 
-**Workaround Options:**
-1. Install libtorch manually and set LIBTORCH environment variable
-2. Use system-wide libtorch in /usr/lib/libtorch.so
-3. Build on A100 where PyTorch with libtorch is available
-4. Refactor semantic-model crate to remove ONNX dependency
+**3. openssl-sys Build Failure (A100)**
+```
+error: failed to run custom build command for `openssl-sys v0.9.111`
+```
+- SSL library linking issues on A100 environment
+
+**Root Cause Analysis:**
+The `attention` crate requires PyTorch (`tch` crate) which pulls in `torch-sys`. This creates a cascade of incompatibilities:
+1. ONNX Runtime (`ort`) is properly feature-gated and not the problem
+2. `attention` crate has **mandatory** PyTorch dependency (fixed to be optional)
+3. `torch-sys` requires exact PyTorch version match (2.3.0)
+4. No compatible PyTorch version available (system has 2.9.1, 2.5.1 has circular import)
+
+### Code Fixes Applied
+
+**1. Fixed temporal-cache cudarc API issues** (`crates/temporal-cache/src/lib.rs`)
+- Removed `Arc<Arc<CudaDevice>>` double wrapping
+- Fixed `dtoh_sync_copy_range` → use `.slice()` + `dtoh_sync_copy`
+- Added `&*` dereference for `Arc<CudaSlice<f32>>` DevicePtr trait
+
+**2. Made PyTorch optional** (`crates/attention/Cargo.toml`)
+- Changed `tch = "0.22"` to `tch = { version = "0.22", optional = true }`
+- Added `pytorch = ["dep:tch"]` feature flag
+- Default includes pytorch: `default = ["cuda", "pytorch"]`
+
+### Recommended Path Forward
+
+**Option A: Wait for Ecosystem Updates**
+- Wait for `tch-rs` to support PyTorch 2.5+
+- OR wait for PyTorch to fix Python 3.13 circular import
+- Timeline: Weeks to months
+
+**Option B: Refactor Attention Crate**
+- Implement attention using pure CUDA (cudarc)
+- Remove PyTorch dependency entirely
+- Effort: 8-12 hours
+
+**Option C: Focus on Python/TensorRT**
+- Python implementation is production-ready (11.42ms baseline validated)
+- TensorRT/ONNX code complete (targets <2ms, 6-10× faster)
+- No build blockers, ready for deployment
 
 ### Expected Performance (If Build Succeeds)
 

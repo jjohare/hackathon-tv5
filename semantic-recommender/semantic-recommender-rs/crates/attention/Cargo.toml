@@ -23,7 +23,7 @@ num-traits = { workspace = true }
 
 # Crate-specific
 bytemuck = "1.14"
-tch = "0.16"
+tch = { version = "0.22", optional = true }
 
 # Local dependencies
 gpu-embeddings = { path = "../gpu-embeddings" }
@@ -35,9 +35,10 @@ tokio-test = "0.4"
 approx = "0.5"
 
 [features]
-default = ["cuda"]
+default = ["cuda", "pytorch"]
 cuda = []
 cpu-fallback = []
+pytorch = ["dep:tch"]
 
 [[bench]]
 name = "attention_bench"

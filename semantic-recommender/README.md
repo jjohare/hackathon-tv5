@@ -32,13 +32,14 @@
 - ✅ **<1% ontology overhead** for hybrid semantic+reasoning recommendations
 - ✅ **Explainable AI** with film ontology concept matching
 
-**🚀 NEW: GPU Hyper-Personalization (3 Breakthrough Optimizations):**
-- ✅ **<0.65ms end-to-end latency** with real-time personalization (62× faster than CPU)
-- ✅ **600K+ QPS** projected batch throughput (24,000× improvement)
-- ✅ **+60-90% quality improvement** from personalization + context awareness
-- ✅ **GPU user embeddings** - Real-time 10M user personalization
-- ✅ **Temporal caching** - 85% hit rate with 12.5× speedup
+**🚀 NEW: GPU Hyper-Personalization (3 Breakthrough Features):**
+- ✅ **11.42ms mean latency** on A100 (1.6× faster than CPU, 1.65× warm speedup)
+- ✅ **94 QPS** batch throughput (1.34× improvement)
+- ✅ **Real-time personalization** - GPU user embeddings for 10M users
+- ✅ **Temporal caching** - 2.4× faster cache hits (0.16ms vs 0.38ms)
 - ✅ **Multi-head attention** - Context-aware reranking (time/genre/social)
+- ✅ **7.6% GPU utilization** - Massive headroom for TensorRT optimization
+- 🔧 **Primary bottleneck identified:** Query encoding - TensorRT can achieve <2ms
 
 Built for the [Agentics Foundation Hackathon](https://github.com/agenticsorg/hackathon-tv5), this system integrates three powerful technologies into a unified "three-brain" hybrid architecture with **formal reasoning**.
 

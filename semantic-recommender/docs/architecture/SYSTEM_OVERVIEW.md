@@ -1,4 +1,17 @@
+<<<<<<<< HEAD:semantic-recommender/scripts/utils/rebuild_architecture_clean.py
+#!/usr/bin/env python3
+"""
+Rebuild ARCHITECTURE.md with clean Mermaid diagrams, removing ASCII art.
+"""
+
+import re
+
+def get_clean_header():
+    """Get the clean header and intro content."""
+    return """# System Architecture: TV5 Monde Media Gateway
+========
 # System Architecture Overview
+>>>>>>>> be5c04130aa4e21216f1124422898e8a21447814:semantic-recommender/docs/architecture/SYSTEM_OVERVIEW.md
 
 **System**: TV5 Monde Media Gateway (Semantic Recommender)
 **Last Updated**: 2025-12-07
@@ -445,6 +458,20 @@ The TV5 Monde Media Gateway architecture achieves:
 ✅ **Production-ready** with monitoring, testing, deployment automation
 
 **Key Innovation**: Intelligent hybrid routing that automatically selects optimal execution path (GPU vs Vector DB) based on query complexity, achieving both ultra-low latency AND massive scale.
+<<<<<<<< HEAD:semantic-recommender/scripts/utils/rebuild_architecture_clean.py
+"""
+
+if __name__ == '__main__':
+    content = get_clean_header()
+    output_file = '/home/devuser/workspace/hackathon-tv5/ARCHITECTURE_CLEAN.md'
+
+    with open(output_file, 'w') as f:
+        f.write(content)
+
+    print(f"Clean ARCHITECTURE.md written to {output_file}")
+    print(f"Total lines: {len(content.splitlines())}")
+    print(f"File size: {len(content)} bytes")
+========
 
 ---
 
@@ -457,3 +484,4 @@ The TV5 Monde Media Gateway architecture achieves:
 **Document Version**: 2.0
 **Last Updated**: 2025-12-07
 **Status**: Production-Ready
+>>>>>>>> be5c04130aa4e21216f1124422898e8a21447814:semantic-recommender/docs/architecture/SYSTEM_OVERVIEW.md

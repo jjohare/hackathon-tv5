@@ -35,6 +35,14 @@ from sentence_transformers import SentenceTransformer
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Import TensorRT encoder (with fallback)
+try:
+    from trt_inference import TensorRTEncoder
+    TRT_AVAILABLE = True
+except ImportError:
+    TRT_AVAILABLE = False
+    print("[Warning] TensorRT encoder not available, using PyTorch fallback")
+
 
 class GPUUserEmbeddings:
     """
@@ -372,9 +380,10 @@ class GPUHyperPersonalization:
     Expected Performance: <0.5ms latency, 500K+ QPS
     """
 
-    def __init__(self, base_path: str = "."):
+    def __init__(self, base_path: str = ".", use_tensorrt: bool = False):
         self.base_path = Path(base_path)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.use_tensorrt = use_tensorrt
 
         print("=" * 80)
         print("GPU Hyper-Personalization System")
@@ -402,14 +411,52 @@ class GPUHyperPersonalization:
             num_heads=8
         ).to(self.device)
 
-        # Load semantic model
+        # Load semantic model (with TensorRT option)
         print("\n[Semantic Model]")
-        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
-        self.model.to(self.device)
+        self._load_encoder(use_tensorrt)
 
         print("\n" + "=" * 80)
         print("✅ System ready!")
         print("=" * 80 + "\n")
+
+    def _load_encoder(self, use_tensorrt: bool):
+        """
+        Load encoder with TensorRT optimization if available
+
+        Args:
+            use_tensorrt: Try to use TensorRT (falls back to PyTorch if unavailable)
+        """
+        trt_engine_path = self.base_path / "data/models/minilm_l12_v2_fp16.plan"
+
+        if use_tensorrt and TRT_AVAILABLE and trt_engine_path.exists():
+            try:
+                print(f"  Loading TensorRT engine: {trt_engine_path}")
+                self.model = TensorRTEncoder(
+                    str(trt_engine_path),
+                    model_name='paraphrase-multilingual-MiniLM-L12-v2',
+                    device=str(self.device)
+                )
+                print(f"  ✅ TensorRT encoder active (3-5x faster)")
+                self.encoder_type = "tensorrt"
+            except Exception as e:
+                print(f"  ⚠️  TensorRT failed: {e}")
+                print(f"  Falling back to PyTorch")
+                self._load_pytorch_encoder()
+        else:
+            if use_tensorrt:
+                if not TRT_AVAILABLE:
+                    print(f"  ⚠️  TensorRT not available (install tensorrt & pycuda)")
+                elif not trt_engine_path.exists():
+                    print(f"  ⚠️  TensorRT engine not found: {trt_engine_path}")
+                print(f"  Using PyTorch encoder")
+            self._load_pytorch_encoder()
+
+    def _load_pytorch_encoder(self):
+        """Load standard PyTorch SentenceTransformer encoder"""
+        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        self.model.to(self.device)
+        self.encoder_type = "pytorch"
+        print(f"  ✅ PyTorch encoder active")
 
     def load_embeddings(self):
         """Load pre-computed embeddings and metadata"""
@@ -515,6 +562,7 @@ class GPUHyperPersonalization:
                 'attention_rerank_ms': (t4 - t3) * 1000
             },
             'device': str(self.device),
+            'encoder': self.encoder_type,
             'user_id': user_id
         }
 
@@ -548,9 +596,11 @@ def main():
     parser = argparse.ArgumentParser(description='GPU Hyper-Personalization System')
     parser.add_argument('--test', action='store_true', help='Run demo test')
     parser.add_argument('--benchmark', action='store_true', help='Run benchmarks')
+    parser.add_argument('--use-tensorrt', action='store_true',
+                       help='Use TensorRT encoder (3-5x faster if engine available)')
     args = parser.parse_args()
 
-    system = GPUHyperPersonalization()
+    system = GPUHyperPersonalization(use_tensorrt=args.use_tensorrt)
 
     if args.test:
         print("\n" + "=" * 80)
@@ -580,7 +630,7 @@ def main():
         )
 
         print(f"⏱️  Total time: {result['timing']['total_ms']:.2f}ms")
-        print(f"   ├─ Query encoding: {result['timing']['query_encoding_ms']:.2f}ms")
+        print(f"   ├─ Query encoding: {result['timing']['query_encoding_ms']:.2f}ms ({result['encoder']})")
         print(f"   ├─ User fusion: {result['timing']['user_fusion_ms']:.2f}ms")
         print(f"   ├─ GPU similarity: {result['timing']['gpu_similarity_ms']:.2f}ms")
         print(f"   └─ Attention rerank: {result['timing']['attention_rerank_ms']:.2f}ms")

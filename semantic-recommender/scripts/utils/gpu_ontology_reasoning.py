@@ -2,17 +2,23 @@
 """
 GPU-Accelerated Ontology Reasoning for Semantic Recommender
 
-Integrates whelk-rs EL++ reasoner with GPU-accelerated similarity computation
+Integrates intelligent graph distance reasoning with GPU-accelerated similarity
 for hybrid semantic+ontology recommendations.
 
 Architecture:
 1. GPU: Fast semantic similarity (PyTorch CUDA)
-2. CPU: Whelk-rs ontology reasoning (Rust via subprocess)
-3. Hybrid: Combine scores with weighted ranking
+2. Graph: Intelligent graph distance reasoning (replaces naive Jaccard)
+3. Hybrid: Filter-then-Boost strategy with adaptive weighting
+
+Changes from V1 (naive Jaccard):
+- Replaced Jaccard overlap with graph shortest paths
+- Added path-based explanations
+- Adaptive weighting based on graph proximity
+- Query expansion using ontology
 
 Performance Target:
 - GPU similarity: 0.1-0.5 ms (measured)
-- Ontology reasoning: <5 ms (target)
+- Graph reasoning: <5 ms (Dijkstra or CUDA SSSP)
 - Total hybrid: <10 ms (production ready)
 """
 
@@ -24,6 +30,14 @@ import time
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 import sys
+
+# Import graph distance reasoner
+try:
+    from .graph_distance_reasoner import GraphDistanceReasoner
+    GRAPH_REASONER_AVAILABLE = True
+except ImportError:
+    GRAPH_REASONER_AVAILABLE = False
+    print("⚠️  Graph distance reasoner not available, falling back to Jaccard")
 
 class GPUOntologyReasoner:
     """
@@ -40,7 +54,7 @@ class GPUOntologyReasoner:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         print("=" * 80)
-        print("GPU-Accelerated Ontology Reasoning System")
+        print("GPU-Accelerated Ontology Reasoning System V2")
         print("=" * 80)
         print(f"\nDevice: {self.device}")
 
@@ -54,11 +68,23 @@ class GPUOntologyReasoner:
         # Load ontology mappings (CPU)
         self.load_ontology_mappings()
 
-        # Scoring weights
+        # Initialize graph distance reasoner
+        if GRAPH_REASONER_AVAILABLE:
+            print("\n🧠 Initializing Graph Distance Reasoner...")
+            self.graph_reasoner = GraphDistanceReasoner(base_path=str(base_path))
+            self.use_graph_reasoning = True
+            print("✅ Graph reasoning enabled")
+        else:
+            self.graph_reasoner = None
+            self.use_graph_reasoning = False
+            print("⚠️  Graph reasoning disabled (using Jaccard fallback)")
+
+        # Scoring weights (DEPRECATED - now using adaptive weighting)
+        # Kept for backward compatibility
         self.weights = {
             'semantic': 0.7,     # Semantic similarity weight
-            'ontology': 0.2,     # Ontology concept matching weight
-            'genre': 0.1         # Genre overlap weight
+            'ontology': 0.2,     # Ontology concept matching weight (deprecated)
+            'genre': 0.1         # Genre overlap weight (deprecated)
         }
 
     def load_embeddings(self):
@@ -102,47 +128,101 @@ class GPUOntologyReasoner:
         print("=" * 80)
 
         # Genome tag → AdA ontology concept mapping
-        # Based on ONTOLOGY_INTEGRATION_PLAN.md
+        # Expanded mapping based on actual MovieLens genome tags (1127 total)
+        # Covers visual style, narrative, themes, cinematography, editing, sound
         self.genome_to_ada = {
-            # Visual Style
+            # Visual Style & Cinematography
             'dark': ['ada:DarkLighting', 'ada:HighContrast'],
             'noir': ['ada:FilmNoirStyle', 'ada:ShadowsAndLight'],
             'colorful': ['ada:SaturatedColor', 'ada:BrightLighting'],
             'visually appealing': ['ada:HighProductionValue', 'ada:AestheticComposition'],
+            'cinematography': ['ada:HighProductionValue', 'ada:ArtisticCinematography'],
+            'beautiful': ['ada:VisualBeauty', 'ada:AestheticComposition'],
 
-            # Camera Work
+            # Camera Work & Shot Composition
             'tracking shot': ['ada:TrackingShot', 'ada:FluidCameraMovement'],
             'close-up': ['ada:CloseUpShot', 'ada:IntimateFraming'],
             'long take': ['ada:LongTake', 'ada:ContinuousShot'],
             'handheld camera': ['ada:HandheldCamera', 'ada:DynamicCamerawork'],
 
-            # Editing
+            # Editing & Pacing
             'fast-paced': ['ada:RapidEditing', 'ada:ShortAverageShotLength'],
             'slow': ['ada:SlowPacing', 'ada:LongTakes'],
             'non-linear': ['ada:NonLinearNarrative', 'ada:ComplexTemporalStructure'],
             'flashback': ['ada:FlashbackNarrative', 'ada:TemporalDisplacement'],
 
-            # Sound
+            # Sound & Music
             'atmospheric': ['ada:AtmosphericSound', 'ada:AmbientSoundDesign'],
-            'soundtrack': ['ada:MemorableScore', 'ada:MusicDriven'],
-            'dialogue driven': ['ada:DialogueDriven', 'ada:VerbalNarrative'],
+            'good soundtrack': ['ada:MemorableScore', 'ada:MusicDriven'],
+            'dialogue': ['ada:DialogueDriven', 'ada:VerbalNarrative'],
+            'talky': ['ada:DialogueHeavy', 'ada:VerbalNarrative'],
 
-            # Lighting
-            'chiaroscuro': ['ada:ChiaroscuroLighting', 'ada:DramaticContrast'],
-            'naturalistic': ['ada:NaturalisticLighting', 'ada:RealisticLighting'],
-            'expressionistic': ['ada:ExpressionisticLighting', 'ada:StylizedLighting'],
-
-            # Narrative
+            # Narrative Structure & Complexity
             'cerebral': ['movies:IntellectualFilm', 'movies:ComplexNarrative'],
             'philosophical': ['movies:PhilosophicalThemes', 'movies:ExistentialContent'],
             'twist ending': ['movies:PlotTwist', 'movies:SurpriseRevelation'],
-            'character study': ['movies:CharacterDriven', 'movies:PsychologicalDepth'],
+            'complex': ['movies:ComplexNarrative', 'movies:LayeredStoryline'],
+            'storytelling': ['movies:NarrativeExcellence', 'movies:CompellingStory'],
+            'enigmatic': ['movies:Mysterious', 'movies:AmbiguousNarrative'],
+            'predictable': ['movies:ConventionalPlot', 'movies:FormulaicNarrative'],
 
-            # Genre-specific
+            # Character & Psychology
+            'character study': ['movies:CharacterDriven', 'movies:PsychologicalDepth'],
+            'intimate': ['movies:PersonalStory', 'movies:EmotionalDepth'],
+            'relationships': ['movies:RelationshipDriven', 'movies:InterpersonalDynamics'],
+            'mentor': ['movies:MentorRelationship', 'movies:GuidanceFigure'],
+            'obsession': ['movies:ObsessiveCharacter', 'movies:PsychologicalIntensity'],
+
+            # Mood & Atmosphere
             'suspenseful': ['ada:Suspense', 'ada:TensionBuilding'],
+            'suspense': ['ada:Suspense', 'ada:TensionBuilding'],
+            'intense': ['movies:HighEmotionalIntensity', 'ada:Suspense'],
+            'melancholic': ['movies:MelancholicMood', 'movies:Sadness'],
+            'dramatic': ['movies:DramaticIntensity', 'movies:EmotionalWeight'],
+            'weird': ['movies:Surreal', 'movies:Unconventional'],
+
+            # Intellectual & Thematic Depth
             'thought-provoking': ['movies:ThoughtProvoking', 'movies:IntellectuallyStimulating'],
-            'action-packed': ['ada:FastPace', 'ada:HighActionDensity'],
+            'social commentary': ['movies:SocialCritique', 'movies:PoliticalThemes'],
+            'life philosophy': ['movies:PhilosophicalReflection', 'movies:ExistentialThemes'],
+
+            # Action & Violence
+            'action': ['movies:ActionSequences', 'ada:HighActionDensity'],
+            'chase': ['movies:ChaseSequence', 'ada:DynamicMovement'],
+            'violence': ['movies:GraphicViolence', 'movies:ViolentContent'],
+            'brutality': ['movies:IntenseViolence', 'movies:HarshRealism'],
+
+            # Emotional Tone
             'romantic': ['movies:RomanticThemes', 'movies:LoveStory'],
+            'comedy': ['movies:ComedyGenre', 'movies:HumorousTone'],
+            'fun movie': ['movies:Entertaining', 'movies:LightHearted'],
+            'great ending': ['movies:SatisfyingConclusion', 'movies:MemorableEnding'],
+
+            # Crime & Corruption
+            'murder': ['movies:MurderPlot', 'movies:CrimeDrama'],
+            'corruption': ['movies:CorruptionTheme', 'movies:MoralDecay'],
+            'vengeance': ['movies:RevengeTheme', 'movies:Retribution'],
+            'betrayal': ['movies:BetrayalTheme', 'movies:Treachery'],
+            'greed': ['movies:GreedTheme', 'movies:MaterialismCritique'],
+
+            # Existential & Psychological
+            'loneliness': ['movies:IsolationTheme', 'movies:Alienation'],
+            'destiny': ['movies:FateTheme', 'movies:Determinism'],
+            'runaway': ['movies:EscapeNarrative', 'movies:Journey'],
+
+            # Production Quality Indicators
+            'criterion': ['movies:ArtHouseCinema', 'movies:CriticallyAcclaimed'],
+            'imdb top 250': ['movies:HighlyRated', 'movies:ClassicCinema'],
+            'great acting': ['movies:ExceptionalPerformances', 'ada:StrongActing'],
+            'great movie': ['movies:CinematicExcellence', 'movies:HighQuality'],
+            'good': ['movies:WellExecuted', 'movies:Quality'],
+            'great': ['movies:Outstanding', 'movies:Exceptional'],
+
+            # Specific Styles
+            'independent film': ['movies:IndependentCinema', 'movies:ArtistControl'],
+            'original': ['movies:OriginalStory', 'movies:Innovative'],
+            'culture clash': ['movies:CulturalConflict', 'movies:CrossCultural'],
+            'pg-13': ['movies:MainstreamAudience', 'movies:ModerateContent'],
         }
 
         print(f"✅ Loaded {len(self.genome_to_ada)} genome tag mappings")
@@ -174,10 +254,17 @@ class GPUOntologyReasoner:
                 classes.add(f"movies:{genre}Genre")
 
             # Map genome tags to AdA concepts (if available)
-            if media_id in self.genome_scores:
-                genome_tags = self.genome_scores[media_id]
+            # genome_scores uses plain IDs like "1", "2", "3"
+            # metadata uses "ml_1", "ml_2", "ml_3"
+            # Strip "ml_" prefix to match genome_scores keys
+            genome_id = media_id.replace('ml_', '') if media_id.startswith('ml_') else media_id
+
+            if genome_id in self.genome_scores:
+                genome_tags = self.genome_scores[genome_id]
                 for tag, score in genome_tags.items():
-                    if score > 0.7 and tag in self.genome_to_ada:
+                    # Lowered threshold from 0.7 to 0.5 for better coverage
+                    # Median score is 0.654, mean is 0.684, so 0.5 captures meaningful tags
+                    if score > 0.5 and tag in self.genome_to_ada:
                         classes.update(self.genome_to_ada[tag])
 
             self.movie_ontology_classes[media_id] = list(classes)
@@ -253,18 +340,26 @@ class GPUOntologyReasoner:
         self,
         query_id: str,
         top_k: int = 10,
-        semantic_candidates: int = 100
+        semantic_candidates: int = 100,
+        ontology_context: Optional[Dict] = None
     ) -> List[Dict]:
         """
         Hybrid recommendation combining:
-        1. GPU semantic similarity
-        2. Ontology concept matching
-        3. Genre overlap
+        1. GPU semantic similarity (FAST: ~0.5ms)
+        2. Graph distance reasoning (INTELLIGENT: ~5ms)
+        3. Filter-then-Boost strategy (ADAPTIVE)
+
+        V2 Changes:
+        - Replaced naive Jaccard with graph shortest paths
+        - Adaptive weighting based on graph proximity
+        - Path-based explanations
+        - Optional filtering based on ontology context
 
         Args:
             query_id: Movie ID to find similar movies for
             top_k: Number of recommendations to return
             semantic_candidates: Number of semantic candidates to re-rank
+            ontology_context: Optional context for filtering (user preferences, constraints)
 
         Returns:
             List of recommendation dicts with scores and explanations
@@ -275,62 +370,105 @@ class GPUOntologyReasoner:
         semantic_results, gpu_time = self.gpu_semantic_similarity(query_id, semantic_candidates)
         print(f"⚡ GPU semantic search: {gpu_time:.3f} ms ({semantic_candidates} candidates)")
 
-        # Step 2: Ontology + genre scoring (CPU)
+        # Step 2: Graph reasoning or fallback to Jaccard
         start = time.time()
-        hybrid_scores = []
 
-        for candidate_id, sem_score in semantic_results:
-            # Skip self
-            if candidate_id == query_id:
-                continue
+        if self.use_graph_reasoning:
+            # V2: Intelligent graph distance reasoning
+            print("🧠 Using graph distance reasoning...")
 
-            # Compute all similarity components
-            onto_score = self.ontology_similarity(query_id, candidate_id)
-            genre_score = self.genre_similarity(query_id, candidate_id)
+            # Convert semantic results to candidate format
+            candidates = []
+            for candidate_id, sem_score in semantic_results:
+                if candidate_id == query_id:
+                    continue
 
-            # Hybrid score
-            final_score = (
-                self.weights['semantic'] * sem_score +
-                self.weights['ontology'] * onto_score +
-                self.weights['genre'] * genre_score
+                candidates.append({
+                    'media_id': candidate_id,
+                    'title': self.media_metadata[candidate_id]['title'],
+                    'semantic_score': sem_score,
+                    'genres': self.media_metadata[candidate_id].get('genres', [])
+                })
+
+            # Apply filter-then-boost strategy
+            hybrid_scores = self.graph_reasoner.filter_then_boost(
+                query_movie_id=query_id,
+                candidates=candidates,
+                ontology_context=ontology_context or {}
             )
 
-            # Explanation
-            query_classes = self.movie_ontology_classes.get(query_id, [])
-            candidate_classes = self.movie_ontology_classes.get(candidate_id, [])
-            shared_classes = list(set(query_classes) & set(candidate_classes))
+        else:
+            # V1: Fallback to naive Jaccard overlap (DEPRECATED)
+            print("⚠️  Using Jaccard fallback (graph reasoning unavailable)...")
 
-            hybrid_scores.append({
-                'media_id': candidate_id,
-                'title': self.media_metadata[candidate_id]['title'],
-                'final_score': final_score,
-                'semantic_score': sem_score,
-                'ontology_score': onto_score,
-                'genre_score': genre_score,
-                'shared_ontology_classes': shared_classes[:5],  # Top 5
-                'genres': self.media_metadata[candidate_id].get('genres', [])
-            })
+            hybrid_scores = []
 
-        cpu_time = (time.time() - start) * 1000
-        print(f"⚙️  Ontology reasoning: {cpu_time:.3f} ms")
+            for candidate_id, sem_score in semantic_results:
+                # Skip self
+                if candidate_id == query_id:
+                    continue
 
-        # Sort by hybrid score
-        hybrid_scores.sort(key=lambda x: x['final_score'], reverse=True)
+                # Compute all similarity components
+                onto_score = self.ontology_similarity(query_id, candidate_id)
+                genre_score = self.genre_similarity(query_id, candidate_id)
+
+                # Hybrid score (naive linear combination)
+                final_score = (
+                    self.weights['semantic'] * sem_score +
+                    self.weights['ontology'] * onto_score +
+                    self.weights['genre'] * genre_score
+                )
+
+                # Explanation
+                query_classes = self.movie_ontology_classes.get(query_id, [])
+                candidate_classes = self.movie_ontology_classes.get(candidate_id, [])
+                shared_classes = list(set(query_classes) & set(candidate_classes))
+
+                hybrid_scores.append({
+                    'media_id': candidate_id,
+                    'title': self.media_metadata[candidate_id]['title'],
+                    'final_score': final_score,
+                    'semantic_score': sem_score,
+                    'ontology_score': onto_score,
+                    'genre_score': genre_score,
+                    'shared_ontology_classes': shared_classes[:5],  # Top 5
+                    'genres': self.media_metadata[candidate_id].get('genres', []),
+                    'reasoning': 'Jaccard overlap (deprecated)'
+                })
+
+            hybrid_scores.sort(key=lambda x: x['final_score'], reverse=True)
+
+        reasoning_time = (time.time() - start) * 1000
+
+        if self.use_graph_reasoning:
+            print(f"🧠 Graph reasoning: {reasoning_time:.3f} ms")
+        else:
+            print(f"⚙️  Jaccard reasoning: {reasoning_time:.3f} ms")
 
         # Return top-k
         results = hybrid_scores[:top_k]
 
-        total_time = gpu_time + cpu_time
-        print(f"✅ Total time: {total_time:.3f} ms (GPU: {gpu_time:.1f}ms, CPU: {cpu_time:.1f}ms)")
+        total_time = gpu_time + reasoning_time
+        print(f"✅ Total time: {total_time:.3f} ms (GPU: {gpu_time:.1f}ms, Reasoning: {reasoning_time:.1f}ms)")
 
         return results, {
             'gpu_time_ms': gpu_time,
-            'cpu_time_ms': cpu_time,
-            'total_time_ms': total_time
+            'reasoning_time_ms': reasoning_time,
+            'total_time_ms': total_time,
+            'reasoning_method': 'graph_distance' if self.use_graph_reasoning else 'jaccard'
         }
 
     def explain_recommendation(self, query_id: str, candidate_id: str) -> str:
-        """Generate human-readable explanation"""
+        """
+        Generate human-readable explanation
+
+        V2: Uses graph reasoning when available for path-based explanations
+        """
+        if self.use_graph_reasoning and self.graph_reasoner:
+            # Use graph distance reasoning for explanation
+            return self.graph_reasoner.explain_recommendation(query_id, candidate_id)
+
+        # V1 Fallback: Jaccard-based explanation (deprecated)
         query_meta = self.media_metadata[query_id]
         candidate_meta = self.media_metadata[candidate_id]
 

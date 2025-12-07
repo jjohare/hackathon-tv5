@@ -71,6 +71,9 @@ class TensorRTEncoder:
         self.input_buffers = {}
         self.output_buffers = {}
 
+        # CUDA stream for async execution
+        self.cuda_stream = None
+
         # Initialize
         self._initialize()
 
@@ -106,6 +109,9 @@ class TensorRTEncoder:
             import tensorrt as trt
             import pycuda.driver as cuda
             import pycuda.autoinit  # Initialize CUDA
+
+            # Create CUDA stream for async execution
+            self.cuda_stream = cuda.Stream()
 
         except ImportError:
             logger.error("TensorRT or PyCUDA not installed. Install with:")
@@ -151,14 +157,22 @@ class TensorRTEncoder:
         Allocate GPU buffers for input/output
 
         Uses zero-copy with torch.cuda tensors for efficient memory management
+        For dynamic shapes (containing -1), buffers are allocated on first use.
         """
         import tensorrt as trt
 
-        # Get binding information
-        for binding in range(self.engine.num_bindings):
-            binding_name = self.engine.get_binding_name(binding)
-            shape = self.engine.get_binding_shape(binding)
-            dtype = trt.nptype(self.engine.get_binding_dtype(binding))
+        # TensorRT 10.x API: use tensor names instead of bindings
+        # Get all tensor names
+        num_io_tensors = self.engine.num_io_tensors
+
+        for i in range(num_io_tensors):
+            tensor_name = self.engine.get_tensor_name(i)
+            mode = self.engine.get_tensor_mode(tensor_name)
+            shape = self.engine.get_tensor_shape(tensor_name)
+            dtype_trt = self.engine.get_tensor_dtype(tensor_name)
+
+            # Convert TensorRT dtype to numpy
+            dtype = trt.nptype(dtype_trt)
 
             # Convert to PyTorch dtype
             if dtype == np.float32:
@@ -172,20 +186,29 @@ class TensorRTEncoder:
             else:
                 torch_dtype = torch.float32
 
-            # Allocate torch tensor on GPU (zero-copy)
-            # Dynamic batch size: use placeholder and reallocate per batch
+            # Skip buffer allocation if shape contains -1 (dynamic dimension)
+            # Buffers will be allocated dynamically during inference
+            if any(dim == -1 for dim in shape):
+                logger.debug(f"Skipping buffer allocation for '{tensor_name}' with dynamic shape: {shape}")
+                if mode == trt.TensorIOMode.INPUT:
+                    self.input_buffers[tensor_name] = None  # Placeholder
+                else:
+                    self.output_buffers[tensor_name] = None  # Placeholder
+                continue
+
+            # Allocate torch tensor on GPU (zero-copy) for static shapes only
             buffer = torch.empty(
                 tuple(shape),
                 dtype=torch_dtype,
                 device=self.device
             )
 
-            if self.engine.binding_is_input(binding):
-                self.input_buffers[binding_name] = buffer
-                logger.debug(f"Input buffer '{binding_name}': shape={shape}, dtype={dtype}")
+            if mode == trt.TensorIOMode.INPUT:
+                self.input_buffers[tensor_name] = buffer
+                logger.debug(f"Input buffer '{tensor_name}': shape={shape}, dtype={dtype}")
             else:
-                self.output_buffers[binding_name] = buffer
-                logger.debug(f"Output buffer '{binding_name}': shape={shape}, dtype={dtype}")
+                self.output_buffers[tensor_name] = buffer
+                logger.debug(f"Output buffer '{tensor_name}': shape={shape}, dtype={dtype}")
 
     def _load_tokenizer(self):
         """Load HuggingFace tokenizer"""
@@ -254,60 +277,82 @@ class TensorRTEncoder:
         import pycuda.driver as cuda
 
         batch_size = input_ids.shape[0]
+        seq_length = input_ids.shape[1]
 
-        # Reallocate buffers if batch size changed
-        for name, buffer in self.input_buffers.items():
-            if buffer.shape[0] != batch_size:
-                new_shape = (batch_size,) + buffer.shape[1:]
-                self.input_buffers[name] = torch.empty(
-                    new_shape,
-                    dtype=buffer.dtype,
-                    device=self.device
-                )
+        # Allocate or reallocate buffers for dynamic shapes
+        # Input buffers
+        for name in ['input_ids', 'attention_mask']:
+            if name in self.input_buffers:
+                buffer = self.input_buffers[name]
+                required_shape = (batch_size, seq_length)
 
-        for name, buffer in self.output_buffers.items():
-            if buffer.shape[0] != batch_size:
-                new_shape = (batch_size,) + buffer.shape[1:]
-                self.output_buffers[name] = torch.empty(
-                    new_shape,
-                    dtype=buffer.dtype,
-                    device=self.device
-                )
+                # Allocate if None or shape mismatch
+                if buffer is None or buffer.shape != required_shape:
+                    dtype = torch.int64 if 'input_ids' in name or 'attention_mask' in name else torch.float32
+                    self.input_buffers[name] = torch.empty(
+                        required_shape,
+                        dtype=dtype,
+                        device=self.device
+                    )
+
+        # Output buffers - get expected shape from engine after setting input shapes
+        for name in self.output_buffers.keys():
+            # We'll set output shape after setting input shapes below
+            pass
 
         # Copy inputs to buffers (zero-copy within GPU)
-        # Assume binding names are 'input_ids' and 'attention_mask'
         if 'input_ids' in self.input_buffers:
             self.input_buffers['input_ids'].copy_(input_ids)
         if 'attention_mask' in self.input_buffers:
             self.input_buffers['attention_mask'].copy_(attention_mask)
 
-        # Set dynamic shapes
-        for i in range(self.engine.num_bindings):
-            if self.engine.binding_is_input(i):
-                binding_name = self.engine.get_binding_name(i)
-                shape = self.input_buffers[binding_name].shape
-                self.context.set_binding_shape(i, shape)
+        # Set dynamic shapes (TensorRT 10.x API)
+        for tensor_name, buffer in self.input_buffers.items():
+            if buffer is not None:
+                shape = buffer.shape
+                self.context.set_input_shape(tensor_name, shape)
 
-        # Prepare bindings (pointers to GPU memory)
-        bindings = []
-        for i in range(self.engine.num_bindings):
-            binding_name = self.engine.get_binding_name(i)
-            if self.engine.binding_is_input(i):
-                buffer = self.input_buffers[binding_name]
-            else:
-                buffer = self.output_buffers[binding_name]
+        # Allocate output buffers now that input shapes are set
+        for tensor_name in self.output_buffers.keys():
+            output_shape = self.context.get_tensor_shape(tensor_name)
+            buffer = self.output_buffers[tensor_name]
 
-            bindings.append(buffer.data_ptr())
+            # Allocate if None or shape mismatch
+            if buffer is None or buffer.shape != tuple(output_shape):
+                dtype = torch.float16  # Output embeddings are FP16
+                self.output_buffers[tensor_name] = torch.empty(
+                    tuple(output_shape),
+                    dtype=dtype,
+                    device=self.device
+                )
 
-        # Execute inference
-        success = self.context.execute_v2(bindings)
+        # Set tensor addresses (TensorRT 10.x API)
+        for tensor_name, buffer in self.input_buffers.items():
+            if buffer is not None:
+                self.context.set_tensor_address(tensor_name, buffer.data_ptr())
+
+        for tensor_name, buffer in self.output_buffers.items():
+            if buffer is not None:
+                self.context.set_tensor_address(tensor_name, buffer.data_ptr())
+
+        # Execute inference (TensorRT 10.x API)
+        # Use CUDA stream handle for async execution
+        import pycuda.driver as cuda
+        success = self.context.execute_async_v3(self.cuda_stream.handle)
 
         if not success:
             raise RuntimeError("TensorRT inference failed")
 
+        # Synchronize stream to ensure inference completes
+        self.cuda_stream.synchronize()
+
         # Get output (assume first output binding is embeddings)
         output_name = list(self.output_buffers.keys())[0]
         embeddings = self.output_buffers[output_name]
+
+        # Convert FP16 to FP32 for compatibility with downstream processing
+        if embeddings.dtype == torch.float16:
+            embeddings = embeddings.to(torch.float32)
 
         return embeddings
 

@@ -114,18 +114,21 @@ def export_to_onnx(
     """
     logger.info(f"Loading SentenceTransformer model: {model_name}")
 
-    # Load the SentenceTransformer model
-    st_model = SentenceTransformer(model_name)
+    # Load the SentenceTransformer model on CPU for export stability
+    device = torch.device('cpu')
+    st_model = SentenceTransformer(model_name, device=device)
     st_model.eval()
 
     # Extract the transformer (first module in the pipeline)
     transformer = st_model[0].auto_model
+    transformer = transformer.to(device)
 
     # Create pooling layer
     pooling = MeanPooling()
 
     # Create combined model for export
     combined_model = SentenceTransformerONNX(transformer, pooling)
+    combined_model.to(device)
     combined_model.eval()
 
     # Create output directory
@@ -134,10 +137,10 @@ def export_to_onnx(
 
     logger.info("Preparing dummy inputs for ONNX export")
 
-    # Create dummy inputs with batch_size=1
+    # Create dummy inputs with batch_size=1 on CPU
     batch_size = 1
-    dummy_input_ids = torch.randint(0, 1000, (batch_size, max_seq_length), dtype=torch.long)
-    dummy_attention_mask = torch.ones((batch_size, max_seq_length), dtype=torch.long)
+    dummy_input_ids = torch.randint(0, 1000, (batch_size, max_seq_length), dtype=torch.long, device=device)
+    dummy_attention_mask = torch.ones((batch_size, max_seq_length), dtype=torch.long, device=device)
 
     # Define dynamic axes for variable batch size and sequence length
     dynamic_axes = {

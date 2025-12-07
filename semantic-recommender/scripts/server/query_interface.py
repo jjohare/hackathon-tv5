@@ -160,6 +160,9 @@ class QueryInterfaceBackend:
 
         # Step 2: Normalization
         start = time.time()
+        # Handle both 1D and 2D tensors (TensorRT returns 2D with batch dim)
+        if query_embedding.dim() == 2:
+            query_embedding = query_embedding.squeeze(0)  # Remove batch dimension
         query_norm = F.normalize(query_embedding, p=2, dim=0)
         norm_time = (time.time() - start) * 1000
 

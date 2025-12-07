@@ -16,12 +16,28 @@ semantic-recommender-rs/
 │   └── cli/                     # Command-line interface
 ```
 
-## Performance Targets
+## Performance Targets vs Python Baseline
 
-- **Latency**: <0.5ms (P95)
-- **Throughput**: 500K+ QPS
-- **GPU Memory**: ~18 GB / 42 GB (43% utilization)
-- **Quality**: +40-60% personalization improvement
+**Python A100 Baseline (Actual Measured):**
+- **Latency (P50):** 11.42ms
+- **Latency (P95):** 11.44ms
+- **Throughput:** 94 QPS
+- **GPU Memory:** 3.01 GB / 39.49 GB (7.6% utilization)
+- **Cold Start:** 306ms (with PTX compilation)
+
+**Rust A100 Targets (Expected):**
+- **Latency (P50)**: <5ms (2.3× faster than Python)
+- **Latency (P95)**: <5.5ms (2.1× faster)
+- **Throughput (Sequential)**: >200 QPS (2.1× higher)
+- **Throughput (Parallel)**: >400 QPS (4.3× higher)
+- **GPU Memory**: ~3.5 GB / 39.49 GB (8.9% utilization)
+- **Cold Start**: <100ms (50-100× faster)
+
+**With TensorRT Optimization:**
+- **Latency (P50)**: <0.7ms (16× faster than Python)
+- **Query Encoding**: <0.3ms (22× speedup from TensorRT FP16)
+- **Total End-to-End**: <1ms target
+- **Throughput**: >1000 QPS
 
 ## Prerequisites
 

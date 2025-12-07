@@ -1,0 +1,30 @@
+{
+  "device": "cpu",
+  "gpu_name": "CPU",
+  "benchmarks": {
+    "latency": {
+      "mean_ms": 18.36945343017578,
+      "median_ms": 16.67618751525879,
+      "p95_ms": 21.523106098175045,
+      "p99_ms": 74.46613073348999,
+      "cold_start_ms": 19.0077543258667,
+      "warm_ms": 18.363005946380923
+    },
+    "throughput": {
+      "batch_10_qps": null,
+      "batch_100_qps": null,
+      "batch_1000_qps": null
+    },
+    "memory": {},
+    "cache": {
+      "hit_rate_pct": 33.4,
+      "avg_hit_ms": 0.3839145877404127,
+      "avg_miss_ms": 1.0795822372665635,
+      "speedup": 2.8120375514267586
+    },
+    "quality": {
+      "status": "completed",
+      "profiles_tested": 2
+    }
+  }
+}

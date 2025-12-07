@@ -128,3 +128,14 @@ data/synthetic/*.json
 # data/ontologies/movies/   - Movies Ontology (MIT)
 # data/ontologies/omc/      - MovieLabs OMC (Apache 2.0)
 # whelk-rs/                 - Whelk-rs EL++ reasoner (BSD-3-Clause)
+
+# Large model files (use Git LFS or download separately)  
+*.onnx
+*.onnx.data
+*.trt
+*.plan
+*.engine
+models/
+data/models/
+**/models/*.onnx*
+**/models/*.trt

@@ -1,342 +1,121 @@
-# Agentics Foundation TV5 Hackathon
+# Semantic Recommender Engine
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![npm version](https://img.shields.io/badge/npm-agentics--hackathon-red.svg)](https://www.npmjs.com/package/agentics-hackathon)
-[![Discord](https://img.shields.io/badge/Discord-Agentics-7289da.svg)](https://discord.agentics.org)
+GPU-accelerated content discovery system for TV5 Monde, featuring multi-modal semantic understanding and sub-100ms recommendations.
 
-> **Build the future of agentic AI - Supported by Google Cloud**
+![Semantic Recommender](semantic-recommender/semantic-recommender.jpeg)
 
-The **Agentics Foundation TV5 Hackathon** repository provides CLI tools, MCP servers, and reference implementations for building agentic AI solutions. This includes the **AI Media Discovery** demo app showcasing the Agent-Ready Web (ARW) specification.
+<p align="center">
+  <img src="semantic-recommender/Generated%20Image%20December%2007,%202025%20-%202_12PM.jpeg" width="45%" alt="Architecture Diagram"/>
+  <img src="semantic-recommender/Generated%20Image%20December%2008,%202025%20-%208_00AM.jpeg" width="45%" alt="System Overview"/>
+</p>
 
-🌐 **Website:** [agentics.org/hackathon](https://agentics.org/hackathon)
-💬 **Discord:** [discord.agentics.org](https://discord.agentics.org)
-📦 **npm:** `npx agentics-hackathon`
+## The Problem
 
----
+Users spend **45 minutes deciding what to watch**—billions of hours lost globally. Traditional recommenders rely on shallow metadata matching. This engine delivers deep semantic understanding.
 
-## 🎯 The Challenge
+## Architecture
 
-Every night, millions spend up to **45 minutes deciding what to watch** — billions of hours lost every day. Not from lack of content, but from fragmentation across streaming platforms.
+```
+COLD PATH (Content Processing)     WARM PATH (Context)        HOT PATH (<100ms)
+────────────────────────────────   ─────────────────────      ─────────────────
+Visual/Audio/Text Embeddings  →    Cultural Trends      →     Intent Inference
+GPU Semantic Fusion           →    Social Signals       →     Vector + Graph Search
+Ontology Reasoning            →    Real-world Events    →     Hybrid Ranking
+```
 
-Join us to build agentic AI solutions that solve real problems using Google Cloud, Gemini, Claude, and open-source tools.
+## Key Features
 
----
+- **Multi-Modal Fusion**: Visual (768-dim) + Audio (512-dim) + Text (1024-dim) → Unified 1024-dim embeddings
+- **GPU Acceleration**: Custom CUDA kernels for semantic similarity (80x speedup), ontology reasoning (33x), graph search (37x)
+- **Ontology Intelligence**: GMC-O (Global Media & Context Ontology) with OWL reasoning
+- **Real-Time Learning**: AgentDB integration for continuous personalization
 
-## 🚀 Quick Start
+## Performance
+
+| Component | Target | Achieved |
+|-----------|--------|----------|
+| API Latency (p99) | <100ms | <81ms |
+| Vector Search | <10ms | <10ms |
+| Throughput | 166K req/sec | 1000+ QPS |
+| GPU Embedding | - | 1000 movies/sec |
+
+## Quick Start
 
 ```bash
-# Initialize your hackathon project
-npx agentics-hackathon init
+# Build Rust components
+cd semantic-recommender
+cargo build --release
 
-# Browse and install 17+ AI tools
-npx agentics-hackathon tools
+# Run API server
+cargo run --release
 
-# Check project status
-npx agentics-hackathon status
-
-# Start MCP server for AI assistant integration
-npx agentics-hackathon mcp
+# Process TMDB dataset (1.3M movies)
+cd scripts/data_pipeline
+python run_tmdb_pipeline.py
 ```
 
----
+## Project Structure
 
-## 🏆 Hackathon Tracks
-
-| Track | Description |
-|-------|-------------|
-| **Entertainment Discovery** | Solve the 45-minute decision problem - help users find what to watch |
-| **Multi-Agent Systems** | Build collaborative AI agents with Google ADK and Vertex AI |
-| **Agentic Workflows** | Create autonomous workflows with Claude, Gemini, and orchestration |
-| **Open Innovation** | Bring your own idea - any agentic AI solution that makes an impact |
-
----
-
-## ✨ Features
-
-### 🛠 CLI Tool (`npx agentics-hackathon`)
-
-- **`init`** - Interactive project setup with track selection and tool installation
-- **`tools`** - Browse and install 17+ AI development tools across 6 categories
-- **`status`** - View project configuration and installed tools
-- **`info`** - Hackathon information and resources
-- **`mcp`** - Start MCP server (stdio or SSE transport)
-- **`discord`** - Join the community
-- **`help`** - Detailed guides and examples
-
-### 🤖 MCP Server
-
-Full Model Context Protocol implementation with:
-- **Tools**: `get_hackathon_info`, `get_tracks`, `get_available_tools`, `get_project_status`, `check_tool_installed`, `get_resources`
-- **Resources**: Project configuration, track information
-- **Prompts**: `hackathon_starter`, `choose_track`
-
-### 📱 Demo Applications & Modules
-
-| Module | Description | Performance |
-|--------|-------------|-------------|
-| **[Semantic Recommender](semantic-recommender/)** | 🚀 **GPU-accelerated hybrid semantic + ontology reasoning** | **316K QPS** on A100, <1ms latency |
-| **[Media Discovery](apps/media-discovery/)** | AI-powered movie/TV discovery with ARW implementation | Production-ready |
-| **[ARW Chrome Extension](apps/arw-chrome-extension/)** | Browser extension for inspecting ARW compliance | Developer tool |
-
-### 🏆 Semantic Recommender - Revolutionary Achievements
-
-The **[semantic-recommender](semantic-recommender/)** module achieves unprecedented performance:
-
-- ✅ **316,360 QPS** sustained throughput on A100 GPU (22,597× faster than CPU)
-- ✅ **1.6 TB/s memory bandwidth** saturation (HBM2e at 99-102% efficiency)
-- ✅ **<1ms production latency** with hybrid semantic + ontology reasoning
-- ✅ **Explainable AI** via Whelk-rs EL++ formal reasoning + AdA Film Ontology
-- ✅ **MCP Server** for Claude Code, Gemini, and AI agent integration
-
-**[➡️ See semantic-recommender/README.md for complete details](semantic-recommender/README.md)**
-
-### 📐 ARW (Agent-Ready Web) Components
-
-This repository includes reference implementations of the ARW specification:
-
-- **Specification**: [ARW v0.1 Draft](spec/ARW-0.1-draft.md)
-- **Schemas**: JSON schemas for validation (`packages/schemas/`)
-- **Validators**: Python and Node.js validation tools (`packages/validators/`)
-- **Badges**: Compliance level badges (`packages/badges/`)
-
----
-
-## 📦 Repository Structure
-
-```plaintext
-hackathon-tv5/
-├── src/                             # Hackathon CLI source
-│   ├── cli.ts                      # Main CLI entry point
-│   ├── commands/                   # CLI commands (init, tools, status, etc.)
-│   ├── mcp/                        # MCP server implementation
-│   │   ├── server.ts              # MCP tools, resources, prompts
-│   │   ├── stdio.ts               # STDIO transport
-│   │   └── sse.ts                 # SSE transport
-│   ├── constants.ts               # Tracks, tools, configuration
-│   └── utils/                     # Helpers and utilities
-│
-├── apps/                           # Demo Applications
-│   ├── media-discovery/           # AI Media Discovery (Next.js + ARW)
-│   │   ├── public/
-│   │   │   ├── .well-known/arw-manifest.json  # ARW manifest
-│   │   │   └── llms.txt                       # ARW discovery file
-│   │   └── src/                   # React components & API routes
-│   └── arw-chrome-extension/      # ARW Inspector Chrome Extension
-│       ├── manifest.json          # Chrome Manifest V3
-│       └── src/                   # Popup, content script, service worker
-│
-├── packages/                       # Shared Packages
-│   ├── @arw/schemas/              # TypeScript ARW schemas with Zod
-│   ├── schemas/                   # JSON schemas for ARW validation
-│   ├── validators/                # Python & Node.js validators
-│   ├── validator/                 # ARW validator CLI tool
-│   ├── badges/                    # ARW compliance badges (SVG)
-│   ├── cli/                       # Rust ARW CLI (advanced)
-│   ├── crawler-sdk/               # TypeScript SDK for ARW crawler service
-│   ├── crawler-service/           # High-performance crawler API service
-│   ├── nextjs-plugin/             # Next.js plugin for ARW integration
-│   └── benchmark/                 # ARW benchmark evaluation
-│
-├── spec/                           # ARW Specification
-│   └── ARW-0.1-draft.md           # Editor's draft specification
-│
-├── docs/                           # Documentation
-├── ai_docs/                        # AI-focused documentation
-├── scripts/                        # Build and utility scripts
-│
-├── .claude/                        # Claude Code configuration
-│   ├── commands/                  # Slash commands
-│   └── agents/                    # Sub-agent definitions
-│
-├── CLAUDE.md                       # Claude Code guidance
-└── README.md                       # This file
+```
+semantic-recommender/
+├── src/
+│   ├── api/           # REST/GraphQL API with MCP integration
+│   ├── cuda/          # GPU kernels (SSSP, semantic similarity)
+│   └── rust/
+│       ├── gpu_engine/    # CUDA FFI and orchestration
+│       ├── models/        # Type-safe data structures
+│       └── ontology/      # OWL reasoning (GMC-O)
+├── scripts/
+│   └── data_pipeline/     # TMDB ingestion & embeddings
+└── design/
+    ├── guides/            # Implementation guides
+    └── ontology/          # GMC-O visualizations
 ```
 
----
+## Technology Stack
 
-## 🔧 Available Tools (17+)
+| Layer | Technology |
+|-------|------------|
+| GPU Compute | CUDA 12.2+, TensorRT, Custom Kernels |
+| Core Language | Rust 1.70+ (cudarc bindings) |
+| Vector Search | RuVector (HNSW), FAISS GPU |
+| Knowledge Graph | Neo4j + Rust OWL Reasoner |
+| Learning | AgentDB (Thompson Sampling, LinUCB) |
+| API | Axum (REST), async-graphql, MCP Protocol |
 
-The CLI provides access to tools across 6 categories:
-
-### AI Assistants
-- **Claude Code CLI** - Anthropic's AI-powered coding assistant
-- **Gemini CLI** - Google's Gemini model interface
-
-### Orchestration & Agent Frameworks
-- **Claude Flow** - #1 agent orchestration platform with 101 MCP tools
-- **Agentic Flow** - Production AI orchestration with 66 agents
-- **Flow Nexus** - Competitive agentic platform on MCP
-- **Google ADK** - Build multi-agent systems with Google's Agent Development Kit
-
-### Cloud Platform
-- **Google Cloud CLI** - gcloud SDK for Vertex AI, Cloud Functions
-- **Vertex AI SDK** - Google Cloud's unified ML platform
-
-### Databases & Memory
-- **RuVector** - Vector database and embeddings toolkit
-- **AgentDB** - Database for agentic AI state management
-
-### Synthesis & Advanced Tools
-- **Agentic Synth** - Synthesis tools for agentic development
-- **Strange Loops** - Consciousness exploration SDK
-- **SPARC 2.0** - Autonomous vector coding agent
-
-### Python Frameworks
-- **LionPride** - Python agentic AI framework
-- **Agentic Framework** - AI agents with natural language
-- **OpenAI Agents SDK** - Multi-agent workflows from OpenAI
-
----
-
-## 🌐 ARW (Agent-Ready Web)
-
-This repository demonstrates the ARW specification through the **Media Discovery** app.
-
-### What is ARW?
-
-ARW provides infrastructure for efficient agent-web interaction:
-
-- **85% token reduction** - Machine views vs HTML scraping
-- **10x faster discovery** - Structured manifests vs crawling
-- **OAuth-enforced actions** - Safe agent transactions
-- **AI-* headers** - Full observability of agent traffic
-
-### ARW in Media Discovery
-
-The media-discovery app implements ARW with:
-
-```json
-// /.well-known/arw-manifest.json
-{
-  "version": "0.1",
-  "profile": "ARW-1",
-  "site": {
-    "name": "AI Media Discovery",
-    "description": "Discover movies and TV shows through natural language"
-  },
-  "actions": [
-    {
-      "id": "semantic_search",
-      "endpoint": "/api/search",
-      "method": "POST"
-    }
-  ]
-}
-```
-
-See the [ARW Specification](spec/ARW-0.1-draft.md) for full details.
-
----
-
-## 💻 Development
-
-### Prerequisites
-
-- Node.js 18+
-- npm or pnpm
-
-### Build & Run
+## API Endpoints
 
 ```bash
-# Install dependencies
-npm install
+# Semantic search
+curl -X POST http://localhost:3000/api/v1/search \
+  -d '{"query": "French noir films with existential themes"}'
 
-# Build the CLI
-npm run build
+# Personalized recommendations
+curl http://localhost:3000/api/v1/recommendations/user_123?explain=true
 
-# Run locally
-npm start
-
-# Development mode (watch)
-npm run dev
-
-# Run linter
-npm run lint
+# MCP manifest (AI agent integration)
+curl http://localhost:3000/api/v1/mcp/manifest
 ```
 
-### MCP Server
+## Documentation
 
-```bash
-# STDIO transport (for Claude Desktop, etc.)
-npm run mcp:stdio
+- [Design System](semantic-recommender/design/README.md) - Full architecture
+- [Implementation Guides](semantic-recommender/design/guides/README.md) - Step-by-step setup
+- [API Reference](semantic-recommender/src/api/README.md) - REST/GraphQL docs
+- [CUDA Kernels](semantic-recommender/src/cuda/README.md) - GPU kernel reference
+- [Data Pipeline](semantic-recommender/scripts/data_pipeline/README.md) - TMDB processing
 
-# SSE transport (for web integrations)
-npm run mcp:sse
-```
+## Requirements
 
-### Media Discovery App
+- NVIDIA GPU (A100/H100 recommended, RTX 4090+ supported)
+- CUDA Toolkit 12.0+
+- Rust 1.70+
+- Python 3.11+ (data pipeline)
 
-```bash
-cd apps/media-discovery
-npm install
-npm run dev
-```
+## License
+
+Apache 2.0 | GMC-O Ontology: CC BY 4.0
 
 ---
 
-## 🔌 MCP Integration
-
-Add to your Claude Desktop config (`claude_desktop_config.json`):
-
-```json
-{
-  "mcpServers": {
-    "agentics-hackathon": {
-      "command": "npx",
-      "args": ["agentics-hackathon", "mcp"]
-    }
-  }
-}
-```
-
-Or use SSE transport:
-
-```bash
-npx agentics-hackathon mcp sse --port 3000
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Areas of focus:
-
-1. **CLI Improvements** - New commands, better UX
-2. **Tool Integrations** - Add more AI tools
-3. **Demo Apps** - Build showcases for hackathon tracks
-4. **ARW Implementation** - Expand specification coverage
-5. **Documentation** - Guides and tutorials
-
-### Development Workflow
-
-See [CLAUDE.md](CLAUDE.md) for development guidelines including:
-- SPARC methodology for systematic development
-- Concurrent execution patterns
-- File organization rules
-
----
-
-## 📜 License
-
-This project is licensed under the [Apache License 2.0](LICENSE).
-
----
-
-## 🔗 Links
-
-- **🌐 Hackathon Website:** [agentics.org/hackathon](https://agentics.org/hackathon)
-- **💬 Discord:** [discord.agentics.org](https://discord.agentics.org)
-- **📦 GitHub:** [github.com/agenticsorg/hackathon-tv5](https://github.com/agenticsorg/hackathon-tv5)
-- **📖 ARW Spec:** [ARW v0.1 Draft](spec/ARW-0.1-draft.md)
-
----
-
-<div align="center">
-
-**🚀 Agentics Foundation TV5 Hackathon**
-
-*Building the Future of Agentic AI - Supported by Google Cloud*
-
-[Website](https://agentics.org/hackathon) | [Discord](https://discord.agentics.org) | [GitHub](https://github.com/agenticsorg/hackathon-tv5)
-
-</div>
+*Media Gateway Hackathon 2025 - Agentics Foundation with TV5 Monde USA, Google & Kaltura*

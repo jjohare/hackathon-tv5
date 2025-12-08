@@ -1,4 +1,9 @@
-# Semantic Recommender Engine
+# Agentics Foundation TV5 Hackathon
+
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Agentics-7289da.svg)](https://discord.agentics.org)
+
+> **Building the Future of Agentic AI** - Supported by Google Cloud
 
 GPU-accelerated content discovery system for TV5 Monde, featuring multi-modal semantic understanding and sub-100ms recommendations.
 
@@ -11,7 +16,7 @@ GPU-accelerated content discovery system for TV5 Monde, featuring multi-modal se
 
 ## The Problem
 
-Users spend **45 minutes deciding what to watch**—billions of hours lost globally. Traditional recommenders rely on shallow metadata matching. This engine delivers deep semantic understanding.
+Every night, millions spend up to **45 minutes deciding what to watch**—billions of hours lost globally. Not from lack of content, but from fragmentation across streaming platforms. Traditional recommenders rely on shallow metadata matching. This engine delivers deep semantic understanding.
 
 ## Architecture
 
@@ -105,6 +110,45 @@ curl http://localhost:3000/api/v1/mcp/manifest
 - [CUDA Kernels](semantic-recommender/src/cuda/README.md) - GPU kernel reference
 - [Data Pipeline](semantic-recommender/scripts/data_pipeline/README.md) - TMDB processing
 
+## Hackathon Tracks
+
+| Track | Description |
+|-------|-------------|
+| **Entertainment Discovery** | Solve the 45-minute decision problem - help users find what to watch |
+| **Multi-Agent Systems** | Build collaborative AI agents with Google ADK and Vertex AI |
+| **Agentic Workflows** | Create autonomous workflows with Claude, Gemini, and orchestration |
+| **Open Innovation** | Bring your own idea - any agentic AI solution that makes an impact |
+
+## Repository Structure
+
+```
+hackathon-tv5/
+├── semantic-recommender/        # Core recommendation engine
+│   ├── src/                    # Rust source (API, CUDA, ontology)
+│   ├── scripts/                # Data pipeline & benchmarks
+│   └── design/                 # Architecture & guides
+├── apps/                       # Demo applications
+│   ├── media-discovery/        # AI Media Discovery (Next.js + ARW)
+│   └── arw-chrome-extension/   # ARW Inspector Chrome Extension
+├── packages/                   # Shared packages
+│   ├── schemas/               # JSON schemas for ARW validation
+│   ├── validators/            # Python & Node.js validators
+│   └── crawler-sdk/           # TypeScript SDK for ARW crawler
+├── spec/                       # ARW Specification
+│   └── ARW-0.1-draft.md       # Editor's draft specification
+└── src/                        # Hackathon CLI source
+```
+
+## ARW (Agent-Ready Web)
+
+This repository implements the ARW specification for efficient agent-web interaction:
+
+- **85% token reduction** - Machine views vs HTML scraping
+- **10x faster discovery** - Structured manifests vs crawling
+- **OAuth-enforced actions** - Safe agent transactions
+
+See the [ARW Specification](spec/ARW-0.1-draft.md) for details.
+
 ## Requirements
 
 - NVIDIA GPU (A100/H100 recommended, RTX 4090+ supported)
@@ -112,10 +156,20 @@ curl http://localhost:3000/api/v1/mcp/manifest
 - Rust 1.70+
 - Python 3.11+ (data pipeline)
 
+## Links
+
+- **Website:** [agentics.org/hackathon](https://agentics.org/hackathon)
+- **Discord:** [discord.agentics.org](https://discord.agentics.org)
+- **GitHub:** [github.com/agenticsorg/hackathon-tv5](https://github.com/agenticsorg/hackathon-tv5)
+
 ## License
 
 Apache 2.0 | GMC-O Ontology: CC BY 4.0
 
 ---
 
+<div align="center">
+
 *Media Gateway Hackathon 2025 - Agentics Foundation with TV5 Monde USA, Google & Kaltura*
+
+</div>

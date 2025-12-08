@@ -3,6 +3,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Agentics-7289da.svg)](https://discord.agentics.org)
 
+![MCP Interface](mcp-interface.png)
+
 > **Building the Future of Agentic AI** - Supported by Google Cloud
 
 GPU-accelerated content discovery system for TV5 Monde, featuring multi-modal semantic understanding and sub-100ms recommendations.
